@@ -47,9 +47,9 @@
 <body class="antialiased min-h-screen flex flex-col selection:bg-yellow-500 selection:text-white">
 
     <!-- ==========================================
-         [화면 0] 앱 시작 시 스플래시(DB 연결) 화면
+         [화면 0] 앱 시작 및 새로고침 시 스플래시 화면
     =========================================== -->
-    <div id="screen-splash" class="flex-1 flex flex-col items-center justify-center p-6 fixed inset-0 bg-[#121212] z-50">
+    <div id="screen-splash" class="flex-1 flex flex-col items-center justify-center p-6 fixed inset-0 bg-[#121212] z-[100]">
         <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-20 h-20 rounded-[22%] mb-8 animate-pulse shadow-lg shadow-yellow-500/20 border border-gray-800 object-cover">
         <svg class="animate-spin h-8 w-8 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         <p class="text-gray-400 font-bold text-sm">학원 데이터베이스 연동 중...</p>
@@ -90,9 +90,17 @@
                 <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-8 h-8 rounded-[22%] object-cover border border-gray-700 shadow-sm shadow-yellow-500/20">
                 <span class="font-signature italic font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 tracking-wider text-xl mt-1">Signature</span>
             </div>
-            <button onclick="logout()" class="text-xs font-bold text-gray-400 bg-gray-800 px-3 py-1.5 rounded-full hover:text-white transition-colors">
-                로그아웃
-            </button>
+            
+            <!-- 새로고침 및 로그아웃 버튼 그룹 -->
+            <div class="flex gap-2">
+                <button onclick="refreshData()" class="flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-900/20 border border-blue-500/30 px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    새로고침
+                </button>
+                <button onclick="logout()" class="text-xs font-bold text-gray-400 bg-gray-800 border border-gray-700 px-3 py-1.5 rounded-full hover:text-white transition-colors">
+                    로그아웃
+                </button>
+            </div>
         </div>
     </header>
 
@@ -262,6 +270,41 @@
         </div>
     </div>
 
+    <!-- ===== [신규 기능] 로그인 실패/에러 안내 모달 ===== -->
+    <div id="loginErrorModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">로그인 실패</h3>
+            <p id="loginErrorMessage" class="text-gray-400 text-sm mb-6 leading-relaxed">아이디 또는 비밀번호가 일치하지 않습니다.</p>
+            <button onclick="closeLoginErrorModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">
+                다시 시도하기
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== PWA 앱 설치 유도 배너 (하단 고정) ===== -->
+    <div id="pwaInstallBanner" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 shadow-[0_-5px_20px_rgba(0,0,0,0.5)] flex justify-between items-center z-[80] transform translate-y-full transition-transform duration-500 rounded-t-2xl md:rounded-none">
+        <div class="flex items-center gap-3">
+            <div class="bg-white/20 p-2.5 rounded-xl">
+                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            </div>
+            <div>
+                <p class="font-bold text-sm md:text-base">Signature 앱 설치하기</p>
+                <p class="text-xs text-blue-200">바탕화면에서 1초 만에 접속하세요!</p>
+            </div>
+        </div>
+        <div class="flex gap-2 items-center">
+            <button id="btnInstallPwa" class="bg-[#FEE500] text-[#191919] px-4 py-2 rounded-xl font-bold text-sm shadow hover:bg-yellow-400 transition-colors whitespace-nowrap">
+                앱 설치
+            </button>
+            <button onclick="hideInstallBanner()" class="text-white/60 hover:text-white p-1 ml-1 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </div>
+
 
     <script>
         // ==========================================
@@ -275,47 +318,160 @@
             "10": "https://youtu.be/예시링크2" 
         }; 
 
-        // 전역 상태 변수 (구글에서 받아온 데이터 저장소)
+        // 전역 상태 변수
         let globalDB = null; 
         let currentUser = null;
 
         // ==========================================
-        // 앱 시작 시 데이터베이스 연동(Fetch) 로직
+        // 🚀 PWA 설치 배너 로직
+        // ==========================================
+        let deferredPrompt;
+        const pwaInstallBanner = document.getElementById('pwaInstallBanner');
+        const btnInstallPwa = document.getElementById('btnInstallPwa');
+
+        // 안드로이드/크롬 설치 프롬프트 이벤트 가로채기
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // 앱이 아니면(브라우저 접속이면) 2초 뒤에 배너 띄우기
+            setTimeout(showInstallBanner, 2000);
+        });
+
+        function showInstallBanner() {
+            if (pwaInstallBanner) pwaInstallBanner.classList.remove('translate-y-full');
+        }
+
+        function hideInstallBanner() {
+            if (pwaInstallBanner) pwaInstallBanner.classList.add('translate-y-full');
+        }
+
+        // 설치 버튼 클릭 이벤트
+        if (btnInstallPwa) {
+            btnInstallPwa.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    hideInstallBanner();
+                    deferredPrompt.prompt(); // 기본 설치 팝업 호출
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${outcome}`);
+                    deferredPrompt = null;
+                } else {
+                    // iOS 등 자동 설치 팝업이 지원되지 않는 경우 수동 안내
+                    alert("🍎 아이폰(iOS) 전용 설치 방법\n\n1. 하단 메뉴바 정중앙의 [공유(네모 안 화살표)] 버튼 클릭\n2. 메뉴를 위로 올려 [홈 화면에 추가] 선택\n3. 우측 상단의 [추가] 클릭!");
+                    hideInstallBanner();
+                }
+            });
+        }
+
+        // 아이폰(iOS) Safari 수동 설치 안내 로직
+        const isIos = () => {
+          const userAgent = window.navigator.userAgent.toLowerCase();
+          return /iphone|ipad|ipod/.test(userAgent);
+        }
+        const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+        // iOS 기기이고, 아직 바탕화면 앱으로 실행한 상태가 아니라면 2초 뒤 배너 띄우기
+        if (isIos() && !isInStandaloneMode()) {
+            setTimeout(() => {
+                if (btnInstallPwa) btnInstallPwa.textContent = '설치 방법'; 
+                showInstallBanner();
+            }, 2000);
+        }
+
+        // ==========================================
+        // 1. 앱 시작 시 데이터베이스 연동 및 자동 로그인
         // ==========================================
         window.onload = async () => {
+            await fetchDatabase();
+            checkAutoLogin(); // DB를 가져온 후 저장된 로그인 정보가 있는지 확인
+        };
+
+        // 데이터베이스를 가져오는 핵심 함수 (앱 로드 및 새로고침 시 공통 사용)
+        async function fetchDatabase() {
             try {
-                // 구글 스크립트(GET)로 데이터 요청
+                document.getElementById('screen-splash').classList.remove('hidden-screen');
                 const response = await fetch(GOOGLE_SCRIPT_URL);
                 globalDB = await response.json();
-                
-                // 데이터 수신 성공 -> 로딩창 숨기고 로그인 화면 표시
-                document.getElementById('screen-splash').classList.add('hidden-screen');
-                document.getElementById('screen-login').classList.remove('hidden-screen');
             } catch (error) {
                 console.error("DB Fetch Error:", error);
                 alert("데이터베이스 연결에 실패했습니다. 인터넷 연결을 확인하거나 관리자에게 문의하세요.");
+            } finally {
+                document.getElementById('screen-splash').classList.add('hidden-screen');
             }
-        };
+        }
+
+        // 수동 새로고침 버튼 (데이터 연동하기) 실행 함수
+        async function refreshData() {
+            await fetchDatabase(); // 스플래시 화면과 함께 최신 DB를 가져옴
+            if (currentUser && currentUser.id) {
+                // 이미 로그인된 상태라면, 혹시 변동된 유저 정보가 있는지 갱신
+                if (globalDB.users && globalDB.users[currentUser.id]) {
+                    const latestUserInfo = globalDB.users[currentUser.id];
+                    latestUserInfo.id = currentUser.id; // 고유 ID 유지
+                    currentUser = latestUserInfo;
+                }
+                applyLoginState(); // 갱신된 정보로 화면을 다시 그립니다.
+            }
+        }
 
         // ==========================================
         // 2. 로그인 및 네비게이션 로직
         // ==========================================
+        
+        // 자동 로그인 확인 함수
+        function checkAutoLogin() {
+            const savedId = localStorage.getItem('signature_id');
+            const savedPw = localStorage.getItem('signature_pw');
+
+            if (savedId && savedPw && globalDB && globalDB.users && globalDB.users[savedId]) {
+                const user = globalDB.users[savedId];
+                if (user.pw === savedPw) {
+                    user.id = savedId;
+                    currentUser = user;
+                    applyLoginState();
+                    navTo('main');
+                    return; // 성공 시 로그인 화면 띄우지 않고 바로 종료
+                }
+            }
+            // 실패 또는 저장된 데이터가 없을 경우에만 로그인 창을 엽니다.
+            document.getElementById('screen-login').classList.remove('hidden-screen');
+        }
+
+        // 수동 로그인 로직
         function tryLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
 
-            if (!id || !pw) return alert("아이디와 비밀번호를 모두 입력해주세요.");
+            if (!id || !pw) {
+                showLoginErrorModal("아이디와 비밀번호를 모두 입력해주세요.");
+                return;
+            }
             
             // 실제 구글 시트에서 가져온 users 객체에서 아이디 검색
             const user = globalDB.users ? globalDB.users[id] : null;
             
             if (user && user.pw === pw) {
+                // 로그인 성공 시 정보 객체에 ID를 저장하고 현재 사용자로 등록
+                user.id = id;
                 currentUser = user;
+                
+                // 로그인 유지 기능 (로컬 스토리지에 암호화 없이 단순 보관 - 모의 인증)
+                localStorage.setItem('signature_id', id);
+                localStorage.setItem('signature_pw', pw);
+
                 applyLoginState();
                 navTo('main');
             } else {
-                alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+                showLoginErrorModal("입력하신 아이디 또는 비밀번호가 일치하지 않습니다.<br>다시 확인해주세요.");
             }
+        }
+
+        // 에러 모달 노출 및 닫기 함수
+        function showLoginErrorModal(msg) {
+            document.getElementById('loginErrorMessage').innerHTML = msg;
+            document.getElementById('loginErrorModal').classList.remove('hidden');
+        }
+        function closeLoginErrorModal() {
+            document.getElementById('loginErrorModal').classList.add('hidden');
         }
 
         function applyLoginState() {
@@ -349,7 +505,10 @@
         }
 
         function logout() {
+            // 정보 삭제 및 초기화
             currentUser = null;
+            localStorage.removeItem('signature_id');
+            localStorage.removeItem('signature_pw');
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             document.getElementById('app-header').classList.add('hidden-screen');
@@ -381,14 +540,30 @@
             // 최신 글이 위로 오게 배열 뒤집기
             [...globalDB.board].reverse().forEach(post => {
                 const color = post.category === '공지' ? 'red' : 'purple';
+                
+                // 첨부파일(링크) 버튼 생성 로직
+                let linkHtml = '';
+                if (post.link && post.link.trim() !== '') {
+                    linkHtml = `
+                        <div class="mt-3 pt-3 border-t border-gray-700">
+                            <button onclick="window.open('${post.link}', '_blank')" class="w-full flex items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-blue-400 text-xs font-bold py-2.5 rounded-lg transition-colors border border-gray-600 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                첨부자료 보기 / 다운로드
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // 내용(content)이 길어도 잘리지 않고 줄바꿈 되도록 설정
                 container.innerHTML += `
-                    <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-700 hover:border-gray-500 transition-colors cursor-pointer">
+                    <div class="bg-[#1E1E1E] p-4 rounded-xl border border-gray-700 transition-colors">
                         <div class="flex justify-between items-start mb-2">
                             <span class="text-xs font-bold bg-${color}-500/20 text-${color}-400 px-2 py-0.5 rounded">${post.category}</span>
                             <span class="text-gray-500 text-xs">${post.date}</span>
                         </div>
                         <h3 class="text-white font-bold text-sm mb-1">${post.title}</h3>
-                        <p class="text-gray-400 text-xs truncate">${post.content}</p>
+                        <p class="text-gray-400 text-xs leading-relaxed whitespace-pre-wrap">${post.content}</p>
+                        ${linkHtml}
                     </div>`;
             });
         }
@@ -445,48 +620,8 @@
         }
 
         // ==========================================
-        // 4. 숙제 관리 로직
+        // 4. 숙제 관리 로직 (구글 시트 연동 자동화 버전)
         // ==========================================
-        const hwDates = [
-            "3/3(화)", "3/4(수)", "3/5(목)", "3/6(금)", "3/7(토)",
-            "3/10(화)", "3/11(수)", "3/12(목)", "3/13(금)", "3/14(토)",
-            "3/17(화)", "3/18(수)", "3/19(목)", "3/20(금)", "3/21(토)",
-            "3/24(화)", "3/25(수)", "3/26(목)", "3/27(금)", "3/28(토)",
-            "3/31(화)", "4/1(수)", "4/2(목)", "4/3(금)", "4/4(토)"
-        ];
-        
-        const verticalData = [
-            { range: "01.지수 B 9~35", count: 27 }, { range: "01.지수 B 36~62", count: 27 },
-            { range: "01.지수 B 63~71, C 72~78", count: 16 }, { range: "01.지수 C 79~85, 02.로그 B 94~100", count: 14 },
-            { range: "02.로그 B 101~126", count: 26 }, { range: "02.로그 B 127~152", count: 26 },
-            { range: "02.로그 C 153~166", count: 14 }, { range: "03.지수함수 B 182~207", count: 26 },
-            { range: "03.지수함수 B 208~233", count: 26 }, { range: "03.지수함수 B 234~259", count: 26 },
-            { range: "03.지수함수 B 260~270, C 271~275", count: 16 }, { range: "03.지수함수 C 276~286, 04.로그함수 B 303~307", count: 16 },
-            { range: "04.로그함수 B 308~331", count: 24 }, { range: "04.로그함수 B 332~355", count: 24 },
-            { range: "04.로그함수 B 356~379", count: 24 }, { range: "04.로그함수 B 380~401", count: 22 },
-            { range: "04.로그함수 C 402~417", count: 16 }, { range: "05.삼각함수 B 434~459", count: 26 },
-            { range: "05.삼각함수 B 460~485", count: 26 }, { range: "05.삼각함수 B 486~500, C 501~503", count: 18 },
-            { range: "05.삼각함수 C 504~513, 06.삼각그래프 B 530~535", count: 16 }, { range: "06.삼각그래프 B 536~561", count: 26 },
-            { range: "06.삼각그래프 B 562~587", count: 26 }, { range: "06.삼각그래프 B 588~609", count: 22 },
-            { range: "06.삼각그래프 C 610~624", count: 15 }
-        ];
-        
-        const risingData = [
-            { range: "01.지수 B 9~26", count: 18 }, { range: "01.지수 B 27~44", count: 18 },
-            { range: "01.지수 B 45~62", count: 18 }, { range: "01.지수 B 63~71, 02.로그 B 94~102", count: 18 },
-            { range: "02.로그 B 103~120", count: 18 }, { range: "02.로그 B 121~138", count: 18 },
-            { range: "02.로그 B 139~152, 03.지수함수 B 182~185", count: 18 }, { range: "03.지수함수 B 186~203", count: 18 },
-            { range: "03.지수함수 B 204~221", count: 18 }, { range: "03.지수함수 B 222~239", count: 18 },
-            { range: "03.지수함수 B 240~257", count: 18 }, { range: "03.지수함수 B 258~270, 04.로그함수 B 303~307", count: 18 },
-            { range: "04.로그함수 B 308~327", count: 20 }, { range: "04.로그함수 B 328~347", count: 20 },
-            { range: "04.로그함수 B 348~367", count: 20 }, { range: "04.로그함수 B 368~387", count: 20 },
-            { range: "04.로그함수 B 388~401, 05.삼각함수 B 434~437", count: 18 }, { range: "05.삼각함수 B 438~455", count: 18 },
-            { range: "05.삼각함수 B 456~473", count: 18 }, { range: "05.삼각함수 B 474~491", count: 18 },
-            { range: "05.삼각함수 B 492~500, 06.삼각그래프 B 530~538", count: 18 }, { range: "06.삼각그래프 B 539~558", count: 20 },
-            { range: "06.삼각그래프 B 559~578", count: 20 }, { range: "06.삼각그래프 B 579~598", count: 20 },
-            { range: "06.삼각그래프 B 599~609", count: 11 }
-        ];
-
         const taskStore = {};
         let currentTask = { id: '', date: '', range: '', className: '', checkClass: '' };
         let currentSelectedQs = new Set();
@@ -497,52 +632,75 @@
             const badge = document.getElementById('hwClassBadge');
             const targetText = document.getElementById('hwTargetText');
             
-            const isVertical = currentUser.className === '수직반';
-            const data = isVertical ? verticalData : risingData;
+            const targetClass = currentUser.className;
+            const isVertical = targetClass === '수직반';
             
-            badge.textContent = currentUser.className;
+            badge.textContent = targetClass;
             if(isVertical) {
                 badge.className = "px-2 py-1 rounded text-xs font-bold mb-2 inline-block bg-blue-500/20 text-blue-400 border border-blue-500/30";
-                targetText.innerHTML = "B단계 + C단계 <span class="+"text-blue-400"+">완벽 마스터</span>";
+                // 원하는 수직반 목표 텍스트로 자유롭게 변경하세요.
+                targetText.innerHTML = "B단계 + C단계 <span class=\"text-blue-400\">완벽 마스터</span>";
             } else {
                 badge.className = "px-2 py-1 rounded text-xs font-bold mb-2 inline-block bg-red-500/20 text-red-400 border border-red-500/30";
-                targetText.innerHTML = "B단계 집중 <span class="+"text-red-400"+">유형 정복</span>";
+                // 원하는 상승반 목표 텍스트로 자유롭게 변경하세요.
+                targetText.innerHTML = "B단계 집중 <span class=\"text-red-400\">유형 정복</span>";
             }
 
-            let html = '';
-            for (let week = 0; week < 5; week++) {
-                html += `<div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-5 shadow-lg">
-                            <h3 class="text-lg font-bold mb-4 text-white border-b border-gray-800 pb-3">${week + 1}주차</h3>
-                            <div class="space-y-1">`;
-                for (let day = 0; day < 5; day++) {
-                    const index = week * 5 + day;
-                    const item = data[index];
-                    const dateStr = hwDates[index];
-                    const uniqueId = `hw-w${week}-d${day}`;
-                    const themeClass = isVertical ? 'text-blue-400 bg-blue-500' : 'text-red-400 bg-red-500';
-                    const checkClass = isVertical ? 'checked-v' : 'checked-r';
+            // 구글 시트에서 가져온 숙제 데이터 필터링 (내 소속반 숙제만 가져옴)
+            const myHomework = (globalDB.homework || []).filter(h => h.className === targetClass);
 
+            if(myHomework.length === 0) {
+                container.innerHTML = `<div class="col-span-1 md:col-span-2 bg-[#1E1E1E] rounded-2xl border border-gray-800 p-10 text-center"><p class="text-gray-500 text-sm">현재 등록된 숙제 일정이 없습니다.<br>관리자가 일정을 등록 중입니다.</p></div>`;
+                return;
+            }
+
+            // 주차별로 데이터 그룹화
+            const hwByWeek = {};
+            myHomework.forEach(item => {
+                if(!hwByWeek[item.week]) hwByWeek[item.week] = [];
+                hwByWeek[item.week].push(item);
+            });
+
+            let html = '';
+            const themeClass = isVertical ? 'text-blue-400 bg-blue-500' : 'text-red-400 bg-red-500';
+            const checkClass = isVertical ? 'checked-v' : 'checked-r';
+
+            // 그룹화된 데이터를 기반으로 화면 렌더링
+            Object.keys(hwByWeek).sort((a,b) => parseInt(a) - parseInt(b)).forEach(week => {
+                html += `<div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-5 shadow-lg">
+                            <h3 class="text-lg font-bold mb-4 text-white border-b border-gray-800 pb-3">${week}주차</h3>
+                            <div class="space-y-1">`;
+                
+                hwByWeek[week].forEach((item, index) => {
+                    const dayNum = index + 1; // 일차 자동 계산
+                    const uniqueId = `hw-w${week}-d${dayNum}`;
+
+                    // 체크박스/메모 상태 저장소 초기화
                     if (!taskStore[uniqueId]) taskStore[uniqueId] = { isDone: false, qs: [], memo: '' };
 
                     html += `
-                        <div onclick="openTaskModal('${uniqueId}', '${dateStr}', '${item.range}', '${currentUser.className}', '${checkClass}')" 
+                        <div onclick="openTaskModal('${uniqueId}', '${item.date}', '${item.range}', '${targetClass}', '${checkClass}')" 
                              class="flex justify-between items-center p-3 hover:bg-[#252525] rounded-xl cursor-pointer transition-all group active:scale-[0.98]">
                             <div class="flex items-center gap-3">
-                                <span class="w-9 h-9 rounded-full ${themeClass} bg-opacity-10 flex items-center justify-center font-bold text-sm border border-transparent transition-colors">D${day + 1}</span>
+                                <span class="w-9 h-9 rounded-full ${themeClass} bg-opacity-10 flex items-center justify-center font-bold text-sm border border-transparent transition-colors">D${dayNum}</span>
                                 <div>
-                                    <div class="text-xs text-gray-500 font-medium mb-0.5">${dateStr}</div>
+                                    <div class="text-xs text-gray-500 font-medium mb-0.5">${item.date}</div>
                                     <div class="text-gray-200 font-medium text-sm">${item.range}</div>
                                 </div>
                             </div>
-                            <div class="relative flex items-center justify-center">
-                                <div id="ui-box-${uniqueId}" class="w-6 h-6 border-2 border-gray-600 rounded check-btn flex items-center justify-center bg-transparent">
-                                    <svg id="ui-svg-${uniqueId}" class="w-4 h-4 opacity-0 text-white transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs font-bold text-gray-500 bg-[#121212] px-2 py-1 rounded hidden md:inline-block">${item.count}제</span>
+                                <div class="relative flex items-center justify-center">
+                                    <div id="ui-box-${uniqueId}" class="w-6 h-6 border-2 border-gray-600 rounded check-btn flex items-center justify-center bg-transparent">
+                                        <svg id="ui-svg-${uniqueId}" class="w-4 h-4 opacity-0 text-white transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>`;
-                }
+                });
                 html += `</div></div>`;
-            }
+            });
+            
             container.innerHTML = html;
         }
 
@@ -745,7 +903,6 @@
   // 1. 마우스 우클릭 방지
   document.addEventListener('contextmenu', function(e) {
     e.preventDefault(); // 우클릭 메뉴가 뜨지 않게 합니다.
-    // alert('보안을 위해 우클릭을 사용할 수 없습니다.'); // 경고창이 필요하면 주석(//)을 지우세요.
   });
 
   // 2. 개발자 도구 및 소스 보기 단축키 방지
