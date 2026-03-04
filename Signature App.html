@@ -323,7 +323,7 @@
         let currentUser = null;
 
         // ==========================================
-        // 🚀 PWA 설치 배너 로직
+        // 🚀 PWA 설치 배너 로직 (강제 표시 버전)
         // ==========================================
         let deferredPrompt;
         const pwaInstallBanner = document.getElementById('pwaInstallBanner');
@@ -333,8 +333,6 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // 앱이 아니면(브라우저 접속이면) 2초 뒤에 배너 띄우기
-            setTimeout(showInstallBanner, 2000);
         });
 
         function showInstallBanner() {
@@ -345,36 +343,39 @@
             if (pwaInstallBanner) pwaInstallBanner.classList.add('translate-y-full');
         }
 
+        // 아이폰(iOS) 기기 확인
+        const isIos = () => {
+          const userAgent = window.navigator.userAgent.toLowerCase();
+          return /iphone|ipad|ipod/.test(userAgent);
+        }
+        
+        // 이미 바탕화면 앱(Standalone)으로 실행 중인지 확인
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+        // 브라우저로 접속했다면 기종 상관없이 무조건 2초 뒤에 배너 띄우기
+        if (!isStandalone) {
+            setTimeout(() => {
+                if (isIos() && btnInstallPwa) {
+                    btnInstallPwa.textContent = '설치 방법'; 
+                }
+                showInstallBanner();
+            }, 2000);
+        }
+
         // 설치 버튼 클릭 이벤트
         if (btnInstallPwa) {
             btnInstallPwa.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     hideInstallBanner();
-                    deferredPrompt.prompt(); // 기본 설치 팝업 호출
+                    deferredPrompt.prompt(); // 기본 설치 팝업(안드로이드) 호출
                     const { outcome } = await deferredPrompt.userChoice;
                     console.log(`User response to the install prompt: ${outcome}`);
                     deferredPrompt = null;
                 } else {
-                    // iOS 등 자동 설치 팝업이 지원되지 않는 경우 수동 안내
-                    alert("🍎 아이폰(iOS) 전용 설치 방법\n\n1. 하단 메뉴바 정중앙의 [공유(네모 안 화살표)] 버튼 클릭\n2. 메뉴를 위로 올려 [홈 화면에 추가] 선택\n3. 우측 상단의 [추가] 클릭!");
-                    hideInstallBanner();
+                    // 수동 설치 안내 페이지(Install.html)로 부드럽게 이동
+                    window.location.href = './Install.html';
                 }
             });
-        }
-
-        // 아이폰(iOS) Safari 수동 설치 안내 로직
-        const isIos = () => {
-          const userAgent = window.navigator.userAgent.toLowerCase();
-          return /iphone|ipad|ipod/.test(userAgent);
-        }
-        const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-
-        // iOS 기기이고, 아직 바탕화면 앱으로 실행한 상태가 아니라면 2초 뒤 배너 띄우기
-        if (isIos() && !isInStandaloneMode()) {
-            setTimeout(() => {
-                if (btnInstallPwa) btnInstallPwa.textContent = '설치 방법'; 
-                showInstallBanner();
-            }, 2000);
         }
 
         // ==========================================
