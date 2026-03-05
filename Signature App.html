@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>한호빈T Signature 관리 어플리케이션</title>
 
+    <!-- ====== PWA 설정을 위한 태그 ====== -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
@@ -16,6 +17,7 @@
             });
         }
     </script>
+    <!-- ======================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
@@ -38,6 +40,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         
+        /* 다이내믹 테마 지원을 위한 체크박스 클래스 */
         .checked-blue { background-color: #3b82f6; border-color: #3b82f6; color: white; }
         .checked-red { background-color: #ef4444; border-color: #ef4444; color: white; }
         .checked-green { background-color: #22c55e; border-color: #22c55e; color: white; }
@@ -82,9 +85,10 @@
     <!-- 앱 공통 상단 헤더 -->
     <header id="app-header" class="hidden-screen sticky top-0 z-40 bg-glass border-b border-gray-800 px-5 py-4">
         <div class="flex justify-between items-center max-w-md mx-auto w-full">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="navTo('main')">
-                <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-8 h-8 rounded-[22%] object-cover border border-gray-700 shadow-sm shadow-yellow-500/20">
+            <div class="flex items-center cursor-pointer" onclick="navTo('main')">
+                <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-8 h-8 rounded-[22%] object-cover border border-gray-700 shadow-sm shadow-yellow-500/20 mr-2.5">
                 <span class="font-signature italic font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 tracking-wider text-xl mt-1">Signature</span>
+                <span class="bg-[#2A2A2A] text-gray-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2 mt-1 border border-gray-700">v1.0</span>
             </div>
             <div class="flex gap-2">
                 <button onclick="refreshData()" class="flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-900/20 border border-blue-500/30 px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors">
@@ -97,7 +101,7 @@
     </header>
 
     <!-- [화면 2] 메인 대시보드 -->
-    <main id="screen-main" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-24">
+    <main id="screen-main" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-10">
         <div class="mb-8 mt-2">
             <div id="userBadge" class="inline-block px-2.5 py-1 rounded-md text-xs font-bold mb-2"></div>
             <h2 class="text-2xl font-bold text-white"><span id="userName" class="text-yellow-400"></span> 님,<br>오늘도 환영합니다!</h2>
@@ -139,6 +143,11 @@
                 <h3 class="text-white font-bold text-lg">알림 & 자료실</h3>
                 <p class="text-gray-400 text-xs mt-1">강사 공지사항 및 보충 학습 자료</p>
             </button>
+        </div>
+
+        <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
+            <p class="text-gray-500 text-xs font-bold">Signature App v1.0 <span class="font-normal text-gray-600">(초기 버전)</span></p>
+            <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
 
@@ -252,15 +261,12 @@
             <h3 class="text-xl font-bold text-white mb-1">제출 성공!</h3>
             <p class="text-gray-400 text-sm mb-4">숙제 내용과 사진이 서버에 안전하게 저장되었습니다.</p>
             
-            <!-- 오답 영상 및 손풀이 제공 컨테이너 -->
             <div id="solutionLinksWrapper" class="bg-[#121212] border border-gray-800 rounded-xl p-4 mb-4 hidden text-left flex-shrink flex flex-col min-h-0">
                 <p class="text-gray-300 text-sm font-bold mb-3 flex items-center gap-2">
                     <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     오답 문항 복습 자료
                 </p>
-                <div id="solutionLinksContainer" class="flex flex-col gap-2 overflow-y-auto pr-1">
-                    <!-- JS 렌더링 영역 -->
-                </div>
+                <div id="solutionLinksContainer" class="flex flex-col gap-2 overflow-y-auto pr-1"></div>
             </div>
 
             <button onclick="closeSuccessModal()" class="w-full mt-auto bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">닫기</button>
@@ -279,21 +285,79 @@
         </div>
     </div>
 
-    <!-- ===== 모달 UI: 손풀이 이미지 뷰어 ===== -->
+    <!-- ===== [수정됨] 모달 UI: 손풀이 이미지 뷰어 (iframe 사용) ===== -->
     <div id="handwrittenModal" class="fixed inset-0 bg-black/95 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeHandwrittenModal()">
-        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-lg w-full p-4 shadow-2xl flex flex-col max-h-[90vh] animate-fade-in-up">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-2xl w-full p-4 shadow-2xl flex flex-col h-[80vh] animate-fade-in-up">
             <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">📝 손풀이 해설</h3>
                 <button onclick="closeHandwrittenModal()" class="text-gray-400 hover:text-white transition-colors bg-gray-800 rounded-full p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            <!-- 이미지 영역 (비율 유지 스크롤) -->
-            <div class="overflow-y-auto flex-grow flex justify-center items-start bg-[#121212] rounded-lg p-1 border border-gray-800">
-                <img id="handwrittenImgObj" src="" alt="손풀이 이미지 로딩 중..." class="max-w-full h-auto rounded">
+            
+            <!-- 구글 드라이브 미리보기용 iframe 영역 -->
+            <div class="flex-grow w-full bg-[#121212] rounded-lg border border-gray-800 overflow-hidden relative min-h-[300px]">
+                <!-- 로딩 표시기 -->
+                <div id="handwrittenLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-[#121212] z-0">
+                    <svg class="animate-spin h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-gray-400 text-sm font-bold">자료를 불러오는 중입니다...</span>
+                </div>
+                
+                <!-- 실제 구글 드라이브 문서가 뜰 프레임 -->
+            <iframe id="handwrittenIframe" src="" class="w-full h-full absolute inset-0 z-10 border-0" onload="document.getElementById('handwrittenLoading').classList.add('hidden');"></iframe>
+        </div>
+    </div>
+</div>
+
+<!-- ===== [수정됨] 모달 UI: 영상 플레이어 (153 오류 해결 & 폴백 버튼 추가) ===== -->
+<div id="videoModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeVideoModal()">
+    <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-3xl w-full p-4 shadow-2xl flex flex-col animate-fade-in-up">
+        <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">▶ 영상 시청</h3>
+            <button onclick="closeVideoModal()" class="text-gray-400 hover:text-white transition-colors bg-gray-800 rounded-full p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+        
+        <!-- 16:9 비율 유지 컨테이너 -->
+        <div class="w-full aspect-video bg-black rounded-lg border border-gray-800 overflow-hidden relative mb-3">
+            <div id="videoLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-[#121212] z-0">
+                <svg class="animate-spin h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span class="text-gray-400 text-sm font-bold">로딩 중...</span>
             </div>
+            
+            <iframe id="videoIframe" src="" class="w-full h-full absolute inset-0 z-10 border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen onload="document.getElementById('videoLoading').classList.add('hidden');"></iframe>
+        </div>
+
+        <!-- ★ 저작권 제한 등으로 153 오류가 날 경우를 대비한 우회 버튼 -->
+        <a id="videoFallbackLink" href="#" target="_blank" class="text-center w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition-colors border border-gray-600 text-sm flex justify-center items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            화면이 안 나오나요? (유튜브 앱에서 직접 열기)
+        </a>
+    </div>
+</div>
+
+<!-- PWA 앱 설치 유도 배너 -->
+<div id="pwaInstallBanner" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 shadow-[0_-5px_20px_rgba(0,0,0,0.5)] flex justify-between items-center z-[80] transform translate-y-full transition-transform duration-500 rounded-t-2xl md:rounded-none">
+        <div class="flex items-center gap-3">
+            <div class="bg-white/20 p-2.5 rounded-xl">
+                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            </div>
+            <div>
+                <p class="font-bold text-sm md:text-base">Signature 앱 설치하기</p>
+                <p class="text-xs text-blue-200">바탕화면에서 1초 만에 접속하세요!</p>
+            </div>
+        </div>
+        <div class="flex gap-2 items-center">
+            <button id="btnInstallPwa" class="bg-[#FEE500] text-[#191919] px-4 py-2 rounded-xl font-bold text-sm shadow hover:bg-yellow-400 transition-colors whitespace-nowrap">
+                앱 설치
+            </button>
+            <button onclick="hideInstallBanner()" class="text-white/60 hover:text-white p-1 ml-1 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
     </div>
 
     <script>
+        // ==========================================
+        // ★ 구글 앱스 스크립트 웹앱 주소
+        // ==========================================
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
@@ -363,6 +427,7 @@
             closeSuccessModal();
             closeErrorModal();
             closeHandwrittenModal();
+            closeVideoModal();
 
             if (e.state && e.state.screen) showScreenOnly(e.state.screen);
             else showScreenOnly(currentUser ? 'main' : 'login');
@@ -507,12 +572,11 @@
             const tData = themeMapper[userClassSettings.theme] || themeMapper['blue'];
 
             mySchedule.forEach(sched => {
-                // ★ 추가: 시간표 항목에 수업 영상 링크가 있다면 '보러가기' 버튼 생성
                 let videoBtnHtml = '';
                 if (sched.link && sched.link.trim() !== '') {
                     videoBtnHtml = `
                         <div class="mt-3 pt-3 border-t border-gray-800">
-                            <button onclick="window.open('${sched.link}', '_blank')" class="w-full flex items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-yellow-400 text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">
+                            <button onclick="openVideoModal('${sched.link}')" class="w-full flex items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-yellow-400 text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 0C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10S15.523 0 10 0zm-2 14.5v-9l7 4.5-7 4.5z"/></svg>
                                 수업 영상 보러가기 (복습/결강)
                             </button>
@@ -712,7 +776,6 @@
             });
         }
 
-        // ★ 앱 카톡 복사 로직 완전히 제거 및 제출 피드백으로 변경
         async function submitDataToServer() {
             const isDone = document.getElementById('modalStatusCheck').checked;
             if(!isDone && currentSelectedQs.size === 0 && selectedPhotos.length === 0) {
@@ -754,7 +817,6 @@
                     body: JSON.stringify(payload)
                 });
                 
-                // 전송 성공 시 모달 전환
                 document.getElementById('loadingOverlay').classList.add('hidden');
                 saveAndCloseTaskModal();
                 executeSuccessModal(qsArr);
@@ -766,7 +828,6 @@
             }
         }
         
-        // ★ 성공 모달 표시 및 영상/손풀이 링크 버튼 제공
         function executeSuccessModal(qsArr) {
             const wrapper = document.getElementById('solutionLinksWrapper');
             const container = document.getElementById('solutionLinksContainer');
@@ -786,7 +847,7 @@
                         let colorClass = level === 'A' ? 'green' : level === 'B' ? 'blue' : 'red';
                         
                         let buttonsHtml = '';
-                        if (vLink) buttonsHtml += `<a href="${vLink}" target="_blank" class="bg-${colorClass}-500/20 px-2 py-1.5 rounded text-${colorClass}-400 text-xs font-bold hover:bg-${colorClass}-500/40 transition-colors shadow-sm">▶ 영상</a>`;
+                        if (vLink) buttonsHtml += `<button onclick="openVideoModal('${vLink}')" class="bg-${colorClass}-500/20 px-2 py-1.5 rounded text-${colorClass}-400 text-xs font-bold hover:bg-${colorClass}-500/40 transition-colors shadow-sm">▶ 영상</button>`;
                         if (hLink) buttonsHtml += `<button onclick="openHandwrittenModal('${hLink}')" class="bg-gray-700 px-2 py-1.5 rounded text-white text-xs font-bold hover:bg-gray-600 transition-colors shadow-sm border border-gray-600">📝 손풀이</button>`;
 
                         container.innerHTML += `
@@ -815,17 +876,73 @@
             document.body.style.overflow = '';
         }
 
-        // ★ 손풀이 이미지 모달 제어
-        function openHandwrittenModal(imgUrl) {
-            document.getElementById('handwrittenImgObj').src = imgUrl;
-            document.getElementById('handwrittenModal').classList.remove('hidden');
-        }
-        function closeHandwrittenModal() {
-            document.getElementById('handwrittenModal').classList.add('hidden');
-            document.getElementById('handwrittenImgObj').src = ''; // 비우기
+        // ★ [핵심] 구글 드라이브 공유 링크를 직접 iframe 뷰어 링크로 변환하는 함수
+        function getDrivePreviewUrl(url) {
+            if (!url) return '';
+            let fileId = '';
+            // 패턴 1: .../file/d/아이디/...
+            const match1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            // 패턴 2: ...?id=아이디
+            const match2 = url.match(/id=([a-zA-Z0-9_-]+)/);
+            
+            if (match1) fileId = match1[1];
+            else if (match2) fileId = match2[1];
+            
+            if (fileId) {
+                // 구글 드라이브 공식 뷰어를 iframe 안에 띄우기 위한 주소
+                return `https://drive.google.com/file/d/${fileId}/preview`;
+            }
+            return url; 
         }
 
-        // --- 사진 처리 (다중 선택 UI) ---
+        function openHandwrittenModal(imgUrl) {
+            const previewUrl = getDrivePreviewUrl(imgUrl);
+            
+            // 모달 및 로딩 표시기 켜기
+            document.getElementById('handwrittenLoading').classList.remove('hidden');
+            document.getElementById('handwrittenModal').classList.remove('hidden');
+            
+            // iframe에 구글 드라이브 뷰어 주소 세팅
+            document.getElementById('handwrittenIframe').src = previewUrl;
+        }
+        
+        function closeHandwrittenModal() {
+            document.getElementById('handwrittenModal').classList.add('hidden');
+            document.getElementById('handwrittenIframe').src = ''; // 리소스 절약을 위해 비우기
+        }
+
+        // ★ 유튜브 링크 임베드 변환 및 영상 모달 제어 함수 (오류 153 방지 완벽 개선판)
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            
+            // 유튜브의 모든 링크 형태(일반, 단축, 쇼츠 등)에서 11자리 고유 ID만 정확하게 추출하는 정규식
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                // 1. youtube-nocookie.com 사용: 브라우저 엄격한 쿠키 차단 정책 우회 (보안 통과)
+                // 2. autoplay=1 제거: 모바일 환경에서 자동 재생이 강제 차단되면서 153 오류가 나는 현상 방지
+                return `https://www.youtube-nocookie.com/embed/${match[2]}?rel=0&playsinline=1`;
+            }
+            
+            return url; 
+        }
+
+        function openVideoModal(url) {
+            const embedUrl = getYouTubeEmbedUrl(url);
+            document.getElementById('videoLoading').classList.remove('hidden');
+            document.getElementById('videoModal').classList.remove('hidden');
+            document.getElementById('videoIframe').src = embedUrl;
+            
+            // 오류 153 발생 시 학생들이 빠져나갈 수 있도록 실제 링크 삽입
+            document.getElementById('videoFallbackLink').href = url;
+        }
+        
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.add('hidden');
+            document.getElementById('videoIframe').src = ''; // 영상 끄기 및 리소스 해제
+        }
+
         function handlePhotoSelection(event) {
             const files = Array.from(event.target.files);
             if (files.length > 0) {
