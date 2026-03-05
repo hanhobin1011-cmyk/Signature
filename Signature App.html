@@ -579,7 +579,8 @@
 
             mySchedule.forEach(sched => {
                 let videoBtnHtml = '';
-                if (sched.link && sched.link.trim() !== '') {
+                // ★ 수정된 부분: 링크가 존재하고, 동시에 로그인한 유저의 역할(role)이 'student'일 때만 버튼을 생성합니다.
+                if (sched.link && sched.link.trim() !== '' && currentUser.role === 'student') {
                     videoBtnHtml = `
                         <div class="mt-3 pt-3 border-t border-gray-800">
                             <button onclick="openVideoModal('${sched.link}')" class="w-full flex items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-yellow-400 text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">
