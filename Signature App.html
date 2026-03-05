@@ -307,7 +307,7 @@
     </div>
 </div>
 
-<!-- ===== [수정됨] 모달 UI: 영상 플레이어 (153 오류 해결 & 폴백 버튼 추가) ===== -->
+<!-- ===== 모달 UI: 영상 플레이어 ===== -->
 <div id="videoModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeVideoModal()">
     <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-3xl w-full p-4 shadow-2xl flex flex-col animate-fade-in-up">
         <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
@@ -325,10 +325,16 @@
             <iframe id="videoIframe" src="" class="w-full h-full absolute inset-0 z-10 border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen onload="document.getElementById('videoLoading').classList.add('hidden');"></iframe>
         </div>
 
-        <!-- ★ 저작권 제한 등으로 153 오류가 날 경우를 대비한 우회 버튼 -->
+        <!-- ★ 가로 전체화면 버튼 추가 -->
+        <button onclick="goFullscreen()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-colors shadow-[0_0_15px_rgba(37,99,235,0.3)] text-sm flex justify-center items-center gap-2 mb-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+            전체화면으로 크게 보기 (가로 모드)
+        </button>
+
+        <!-- 기존 비상탈출 버튼 -->
         <a id="videoFallbackLink" href="#" target="_blank" class="text-center w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition-colors border border-gray-600 text-sm flex justify-center items-center gap-2">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-            화면이 안 나오나요? (유튜브 앱에서 직접 열기)
+            화면이 안 나오나요? (유튜브 앱에서 열기)
         </a>
     </div>
 </div>
@@ -911,28 +917,36 @@
             document.getElementById('handwrittenIframe').src = ''; // 리소스 절약을 위해 비우기
         }
 
-        // ★ 유튜브 링크 임베드 변환 및 영상 모달 제어 함수 (오류 153 방지 완벽 개선판)
+        // ★ 유튜브 링크 임베드 변환 및 영상 모달 제어 함수 (153 오류 최종 해결판)
         function getYouTubeEmbedUrl(url) {
             if (!url) return '';
+            url = url.trim(); // 공백 제거
             
-            // 유튜브의 모든 링크 형태(일반, 단축, 쇼츠 등)에서 11자리 고유 ID만 정확하게 추출하는 정규식
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            // 현존하는 가장 강력한 유튜브 11자리 고유 ID 추출 정규식
+            const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
             const match = url.match(regExp);
 
-            if (match && match[2].length === 11) {
-                // 1. youtube-nocookie.com 사용: 브라우저 엄격한 쿠키 차단 정책 우회 (보안 통과)
-                // 2. autoplay=1 제거: 모바일 환경에서 자동 재생이 강제 차단되면서 153 오류가 나는 현상 방지
-                return `https://www.youtube-nocookie.com/embed/${match[2]}?rel=0&playsinline=1`;
+            if (match && match[1]) {
+                // youtube-nocookie 도메인이 일부 환경에서 153 오류를 유발하므로 다시 표준 도메인으로 복구합니다.
+                return `https://www.youtube.com/embed/${match[1]}?rel=0&playsinline=1`;
             }
             
-            return url; 
+            return ''; // 매칭 실패 시 빈칸 반환
         }
 
         function openVideoModal(url) {
             const embedUrl = getYouTubeEmbedUrl(url);
             document.getElementById('videoLoading').classList.remove('hidden');
             document.getElementById('videoModal').classList.remove('hidden');
-            document.getElementById('videoIframe').src = embedUrl;
+            
+            const iframe = document.getElementById('videoIframe');
+            if (embedUrl) {
+                iframe.src = embedUrl;
+            } else {
+                // 주소가 잘못되었을 경우 렌더링 중지
+                document.getElementById('videoLoading').classList.add('hidden');
+                iframe.src = '';
+            }
             
             // 오류 153 발생 시 학생들이 빠져나갈 수 있도록 실제 링크 삽입
             document.getElementById('videoFallbackLink').href = url;
@@ -941,6 +955,27 @@
         function closeVideoModal() {
             document.getElementById('videoModal').classList.add('hidden');
             document.getElementById('videoIframe').src = ''; // 영상 끄기 및 리소스 해제
+        }
+
+        // ★ 모바일 가로 전체화면 기능
+        function goFullscreen() {
+            const iframe = document.getElementById('videoIframe');
+            
+            // 브라우저별 전체화면 API 호출
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) { /* iOS Safari 호환 */
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) { /* IE 호환 */
+                iframe.msRequestFullscreen();
+            }
+            
+            // 모바일 화면 가로 강제 회전 시도 (지원하는 안드로이드/최신 브라우저 한정)
+            try {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch((e) => console.log('화면 회전 강제 잠금을 지원하지 않는 기기입니다.'));
+                }
+            } catch(e) {}
         }
 
         function handlePhotoSelection(event) {
