@@ -297,7 +297,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-300 font-bold text-sm mb-2 flex items-center justify-between">
-                        <div class="flex items-center gap-2"><span class="bg-purple-500/20 text-purple-500 p-1 rounded">📸</span>숙제 인증 사진 <span class="text-xs text-gray-500 font-normal">(서버로 즉시 전송)</span></div>
+                        <div class="flex items-center gap-2"><span class="bg-purple-500/20 text-purple-500 p-1 rounded">📸</span>숙제 인증 사진 <span class="text-xs text-gray-500 font-normal">(서버로 안전하게 전송)</span></div>
                     </label>
                     <div id="photoUploadBtn" onclick="document.getElementById('modalPhotoInput').click()" class="border-2 border-dashed border-gray-600 rounded-xl p-4 text-center cursor-pointer hover:bg-gray-800 transition-colors">
                         <span class="text-sm font-bold text-gray-300">카메라 촬영 또는 앨범 선택 <span class="text-purple-400">(다중 선택)</span></span>
@@ -435,10 +435,8 @@
 
     <script>
         // ==========================================
-        // 1. 전역 변수 및 초기 설정 영역
+        // 1. 전역 변수 및 초기 세팅 (안전하게 최상단 배치)
         // ==========================================
-        
-        // ★ 최신 버전의 구글 앱스 스크립트 주소 (변경 금지)
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
@@ -449,7 +447,7 @@
         let selectedPhotos = [];
         let deferredPrompt;
 
-        // PWA 판별 변수를 최상단에 안전하게 선언 (오류 해결 핵심!)
+        // ★ PWA 관련 변수 호이스팅 오류 방지를 위해 최상단에 선언
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         const isIos = () => /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
 
@@ -462,14 +460,13 @@
         };
 
         // ==========================================
-        // 2. 앱 구동 및 데이터 로딩
+        // 2. 앱 구동 및 데이터 통신
         // ==========================================
-
         async function initApp() {
             await fetchDatabase();
             checkAutoLogin();
             
-            // PWA 설치 배너 띄우기
+            // PWA 배너 표시 지연 로직
             const pwaInstallBanner = document.getElementById('pwaInstallBanner');
             const btnInstallPwa = document.getElementById('btnInstallPwa');
             if (!isStandalone) {
@@ -480,9 +477,12 @@
             }
         }
 
-        // HTML 렌더링이 완료된 후 안전하게 실행
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initApp);
-        else initApp();
+        // DOM이 안전하게 로드된 후에만 초기화 실행
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
 
         function hideSplashScreen() {
             const splash = document.getElementById('screen-splash');
@@ -493,19 +493,12 @@
             try {
                 document.getElementById('screen-splash').classList.remove('hidden-screen');
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 무한로딩 방지
-                
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
                 const response = await fetch(GOOGLE_SCRIPT_URL, { signal: controller.signal });
                 clearTimeout(timeoutId);
                 const text = await response.text(); 
-                
-                try { 
-                    globalDB = JSON.parse(text); 
-                } catch (e) { 
-                    throw new Error("서버 응답 오류 (JSON 파싱 실패)"); 
-                }
+                try { globalDB = JSON.parse(text); } catch (e) { throw new Error("JSON 파싱 실패"); }
             } catch (error) {
-                console.error(error);
                 showError("연결 실패", "데이터베이스에 연결할 수 없습니다. 새로고침 해주세요.");
             } finally {
                 hideSplashScreen();
@@ -524,9 +517,8 @@
         }
 
         // ==========================================
-        // 3. 네비게이션 및 로그인 처리
+        // 3. 네비게이션 및 로그인
         // ==========================================
-
         const screens = ['login', 'main', 'homework', 'report', 'schedule', 'board'];
         function showScreenOnly(targetScreen) {
             screens.forEach(s => {
@@ -559,11 +551,7 @@
         function checkAutoLogin() {
             const savedId = localStorage.getItem('signature_id');
             const savedPw = localStorage.getItem('signature_pw');
-            
-            if (!globalDB || !globalDB.users) { 
-                showScreenOnly('login'); 
-                return; 
-            }
+            if (!globalDB || !globalDB.users) { showScreenOnly('login'); return; }
 
             if (savedId && savedPw && globalDB.users[savedId]) {
                 const user = globalDB.users[savedId];
@@ -583,7 +571,6 @@
         function tryLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
-            
             if (!globalDB || !globalDB.users) return showLoginErrorModal("서버 데이터를 불러오지 못했습니다.<br>네트워크 연결을 확인해주세요.");
             if (!id || !pw) return showLoginErrorModal("아이디와 비밀번호를 모두 입력해주세요.");
             
@@ -618,7 +605,13 @@
             } else {
                 badge.textContent = "👪 학부모 계정";
                 badge.className = `inline-block px-2.5 py-1 rounded-md text-xs font-bold mb-2 border ${tData.badge}`;
-                classInfo.textContent = `자녀: ${currentUser.childName} 학생 (${currentUser.className})`;
+                
+                let childNameStr = "자녀";
+                if (currentUser.childId && globalDB.users[currentUser.childId]) {
+                    childNameStr = globalDB.users[currentUser.childId].name;
+                }
+                
+                classInfo.textContent = `자녀: ${childNameStr} 학생 (${currentUser.className})`;
                 document.getElementById('menu-homework').classList.add('hidden');
             }
             document.getElementById('menu-board').classList.remove('hidden');
@@ -641,9 +634,8 @@
         }
 
         // ==========================================
-        // 4. 화면 렌더링 로직 (게시판, 일정, 리포트, 숙제)
+        // 4. 화면 렌더링 로직
         // ==========================================
-
         function renderBoard() {
             const container = document.getElementById('boardListContainer');
             container.innerHTML = '';
@@ -720,12 +712,16 @@
             });
         }
 
-        // 인포그래픽 리포트 관련
+        // ==========================================
+        // 5. 리포트 렌더링 및 탭 모달
+        // ==========================================
+
         function renderReports() {
             const container = document.getElementById('reportListContainer');
             container.innerHTML = '';
-            const targetName = currentUser.role === 'parent' ? currentUser.childName : currentUser.name;
-            const myReports = (globalDB.reports || []).filter(r => r.studentName === targetName);
+            
+            const targetId = currentUser.role === 'parent' ? currentUser.childId : currentUser.id;
+            const myReports = (globalDB.reports || []).filter(r => r.studentId === targetId);
 
             if(myReports.length === 0) {
                 container.innerHTML = `<p class="text-gray-500 text-sm text-center py-10">발행된 리포트가 없습니다.</p>`; return;
@@ -740,10 +736,12 @@
                     btnHtml = `<button onclick="openReportDetailModal('${strData}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-md transition-colors flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 분석 보기</button>`;
                 }
 
+                const studentNameDisplay = rep.studentName || currentUser.name;
+
                 container.innerHTML += `
                     <div class="bg-[#1E1E1E] p-4 md:p-5 rounded-2xl border border-gray-700 flex justify-between items-center mb-3 hover:border-gray-500 transition-colors">
                         <div>
-                            <span class="text-[11px] text-gray-500 font-bold mb-0.5 block">${targetName} 학생</span>
+                            <span class="text-[11px] text-gray-500 font-bold mb-0.5 block">${studentNameDisplay} 학생</span>
                             <h3 class="text-white font-bold text-base md:text-lg">${rep.week} 리포트</h3>
                         </div>
                         ${btnHtml}
@@ -751,6 +749,7 @@
             });
         }
 
+        // ★ 누락되었던 탭 제어 함수 완벽 복구
         function switchReportTab(tab) {
             const btnW = document.getElementById('repTabWrong');
             const btnC = document.getElementById('repTabCorrect');
@@ -809,9 +808,8 @@
 
                 const weekDB = globalDB.clinicDB ? globalDB.clinicDB[data.week] : null;
 
-                // ★ 신규: 6단계 난이도별 컬러 뱃지 생성 함수
                 const getDiffBadge = (level) => {
-                    let style = "bg-gray-800 text-gray-400 border-gray-700"; // 기본 (알수없음 등)
+                    let style = "bg-gray-800 text-gray-400 border-gray-700"; 
                     if (level === '하') style = "bg-green-500/20 text-green-400 border-green-500/30";
                     else if (level === '중하') style = "bg-teal-500/20 text-teal-400 border-teal-500/30";
                     else if (level === '중') style = "bg-blue-500/20 text-blue-400 border-blue-500/30";
@@ -927,7 +925,9 @@
             document.getElementById('detReportAvgScoreBar').style.width = '0%';
         }
 
-        // 숙제 렌더링
+        // ==========================================
+        // 6. 숙제 렌더링 및 모달 처리
+        // ==========================================
         function renderHomeworkList() {
             const container = document.getElementById('my-homework-container');
             const targetClass = currentUser.className;
@@ -976,10 +976,6 @@
             });
             container.innerHTML = html;
         }
-
-        // ==========================================
-        // 5. 모달 제어 및 API 제출 기능
-        // ==========================================
 
         function openTaskModal(id, date, range, className, checkClass, themeName) {
             currentTask = { id, date, range, className, checkClass, themeName: themeName || 'blue' };
@@ -1181,10 +1177,6 @@
             document.body.style.overflow = '';
         }
 
-        // ==========================================
-        // 6. 유튜브 모달 / 손풀이 뷰어 등 부가 기능
-        // ==========================================
-
         function showError(title, msg) {
             const titleEl = document.getElementById('errorTitle');
             const msgEl = document.getElementById('errorMessage');
@@ -1305,7 +1297,9 @@
             document.getElementById('photoUploadBtn').classList.remove('hidden');
         }
 
-        // PWA 배너 로직 보조
+        // ==========================================
+        // 7. PWA 배너 관련
+        // ==========================================
         window.addEventListener('beforeinstallprompt', (e) => { 
             e.preventDefault(); 
             deferredPrompt = e; 
@@ -1336,10 +1330,9 @@
         }
     </script>
     
+    <!-- 보안 설정 -->
     <script>
-      // 1. 마우스 우클릭 방지
       document.addEventListener('contextmenu', e => e.preventDefault());
-      // 2. 개발자 도구 및 소스 보기 단축키 방지
       document.addEventListener('keydown', e => {
         if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || (e.ctrlKey && e.keyCode === 85)) {
           e.preventDefault(); e.returnValue = false;
