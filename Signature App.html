@@ -17,7 +17,6 @@
             });
         }
     </script>
-    <!-- ======================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
@@ -40,7 +39,6 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         
-        /* 다이내믹 테마 지원을 위한 체크박스 클래스 */
         .checked-blue { background-color: #3b82f6; border-color: #3b82f6; color: white; }
         .checked-red { background-color: #ef4444; border-color: #ef4444; color: white; }
         .checked-green { background-color: #22c55e; border-color: #22c55e; color: white; }
@@ -48,6 +46,7 @@
         .checked-yellow { background-color: #eab308; border-color: #eab308; color: white; }
         
         .font-signature { font-family: 'Playfair Display', serif; }
+        .bar-fill { transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col selection:bg-yellow-500 selection:text-white">
@@ -88,7 +87,7 @@
             <div class="flex items-center cursor-pointer" onclick="navTo('main')">
                 <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-8 h-8 rounded-[22%] object-cover border border-gray-700 shadow-sm shadow-yellow-500/20 mr-2.5">
                 <span class="font-signature italic font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 tracking-wider text-xl mt-1">Signature</span>
-                <span class="bg-[#2A2A2A] text-gray-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2 mt-1 border border-gray-700">v1.0</span>
+                <span class="bg-[#2A2A2A] text-gray-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2 mt-1 border border-gray-700">v1.4</span>
             </div>
             <div class="flex gap-2">
                 <button onclick="refreshData()" class="flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-900/20 border border-blue-500/30 px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors">
@@ -125,7 +124,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 </div>
                 <h3 class="text-white font-bold">주간 리포트</h3>
-                <p class="text-gray-400 text-xs mt-1">학습/테스트 결과</p>
+                <p class="text-gray-400 text-xs mt-1">인포그래픽 종합 분석</p>
             </button>
 
             <button onclick="navTo('schedule')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-green-500 hover:bg-gray-800 transition-all group">
@@ -146,12 +145,12 @@
         </div>
 
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v1.0 <span class="font-normal text-gray-600">(초기 버전)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v1.4 <span class="font-normal text-gray-600">(최적화 완료)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
 
-    <!-- [화면 3] 숙제 관리, [화면 4] 리포트, [화면 5] 스케줄, [화면 6] 게시판 -->
+    <!-- [화면 3] 숙제 관리 -->
     <div id="screen-homework" class="hidden-screen flex-1 p-5 max-w-4xl mx-auto w-full fade-in pb-24">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -163,14 +162,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="my-homework-container"></div>
     </div>
 
-    <div id="screen-report" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in">
+    <!-- [화면 4] 주간 리포트 화면 -->
+    <div id="screen-report" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-20">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
         </button>
-        <h2 class="text-2xl font-bold text-white mb-6">주간 리포트 조회</h2>
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-white tracking-tight">주간 학습 리포트</h2>
+            <p class="text-gray-400 text-sm mt-1">매주 업데이트되는 학생 맞춤형 분석 자료입니다.</p>
+        </div>
         <div id="reportListContainer" class="space-y-4"></div>
     </div>
 
+    <!-- [화면 5] 스케줄 화면 -->
     <div id="screen-schedule" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -179,6 +183,7 @@
         <div class="relative pl-4 space-y-6" id="scheduleListContainer"></div>
     </div>
     
+    <!-- [화면 6] 게시판 화면 -->
     <div id="screen-board" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -187,14 +192,94 @@
         <div class="space-y-3" id="boardListContainer"></div>
     </div>
 
-    <!-- ===== 모달 UI: 숙제 입력 ===== -->
+    <!-- 1. 프리미엄 인포그래픽 리포트 모달 -->
+    <div id="reportDetailModal" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-0 md:p-4 backdrop-blur-md transition-opacity duration-300">
+        <div class="bg-[#191919] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-lg md:rounded-3xl shadow-2xl flex flex-col relative overflow-hidden animate-fade-in-up">
+            <div class="bg-gradient-to-br from-blue-900/40 via-[#191919] to-purple-900/20 p-6 border-b border-gray-800 flex-shrink-0 relative">
+                <div class="absolute top-0 right-0 p-4">
+                    <button onclick="closeReportDetailModal()" class="text-gray-400 hover:text-white bg-gray-800/50 rounded-full p-1.5 backdrop-blur-sm transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="bg-blue-500/20 text-blue-400 text-xs font-bold px-2 py-1 rounded border border-blue-500/30" id="detReportBadge">Signature Report</div>
+                    <span class="text-gray-400 text-sm font-medium" id="detReportWeek"></span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tight">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600" id="detReportName"></span> 학생 분석
+                </h3>
+            </div>
+            
+            <div class="overflow-y-auto flex-grow p-6 space-y-6 pb-20">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-[#121212] p-4 rounded-2xl border border-gray-800 flex flex-col justify-center items-center text-center shadow-inner">
+                        <span class="text-[10px] text-gray-500 font-bold mb-1 uppercase tracking-widest">정규수업 출결</span>
+                        <div class="text-xl font-black text-white" id="detReportAttend"></div>
+                    </div>
+                    <div class="bg-[#121212] p-4 rounded-2xl border border-gray-800 flex flex-col justify-center items-center text-center shadow-inner">
+                        <span class="text-[10px] text-gray-500 font-bold mb-1 uppercase tracking-widest">수업 태도</span>
+                        <div class="text-xl font-black text-blue-400" id="detReportAttitude"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800">
+                    <div class="flex justify-between items-end mb-3">
+                        <span class="text-sm font-bold text-gray-300 flex items-center gap-1.5"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg> 과제 수행률</span>
+                        <span class="text-2xl font-black text-green-400" id="detReportHwText">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-3.5 shadow-inner overflow-hidden">
+                        <div id="detReportHwBar" class="bg-gradient-to-r from-green-500 to-emerald-400 h-3.5 rounded-full bar-fill w-0 relative"><div class="absolute top-0 right-0 bottom-0 w-4 bg-white/30 rounded-full blur-[2px]"></div></div>
+                    </div>
+                </div>
+                
+                <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800">
+                    <span class="text-sm font-bold text-gray-300 mb-5 flex items-center gap-1.5"><svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 주말 클리닉 테스트 결과</span>
+                    
+                    <div id="detReportTestArea">
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs mb-1.5"><span class="text-yellow-400 font-bold">학생 점수</span><span class="text-yellow-400 font-black text-sm" id="detReportMyScoreText">0점</span></div>
+                            <div class="w-full bg-gray-800 rounded-full h-4 shadow-inner overflow-hidden"><div id="detReportMyScoreBar" class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-4 rounded-full bar-fill w-0 relative"><div class="absolute top-0 right-0 bottom-0 w-3 bg-white/40 rounded-full blur-[1px]"></div></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] mb-1"><span class="text-gray-400">반 평균</span><span class="text-gray-400" id="detReportAvgScoreText">0점</span></div>
+                            <div class="w-full bg-gray-800/50 rounded-full h-1.5 overflow-hidden"><div id="detReportAvgScoreBar" class="bg-gray-600 h-1.5 rounded-full bar-fill w-0"></div></div>
+                        </div>
+                        
+                        <div class="mt-6 pt-5 border-t border-gray-800">
+                            <!-- 탭 버튼 -->
+                            <div class="flex bg-[#191919] rounded-lg p-1 mb-4 border border-gray-700">
+                                <button id="repTabWrong" onclick="switchReportTab('wrong')" class="flex-1 py-2 text-[11px] font-bold rounded-md bg-red-500/20 text-red-400 transition-all shadow-sm">🔍 취약점 (오답)</button>
+                                <button id="repTabCorrect" onclick="switchReportTab('correct')" class="flex-1 py-2 text-[11px] font-bold rounded-md text-gray-500 hover:text-gray-300 transition-all">🎯 나의 강점 (정답)</button>
+                            </div>
+                            
+                            <div id="detReportAnalysisList" class="space-y-2"></div>
+                            <div id="detReportCorrectList" class="space-y-2 hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- 미응시 전용 뷰 -->
+                    <div id="detReportNoTestArea" class="hidden flex flex-col items-center justify-center py-6 bg-[#191919] rounded-xl border border-gray-800">
+                        <span class="text-3xl mb-2">🚫</span>
+                        <span class="text-gray-400 font-bold text-sm">이번 주 클리닉 테스트 미응시</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="bg-[#121212] p-4 rounded-xl border border-gray-800"><span class="text-[11px] font-bold text-gray-500 mb-2 block uppercase tracking-wider">정규수업 특이사항</span><p class="text-sm text-gray-300 leading-relaxed break-keep" id="detReportNotes"></p></div>
+                    <div class="bg-blue-900/10 p-5 rounded-2xl border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.05)] relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div><span class="text-sm font-black text-blue-400 mb-2 flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg> 주간 학습 총평</span><p class="text-sm text-gray-200 leading-relaxed font-medium break-keep whitespace-pre-wrap" id="detReportReview"></p></div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800 bg-[#191919] flex-shrink-0 absolute bottom-0 w-full md:relative"><button onclick="closeReportDetailModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg border border-gray-700">리포트 닫기</button></div>
+        </div>
+    </div>
+
+    <!-- 2. 숙제 입력(제출) 모달 -->
     <div id="taskModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeTaskModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in-up flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-start mb-4 border-b border-gray-700 pb-4 flex-shrink-0">
                 <div><h3 id="modalDateTitle" class="text-xl font-bold text-white"></h3><p id="modalRangeDesc" class="text-sm text-gray-400 mt-1 font-medium"></p></div>
                 <button onclick="closeTaskModal()" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            
             <div class="space-y-4 mb-5 overflow-y-auto flex-grow pr-1">
                 <div class="flex items-center justify-between bg-[#121212] p-3 rounded-lg border border-gray-800">
                     <span class="text-gray-300 font-bold text-sm">진행 상태</span>
@@ -206,24 +291,18 @@
                 </div>
                 <div>
                     <label class="block text-gray-300 font-bold text-sm mb-2 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                        <div class="flex items-center gap-2"><span class="bg-yellow-500/20 text-yellow-500 p-1 rounded">❓</span>오답/질문 문항 <span class="text-xs text-gray-500 font-normal">(해설 영상 제공)</span></div>
+                        <div class="flex items-center gap-2"><span class="bg-yellow-500/20 text-yellow-500 p-1 rounded">❓</span>오답/질문 문항 <span class="text-xs text-gray-500 font-normal">(영상/손풀이 매칭)</span></div>
                     </label>
                     <div id="modalQsContainer" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-3 bg-[#121212] border border-gray-700 rounded-lg"></div>
                 </div>
-                
                 <div>
                     <label class="block text-gray-300 font-bold text-sm mb-2 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-purple-500/20 text-purple-500 p-1 rounded">📸</span>
-                            숙제 인증 사진 <span class="text-xs text-gray-500 font-normal">(서버로 즉시 전송됩니다)</span>
-                        </div>
+                        <div class="flex items-center gap-2"><span class="bg-purple-500/20 text-purple-500 p-1 rounded">📸</span>숙제 인증 사진 <span class="text-xs text-gray-500 font-normal">(서버로 즉시 전송)</span></div>
                     </label>
-                    
                     <div id="photoUploadBtn" onclick="document.getElementById('modalPhotoInput').click()" class="border-2 border-dashed border-gray-600 rounded-xl p-4 text-center cursor-pointer hover:bg-gray-800 transition-colors">
-                        <span class="text-sm font-bold text-gray-300">카메라 촬영 또는 앨범 선택 <span class="text-purple-400">(다중 선택 가능)</span></span>
+                        <span class="text-sm font-bold text-gray-300">카메라 촬영 또는 앨범 선택 <span class="text-purple-400">(다중 선택)</span></span>
                     </div>
                     <input type="file" id="modalPhotoInput" accept="image/*" multiple class="hidden" onchange="handlePhotoSelection(event)">
-                    
                     <div id="photoPreviewContainer" class="hidden mt-2 p-3 bg-[#121212] border border-gray-700 rounded-lg">
                         <div id="photoGrid" class="flex gap-2 overflow-x-auto pb-2"></div>
                         <div class="flex justify-between items-center mt-2 border-t border-gray-800 pt-2">
@@ -240,7 +319,6 @@
                     <textarea id="modalMemoInput" rows="2" class="w-full bg-[#121212] border border-gray-700 text-white text-sm rounded-lg p-3" placeholder="어려웠던 부분이나 메모를 남겨주세요"></textarea>
                 </div>
             </div>
-
             <div class="flex flex-col gap-3 flex-shrink-0 pt-2 relative">
                 <div id="loadingOverlay" class="absolute inset-0 bg-[#1E1E1E]/90 backdrop-blur-sm z-10 hidden flex-col items-center justify-center rounded-xl">
                     <svg class="animate-spin h-6 w-6 text-yellow-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -252,7 +330,7 @@
         </div>
     </div>
 
-    <!-- ===== 모달 UI: 제출 성공 피드백 & 해설/손풀이 링크 ===== -->
+    <!-- 3. 제출 성공 피드백 & 복습자료 모달 -->
     <div id="submitSuccessModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl animate-fade-in-up max-h-[90vh] flex flex-col">
             <div class="w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-3 border border-green-500/20 flex-shrink-0">
@@ -268,12 +346,11 @@
                 </p>
                 <div id="solutionLinksContainer" class="flex flex-col gap-2 overflow-y-auto pr-1"></div>
             </div>
-
             <button onclick="closeSuccessModal()" class="w-full mt-auto bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">닫기</button>
         </div>
     </div>
 
-    <!-- ===== 모달 UI: 제출 실패/에러 안내 ===== -->
+    <!-- 4. 일반/시스템 에러 안내 모달 -->
     <div id="submitErrorModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
@@ -285,62 +362,62 @@
         </div>
     </div>
 
-    <!-- ===== [수정됨] 모달 UI: 손풀이 이미지 뷰어 (iframe 사용) ===== -->
+    <!-- 5. 로그인 전용 에러 모달 -->
+    <div id="loginErrorModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">로그인 실패</h3>
+            <p id="loginErrorMessage" class="text-gray-400 text-sm mb-6 leading-relaxed">아이디 또는 비밀번호가 일치하지 않습니다.</p>
+            <button onclick="closeLoginErrorModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">다시 시도하기</button>
+        </div>
+    </div>
+
+    <!-- 6. 손풀이 이미지 뷰어 모달 -->
     <div id="handwrittenModal" class="fixed inset-0 bg-black/95 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeHandwrittenModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-2xl w-full p-4 shadow-2xl flex flex-col h-[80vh] animate-fade-in-up">
             <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">📝 손풀이 해설</h3>
                 <button onclick="closeHandwrittenModal()" class="text-gray-400 hover:text-white transition-colors bg-gray-800 rounded-full p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            
-            <!-- 구글 드라이브 미리보기용 iframe 영역 -->
             <div class="flex-grow w-full bg-[#121212] rounded-lg border border-gray-800 overflow-hidden relative min-h-[300px]">
-                <!-- 로딩 표시기 -->
                 <div id="handwrittenLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-[#121212] z-0">
                     <svg class="animate-spin h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     <span class="text-gray-400 text-sm font-bold">자료를 불러오는 중입니다...</span>
                 </div>
-                
-                <!-- 실제 구글 드라이브 문서가 뜰 프레임 -->
-            <iframe id="handwrittenIframe" src="" class="w-full h-full absolute inset-0 z-10 border-0" onload="document.getElementById('handwrittenLoading').classList.add('hidden');"></iframe>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 모달 UI: 영상 플레이어 ===== -->
-<div id="videoModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeVideoModal()">
-    <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-3xl w-full p-4 shadow-2xl flex flex-col animate-fade-in-up">
-        <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">▶ 영상 시청</h3>
-            <button onclick="closeVideoModal()" class="text-gray-400 hover:text-white transition-colors bg-gray-800 rounded-full p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
-        
-        <!-- 16:9 비율 유지 컨테이너 -->
-        <div class="w-full aspect-video bg-black rounded-lg border border-gray-800 overflow-hidden relative mb-3">
-            <div id="videoLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-[#121212] z-0">
-                <svg class="animate-spin h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <span class="text-gray-400 text-sm font-bold">로딩 중...</span>
+                <iframe id="handwrittenIframe" src="" class="w-full h-full absolute inset-0 z-10 border-0" onload="document.getElementById('handwrittenLoading').classList.add('hidden');"></iframe>
             </div>
-            
-            <iframe id="videoIframe" src="" class="w-full h-full absolute inset-0 z-10 border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen onload="document.getElementById('videoLoading').classList.add('hidden');"></iframe>
         </div>
-
-        <!-- ★ 가로 전체화면 버튼 추가 -->
-        <button onclick="goFullscreen()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-colors shadow-[0_0_15px_rgba(37,99,235,0.3)] text-sm flex justify-center items-center gap-2 mb-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-            전체화면으로 크게 보기 (가로 모드)
-        </button>
-
-        <!-- 기존 비상탈출 버튼 -->
-        <a id="videoFallbackLink" href="#" target="_blank" class="text-center w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition-colors border border-gray-600 text-sm flex justify-center items-center gap-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-            화면이 안 나오나요? (유튜브 앱에서 열기)
-        </a>
     </div>
-</div>
 
-<!-- PWA 앱 설치 유도 배너 -->
-<div id="pwaInstallBanner" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 shadow-[0_-5px_20px_rgba(0,0,0,0.5)] flex justify-between items-center z-[80] transform translate-y-full transition-transform duration-500 rounded-t-2xl md:rounded-none">
+    <!-- 7. 영상 플레이어 모달 -->
+    <div id="videoModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeVideoModal()">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-3xl w-full p-4 shadow-2xl flex flex-col animate-fade-in-up">
+            <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">▶ 영상 시청</h3>
+                <button onclick="closeVideoModal()" class="text-gray-400 hover:text-white transition-colors bg-gray-800 rounded-full p-1"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="w-full aspect-video bg-black rounded-lg border border-gray-800 overflow-hidden relative mb-3">
+                <div id="videoLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-[#121212] z-0">
+                    <svg class="animate-spin h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-gray-400 text-sm font-bold">로딩 중...</span>
+                </div>
+                <iframe id="videoIframe" src="" class="w-full h-full absolute inset-0 z-10 border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen onload="document.getElementById('videoLoading').classList.add('hidden');"></iframe>
+            </div>
+            <button onclick="goFullscreen()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-colors shadow-[0_0_15px_rgba(37,99,235,0.3)] text-sm flex justify-center items-center gap-2 mb-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                전체화면으로 크게 보기 (가로 모드)
+            </button>
+            <a id="videoFallbackLink" href="#" target="_blank" class="text-center w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3 rounded-xl transition-colors border border-gray-600 text-sm flex justify-center items-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                화면이 안 나오나요? (유튜브 앱에서 열기)
+            </a>
+        </div>
+    </div>
+
+    <!-- PWA 앱 설치 유도 배너 -->
+    <div id="pwaInstallBanner" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 shadow-[0_-5px_20px_rgba(0,0,0,0.5)] flex justify-between items-center z-[80] transform translate-y-full transition-transform duration-500 rounded-t-2xl md:rounded-none">
         <div class="flex items-center gap-3">
             <div class="bg-white/20 p-2.5 rounded-xl">
                 <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -351,23 +428,30 @@
             </div>
         </div>
         <div class="flex gap-2 items-center">
-            <button id="btnInstallPwa" class="bg-[#FEE500] text-[#191919] px-4 py-2 rounded-xl font-bold text-sm shadow hover:bg-yellow-400 transition-colors whitespace-nowrap">
-                앱 설치
-            </button>
-            <button onclick="hideInstallBanner()" class="text-white/60 hover:text-white p-1 ml-1 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <button id="btnInstallPwa" class="bg-[#FEE500] text-[#191919] px-4 py-2 rounded-xl font-bold text-sm shadow hover:bg-yellow-400 transition-colors whitespace-nowrap">앱 설치</button>
+            <button onclick="hideInstallBanner()" class="text-white/60 hover:text-white p-1 ml-1 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // ★ 구글 앱스 스크립트 웹앱 주소
+        // 1. 전역 변수 및 초기 설정 영역
         // ==========================================
+        
+        // ★ 최신 버전의 구글 앱스 스크립트 주소 (변경 금지)
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
         let currentUser = null;
+        const taskStore = {};
+        let currentTask = { id: '', date: '', range: '', className: '', checkClass: '', themeName: 'blue' };
+        let currentSelectedQs = new Set();
+        let selectedPhotos = [];
+        let deferredPrompt;
+
+        // PWA 판별 변수를 최상단에 안전하게 선언 (오류 해결 핵심!)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        const isIos = () => /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
 
         const themeMapper = {
             blue: { badge: "bg-blue-500/20 text-blue-400 border-blue-500/30", text: "text-blue-400", bg: "bg-blue-500", check: "checked-blue", toggle: "peer-checked:bg-blue-500" },
@@ -377,33 +461,61 @@
             yellow: { badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", text: "text-yellow-400", bg: "bg-yellow-500", check: "checked-yellow", toggle: "peer-checked:bg-yellow-500" }
         };
 
-        // --- PWA 앱 설치 배너 처리 ---
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        // ==========================================
+        // 2. 앱 구동 및 데이터 로딩
+        // ==========================================
 
-        window.onload = async () => {
+        async function initApp() {
             await fetchDatabase();
-            checkAutoLogin(); 
-        };
+            checkAutoLogin();
+            
+            // PWA 설치 배너 띄우기
+            const pwaInstallBanner = document.getElementById('pwaInstallBanner');
+            const btnInstallPwa = document.getElementById('btnInstallPwa');
+            if (!isStandalone) {
+                setTimeout(() => {
+                    if (isIos() && btnInstallPwa) btnInstallPwa.textContent = '설치 방법'; 
+                    if (pwaInstallBanner) pwaInstallBanner.classList.remove('translate-y-full');
+                }, 2000);
+            }
+        }
+
+        // HTML 렌더링이 완료된 후 안전하게 실행
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initApp);
+        else initApp();
+
+        function hideSplashScreen() {
+            const splash = document.getElementById('screen-splash');
+            if (splash) splash.classList.add('hidden-screen');
+        }
 
         async function fetchDatabase() {
             try {
                 document.getElementById('screen-splash').classList.remove('hidden-screen');
-                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 무한로딩 방지
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, { signal: controller.signal });
+                clearTimeout(timeoutId);
                 const text = await response.text(); 
-                try { globalDB = JSON.parse(text); } catch (e) { throw new Error("서버 응답 오류 (배포 확인 필요)"); }
+                
+                try { 
+                    globalDB = JSON.parse(text); 
+                } catch (e) { 
+                    throw new Error("서버 응답 오류 (JSON 파싱 실패)"); 
+                }
             } catch (error) {
+                console.error(error);
                 showError("연결 실패", "데이터베이스에 연결할 수 없습니다. 새로고침 해주세요.");
             } finally {
-                document.getElementById('screen-splash').classList.add('hidden-screen');
+                hideSplashScreen();
             }
         }
 
         async function refreshData() {
             await fetchDatabase(); 
-            if (currentUser && currentUser.id) {
-                if (globalDB.users && globalDB.users[currentUser.id]) {
+            if (currentUser && currentUser.id && globalDB && globalDB.users) {
+                if (globalDB.users[currentUser.id]) {
                     currentUser = globalDB.users[currentUser.id];
                     currentUser.id = currentUser.id; 
                 }
@@ -411,7 +523,10 @@
             }
         }
 
-        // --- 라우팅 및 로그인 ---
+        // ==========================================
+        // 3. 네비게이션 및 로그인 처리
+        // ==========================================
+
         const screens = ['login', 'main', 'homework', 'report', 'schedule', 'board'];
         function showScreenOnly(targetScreen) {
             screens.forEach(s => {
@@ -434,6 +549,8 @@
             closeErrorModal();
             closeHandwrittenModal();
             closeVideoModal();
+            closeReportDetailModal();
+            closeLoginErrorModal();
 
             if (e.state && e.state.screen) showScreenOnly(e.state.screen);
             else showScreenOnly(currentUser ? 'main' : 'login');
@@ -442,9 +559,13 @@
         function checkAutoLogin() {
             const savedId = localStorage.getItem('signature_id');
             const savedPw = localStorage.getItem('signature_pw');
-            if (!globalDB) return showScreenOnly('login');
+            
+            if (!globalDB || !globalDB.users) { 
+                showScreenOnly('login'); 
+                return; 
+            }
 
-            if (savedId && savedPw && globalDB && globalDB.users && globalDB.users[savedId]) {
+            if (savedId && savedPw && globalDB.users[savedId]) {
                 const user = globalDB.users[savedId];
                 if (user.pw === savedPw) {
                     user.id = savedId;
@@ -462,8 +583,9 @@
         function tryLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
-            if (!globalDB || !globalDB.users) return showError("통신 오류", "서버 데이터를 불러오지 못했습니다.");
-            if (!id || !pw) return showError("입력 오류", "아이디와 비밀번호를 모두 입력해주세요.");
+            
+            if (!globalDB || !globalDB.users) return showLoginErrorModal("서버 데이터를 불러오지 못했습니다.<br>네트워크 연결을 확인해주세요.");
+            if (!id || !pw) return showLoginErrorModal("아이디와 비밀번호를 모두 입력해주세요.");
             
             const user = globalDB.users[id];
             if (user && user.pw === pw) {
@@ -474,16 +596,9 @@
                 applyLoginState();
                 navTo('main');
             } else {
-                showError("로그인 실패", "아이디 또는 비밀번호가 일치하지 않습니다.");
+                showLoginErrorModal("아이디 또는 비밀번호가 일치하지 않습니다.");
             }
         }
-
-        function showError(title, msg) {
-            document.getElementById('errorTitle').innerHTML = title;
-            document.getElementById('loginErrorMessage').innerHTML = msg;
-            document.getElementById('submitErrorModal').classList.remove('hidden');
-        }
-        function closeErrorModal() { document.getElementById('submitErrorModal').classList.add('hidden'); }
 
         function applyLoginState() {
             document.getElementById('app-header').classList.remove('hidden-screen');
@@ -525,7 +640,10 @@
             history.pushState({ screen: 'login' }, "", "#login");
         }
 
-        // --- 렌더링 함수들 ---
+        // ==========================================
+        // 4. 화면 렌더링 로직 (게시판, 일정, 리포트, 숙제)
+        // ==========================================
+
         function renderBoard() {
             const container = document.getElementById('boardListContainer');
             container.innerHTML = '';
@@ -566,20 +684,17 @@
         function renderSchedule() {
             const container = document.getElementById('scheduleListContainer');
             container.innerHTML = '<div class="absolute left-[7px] top-4 bottom-2 w-0.5 bg-gray-700"></div>';
-            
             const targetClass = currentUser.className;
             const mySchedule = (globalDB.schedule || []).filter(s => s.className === targetClass);
 
             if(mySchedule.length === 0) {
                 container.innerHTML = `<p class="text-gray-500 text-sm text-center py-10">스케줄이 없습니다.</p>`; return;
             }
-
             const userClassSettings = (globalDB.settings && globalDB.settings[targetClass]) ? globalDB.settings[targetClass] : { theme: 'blue' };
             const tData = themeMapper[userClassSettings.theme] || themeMapper['blue'];
 
             mySchedule.forEach(sched => {
                 let videoBtnHtml = '';
-                // ★ 수정된 부분: 링크가 존재하고, 동시에 로그인한 유저의 역할(role)이 'student'일 때만 버튼을 생성합니다.
                 if (sched.link && sched.link.trim() !== '' && currentUser.role === 'student') {
                     videoBtnHtml = `
                         <div class="mt-3 pt-3 border-t border-gray-800">
@@ -605,6 +720,7 @@
             });
         }
 
+        // 인포그래픽 리포트 관련
         function renderReports() {
             const container = document.getElementById('reportListContainer');
             container.innerHTML = '';
@@ -612,27 +728,206 @@
             const myReports = (globalDB.reports || []).filter(r => r.studentName === targetName);
 
             if(myReports.length === 0) {
-                container.innerHTML = `<p class="text-gray-500 text-sm text-center py-10">리포트가 없습니다.</p>`; return;
+                container.innerHTML = `<p class="text-gray-500 text-sm text-center py-10">발행된 리포트가 없습니다.</p>`; return;
             }
 
-            [...myReports].reverse().forEach(rep => {
+            [...myReports].reverse().forEach((rep, idx) => {
+                let btnHtml = '';
+                if(rep.isOld) {
+                    btnHtml = `<button onclick="window.open('${rep.link}', '_blank')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold py-2 px-3 rounded-lg border border-gray-600 transition-colors flex items-center gap-1">기존 링크</button>`;
+                } else {
+                    const strData = JSON.stringify(rep).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                    btnHtml = `<button onclick="openReportDetailModal('${strData}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-md transition-colors flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 분석 보기</button>`;
+                }
+
                 container.innerHTML += `
-                    <div class="bg-[#1E1E1E] p-5 rounded-2xl border border-gray-700 flex justify-between items-center mb-3">
+                    <div class="bg-[#1E1E1E] p-4 md:p-5 rounded-2xl border border-gray-700 flex justify-between items-center mb-3 hover:border-gray-500 transition-colors">
                         <div>
-                            <span class="text-xs text-blue-400 font-bold mb-1 block">${targetName} 학생</span>
-                            <h3 class="text-white font-bold text-lg">${rep.week} 리포트</h3>
+                            <span class="text-[11px] text-gray-500 font-bold mb-0.5 block">${targetName} 학생</span>
+                            <h3 class="text-white font-bold text-base md:text-lg">${rep.week} 리포트</h3>
                         </div>
-                        <button onclick="window.open('${rep.link}', '_blank')" class="bg-gray-800 hover:bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg border border-gray-600 transition-colors">조회</button>
+                        ${btnHtml}
                     </div>`;
             });
         }
 
-        // --- 숙제 입력 로직 ---
-        const taskStore = {};
-        let currentTask = { id: '', date: '', range: '', className: '', checkClass: '', themeName: 'blue' };
-        let currentSelectedQs = new Set();
-        let selectedPhotos = [];
+        function switchReportTab(tab) {
+            const btnW = document.getElementById('repTabWrong');
+            const btnC = document.getElementById('repTabCorrect');
+            const listW = document.getElementById('detReportAnalysisList');
+            const listC = document.getElementById('detReportCorrectList');
 
+            if(tab === 'wrong') {
+                btnW.className = "flex-1 py-2 text-[11px] font-bold rounded-md bg-red-500/20 text-red-400 transition-all shadow-sm";
+                btnC.className = "flex-1 py-2 text-[11px] font-bold rounded-md text-gray-500 hover:text-gray-300 transition-all";
+                listW.classList.remove('hidden');
+                listC.classList.add('hidden');
+            } else {
+                btnC.className = "flex-1 py-2 text-[11px] font-bold rounded-md bg-blue-500/20 text-blue-400 transition-all shadow-sm";
+                btnW.className = "flex-1 py-2 text-[11px] font-bold rounded-md text-gray-500 hover:text-gray-300 transition-all";
+                listC.classList.remove('hidden');
+                listW.classList.add('hidden');
+            }
+        }
+
+        function openReportDetailModal(strData) {
+            const data = JSON.parse(strData.replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
+            
+            document.getElementById('detReportWeek').textContent = data.week;
+            document.getElementById('detReportName').textContent = data.studentName;
+            document.getElementById('detReportAttend').textContent = data.attendance || "-";
+            document.getElementById('detReportAttitude').textContent = data.attitude || "-";
+            document.getElementById('detReportNotes').textContent = data.notes || "특이사항 없음";
+            document.getElementById('detReportReview').textContent = data.review || "작성된 총평이 없습니다.";
+
+            let hwScore = parseInt(data.hwScore) || 0;
+            document.getElementById('detReportHwText').textContent = `${hwScore}%`;
+            setTimeout(() => { document.getElementById('detReportHwBar').style.width = `${hwScore}%`; }, 100);
+
+            const isNoTest = data.testScore === "미응시" || data.wrongAnalysis === "미응시";
+            
+            if (isNoTest) {
+                document.getElementById('detReportTestArea').classList.add('hidden');
+                document.getElementById('detReportNoTestArea').classList.remove('hidden');
+                document.getElementById('detReportMyScoreBar').style.width = '0%';
+                document.getElementById('detReportAvgScoreBar').style.width = '0%';
+            } else {
+                document.getElementById('detReportTestArea').classList.remove('hidden');
+                document.getElementById('detReportNoTestArea').classList.add('hidden');
+
+                switchReportTab('wrong');
+
+                let myScore = parseInt(data.testScore) || 0;
+                let avgScore = parseInt(data.avgScore) || 0;
+                document.getElementById('detReportMyScoreText').textContent = data.testScore ? `${data.testScore}점` : "-";
+                document.getElementById('detReportAvgScoreText').textContent = data.avgScore ? `${data.avgScore}점` : "-";
+
+                setTimeout(() => { 
+                    document.getElementById('detReportMyScoreBar').style.width = data.testScore ? `${Math.min(myScore, 100)}%` : '0%'; 
+                    document.getElementById('detReportAvgScoreBar').style.width = data.avgScore ? `${Math.min(avgScore, 100)}%` : '0%'; 
+                }, 100);
+
+                const weekDB = globalDB.clinicDB ? globalDB.clinicDB[data.week] : null;
+
+                // ★ 신규: 6단계 난이도별 컬러 뱃지 생성 함수
+                const getDiffBadge = (level) => {
+                    let style = "bg-gray-800 text-gray-400 border-gray-700"; // 기본 (알수없음 등)
+                    if (level === '하') style = "bg-green-500/20 text-green-400 border-green-500/30";
+                    else if (level === '중하') style = "bg-teal-500/20 text-teal-400 border-teal-500/30";
+                    else if (level === '중') style = "bg-blue-500/20 text-blue-400 border-blue-500/30";
+                    else if (level === '중상') style = "bg-orange-500/20 text-orange-400 border-orange-500/30";
+                    else if (level === '상') style = "bg-red-500/20 text-red-400 border-red-500/30";
+                    else if (level === '최상') style = "bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30 font-black shadow-[0_0_8px_rgba(217,70,239,0.3)]";
+                    return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${style} ml-1 tracking-widest">${level}</span>`;
+                };
+
+                const analysisContainer = document.getElementById('detReportAnalysisList');
+                analysisContainer.innerHTML = '';
+                
+                if (data.wrongAnalysis && data.wrongAnalysis.trim() !== '') {
+                    const lines = data.wrongAnalysis.split(/[\n,]+/);
+                    lines.forEach(line => {
+                        if (line.trim() === '') return;
+                        const parts = line.split('/'); 
+                        let qNum, diff, rate, topic, reason;
+
+                        if (parts.length === 2) {
+                            qNum = parts[0].trim();
+                            reason = parts[1].trim();
+                            if (weekDB && weekDB[qNum]) {
+                                diff = weekDB[qNum].diff;
+                                rate = weekDB[qNum].rate;
+                                topic = weekDB[qNum].topic;
+                            } else {
+                                diff = "?"; rate = "?"; topic = "DB 정보 없음";
+                            }
+                        } else if (parts.length >= 5) {
+                            qNum = parts[0].trim();
+                            diff = parts[1].trim();
+                            rate = parts[2].trim();
+                            topic = parts[3].trim();
+                            reason = parts[4].trim();
+                        } else {
+                            return; 
+                        }
+
+                        let reasonColor = "bg-gray-800 text-gray-400 border-gray-700"; 
+                        if (reason.includes("계산")) reasonColor = "bg-red-500/20 text-red-400 border-red-500/30";
+                        else if (reason.includes("해석")) reasonColor = "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+                        else if (reason.includes("개념")) reasonColor = "bg-blue-500/20 text-blue-400 border-blue-500/30";
+                        else if (reason.includes("검토") || reason.includes("관리")) reasonColor = "bg-purple-500/20 text-purple-400 border-purple-500/30";
+
+                        analysisContainer.innerHTML += `
+                            <div class="bg-[#191919] border border-gray-700 rounded-xl p-3 shadow-sm">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-black text-white text-sm">${qNum}번</span>
+                                    </div>
+                                    <div class="px-2 py-0.5 rounded text-[10px] font-bold border ${reasonColor}">${reason}</div>
+                                </div>
+                                <div class="flex flex-wrap gap-2 text-[11px] text-gray-500 mt-1 items-center">
+                                    <span class="flex items-center">난이도: ${getDiffBadge(diff)}</span>
+                                    <span>|</span>
+                                    <span>정답률: <span class="text-gray-300">${rate}</span></span>
+                                    <span>|</span>
+                                    <span class="truncate">단원: <span class="text-gray-300">${topic}</span></span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    analysisContainer.innerHTML = '<p class="text-gray-500 text-[11px] text-center py-4 bg-[#191919] rounded-lg border border-gray-800">기록된 오답 분석이 없습니다.</p>';
+                }
+
+                const correctContainer = document.getElementById('detReportCorrectList');
+                correctContainer.innerHTML = '';
+
+                if (data.correctList && data.correctList.trim() !== '') {
+                    const cNums = data.correctList.split(',').map(s=>s.trim()).filter(s=>s);
+                    let correctHtml = '';
+                    cNums.forEach(num => {
+                        let diff = "?", rate = "?", topic = "DB 정보 없음";
+                        if (weekDB && weekDB[num]) {
+                            diff = weekDB[num].diff;
+                            rate = weekDB[num].rate;
+                            topic = weekDB[num].topic;
+                        }
+                        
+                        correctHtml += `
+                            <div class="bg-[#191919] border border-gray-800 rounded-xl p-3 shadow-sm flex justify-between items-center hover:border-blue-500/50 transition-colors">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="font-black text-white text-sm">${num}번</span>
+                                        <span class="text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30">정답</span>
+                                    </div>
+                                    <div class="text-[11px] text-gray-500">단원: <span class="text-gray-300">${topic}</span></div>
+                                </div>
+                                <div class="text-right text-[11px] text-gray-500 space-y-1.5">
+                                    <div class="flex justify-end items-center">난이도: ${getDiffBadge(diff)}</div>
+                                    <div>정답률: <span class="text-gray-300">${rate}</span></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    correctContainer.innerHTML = correctHtml;
+                } else {
+                    correctContainer.innerHTML = '<p class="text-gray-500 text-[11px] text-center py-4 bg-[#191919] rounded-lg border border-gray-800">기록된 정답 데이터가 없습니다.</p>';
+                }
+            }
+
+            document.getElementById('reportDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReportDetailModal() {
+            document.getElementById('reportDetailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            document.getElementById('detReportHwBar').style.width = '0%';
+            document.getElementById('detReportMyScoreBar').style.width = '0%';
+            document.getElementById('detReportAvgScoreBar').style.width = '0%';
+        }
+
+        // 숙제 렌더링
         function renderHomeworkList() {
             const container = document.getElementById('my-homework-container');
             const targetClass = currentUser.className;
@@ -681,6 +976,10 @@
             });
             container.innerHTML = html;
         }
+
+        // ==========================================
+        // 5. 모달 제어 및 API 제출 기능
+        // ==========================================
 
         function openTaskModal(id, date, range, className, checkClass, themeName) {
             currentTask = { id, date, range, className, checkClass, themeName: themeName || 'blue' };
@@ -786,7 +1085,7 @@
         async function submitDataToServer() {
             const isDone = document.getElementById('modalStatusCheck').checked;
             if(!isDone && currentSelectedQs.size === 0 && selectedPhotos.length === 0) {
-                alert("체크된 항목이 없거나 미완료 상태입니다.");
+                showError("제출 불가", "완료 체크, 질문 문항, 또는 인증 사진 중 하나는 필수입니다.");
                 return;
             }
 
@@ -831,7 +1130,7 @@
             } catch (error) {
                 console.error("전송 오류:", error);
                 document.getElementById('loadingOverlay').classList.add('hidden');
-                showError("제출 오류", "서버 전송 중 문제가 발생했습니다. 네트워크 확인 후 다시 시도해주세요.");
+                showError("제출 오류", "서버 전송 중 문제가 발생했습니다. 네트워크를 확인 후 다시 시도해주세요.");
             }
         }
         
@@ -839,7 +1138,6 @@
             const wrapper = document.getElementById('solutionLinksWrapper');
             const container = document.getElementById('solutionLinksContainer');
             container.innerHTML = '';
-            
             let foundCount = 0;
             
             if (qsArr && qsArr.length > 0) {
@@ -883,56 +1181,63 @@
             document.body.style.overflow = '';
         }
 
-        // ★ [핵심] 구글 드라이브 공유 링크를 직접 iframe 뷰어 링크로 변환하는 함수
+        // ==========================================
+        // 6. 유튜브 모달 / 손풀이 뷰어 등 부가 기능
+        // ==========================================
+
+        function showError(title, msg) {
+            const titleEl = document.getElementById('errorTitle');
+            const msgEl = document.getElementById('errorMessage');
+            if(titleEl) titleEl.innerHTML = title;
+            if(msgEl) msgEl.innerHTML = msg;
+            const modal = document.getElementById('submitErrorModal');
+            if(modal) modal.classList.remove('hidden');
+        }
+        function closeErrorModal() { document.getElementById('submitErrorModal').classList.add('hidden'); }
+
+        function showLoginErrorModal(msg) {
+            const msgEl = document.getElementById('loginErrorMessage');
+            if(msgEl) msgEl.innerHTML = msg;
+            const modal = document.getElementById('loginErrorModal');
+            if(modal) modal.classList.remove('hidden');
+        }
+        function closeLoginErrorModal() { document.getElementById('loginErrorModal').classList.add('hidden'); }
+
+
         function getDrivePreviewUrl(url) {
             if (!url) return '';
             let fileId = '';
-            // 패턴 1: .../file/d/아이디/...
             const match1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-            // 패턴 2: ...?id=아이디
             const match2 = url.match(/id=([a-zA-Z0-9_-]+)/);
-            
             if (match1) fileId = match1[1];
             else if (match2) fileId = match2[1];
             
-            if (fileId) {
-                // 구글 드라이브 공식 뷰어를 iframe 안에 띄우기 위한 주소
-                return `https://drive.google.com/file/d/${fileId}/preview`;
-            }
+            if (fileId) return `https://drive.google.com/file/d/${fileId}/preview`;
             return url; 
         }
 
         function openHandwrittenModal(imgUrl) {
             const previewUrl = getDrivePreviewUrl(imgUrl);
-            
-            // 모달 및 로딩 표시기 켜기
             document.getElementById('handwrittenLoading').classList.remove('hidden');
             document.getElementById('handwrittenModal').classList.remove('hidden');
-            
-            // iframe에 구글 드라이브 뷰어 주소 세팅
             document.getElementById('handwrittenIframe').src = previewUrl;
         }
         
         function closeHandwrittenModal() {
             document.getElementById('handwrittenModal').classList.add('hidden');
-            document.getElementById('handwrittenIframe').src = ''; // 리소스 절약을 위해 비우기
+            document.getElementById('handwrittenIframe').src = '';
         }
 
-        // ★ 유튜브 링크 임베드 변환 및 영상 모달 제어 함수 (153 오류 최종 해결판)
         function getYouTubeEmbedUrl(url) {
             if (!url) return '';
-            url = url.trim(); // 공백 제거
-            
-            // 현존하는 가장 강력한 유튜브 11자리 고유 ID 추출 정규식
+            url = url.trim(); 
             const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
             const match = url.match(regExp);
 
             if (match && match[1]) {
-                // youtube-nocookie 도메인이 일부 환경에서 153 오류를 유발하므로 다시 표준 도메인으로 복구합니다.
                 return `https://www.youtube.com/embed/${match[1]}?rel=0&playsinline=1`;
             }
-            
-            return ''; // 매칭 실패 시 빈칸 반환
+            return ''; 
         }
 
         function openVideoModal(url) {
@@ -941,40 +1246,29 @@
             document.getElementById('videoModal').classList.remove('hidden');
             
             const iframe = document.getElementById('videoIframe');
-            if (embedUrl) {
-                iframe.src = embedUrl;
-            } else {
-                // 주소가 잘못되었을 경우 렌더링 중지
+            if (embedUrl) iframe.src = embedUrl;
+            else {
                 document.getElementById('videoLoading').classList.add('hidden');
                 iframe.src = '';
             }
             
-            // 오류 153 발생 시 학생들이 빠져나갈 수 있도록 실제 링크 삽입
             document.getElementById('videoFallbackLink').href = url;
         }
         
         function closeVideoModal() {
             document.getElementById('videoModal').classList.add('hidden');
-            document.getElementById('videoIframe').src = ''; // 영상 끄기 및 리소스 해제
+            document.getElementById('videoIframe').src = '';
         }
 
-        // ★ 모바일 가로 전체화면 기능
         function goFullscreen() {
             const iframe = document.getElementById('videoIframe');
+            if (iframe.requestFullscreen) iframe.requestFullscreen();
+            else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+            else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
             
-            // 브라우저별 전체화면 API 호출
-            if (iframe.requestFullscreen) {
-                iframe.requestFullscreen();
-            } else if (iframe.webkitRequestFullscreen) { /* iOS Safari 호환 */
-                iframe.webkitRequestFullscreen();
-            } else if (iframe.msRequestFullscreen) { /* IE 호환 */
-                iframe.msRequestFullscreen();
-            }
-            
-            // 모바일 화면 가로 강제 회전 시도 (지원하는 안드로이드/최신 브라우저 한정)
             try {
                 if (screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch((e) => console.log('화면 회전 강제 잠금을 지원하지 않는 기기입니다.'));
+                    screen.orientation.lock('landscape').catch((e) => console.log('회전 미지원 기기'));
                 }
             } catch(e) {}
         }
@@ -1010,10 +1304,42 @@
             document.getElementById('photoPreviewContainer').classList.add('hidden');
             document.getElementById('photoUploadBtn').classList.remove('hidden');
         }
+
+        // PWA 배너 로직 보조
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); 
+            deferredPrompt = e; 
+        });
+        
+        function showInstallBanner() { 
+            const pwaInstallBanner = document.getElementById('pwaInstallBanner');
+            if (pwaInstallBanner) pwaInstallBanner.classList.remove('translate-y-full'); 
+        }
+        
+        function hideInstallBanner() { 
+            const pwaInstallBanner = document.getElementById('pwaInstallBanner');
+            if (pwaInstallBanner) pwaInstallBanner.classList.add('translate-y-full'); 
+        }
+
+        const btnInstallPwa = document.getElementById('btnInstallPwa');
+        if (btnInstallPwa) {
+            btnInstallPwa.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    hideInstallBanner();
+                    deferredPrompt.prompt();
+                    await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                } else {
+                    window.location.href = './Install.html';
+                }
+            });
+        }
     </script>
     
     <script>
+      // 1. 마우스 우클릭 방지
       document.addEventListener('contextmenu', e => e.preventDefault());
+      // 2. 개발자 도구 및 소스 보기 단축키 방지
       document.addEventListener('keydown', e => {
         if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) || (e.ctrlKey && e.keyCode === 85)) {
           e.preventDefault(); e.returnValue = false;
