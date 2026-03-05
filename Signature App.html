@@ -77,6 +77,12 @@
                     <input type="password" id="loginPw" placeholder="비밀번호 입력" class="w-full bg-[#121212] border border-gray-700 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-yellow-500 transition-colors" onkeypress="if(event.key==='Enter') tryLogin()">
                 </div>
                 <button onclick="tryLogin()" class="w-full bg-[#FEE500] hover:bg-yellow-400 text-[#191919] font-black py-4 rounded-xl mt-4 transition-colors shadow-lg shadow-yellow-500/20">로그인</button>
+                
+                <!-- 사용 가이드 버튼 -->
+                <button onclick="openUserGuideModal()" class="w-full mt-3 flex items-center justify-center gap-2 text-gray-400 hover:text-white text-sm font-bold transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    앱 사용 가이드 보기
+                </button>
             </div>
         </div>
     </div>
@@ -191,6 +197,10 @@
         <h2 class="text-2xl font-bold text-white mb-6">알림 & 자료실</h2>
         <div class="space-y-3" id="boardListContainer"></div>
     </div>
+
+    <!-- ==========================================
+         [모달 영역] 중복 없이 한 개씩만 존재
+    =========================================== -->
 
     <!-- 1. 프리미엄 인포그래픽 리포트 모달 -->
     <div id="reportDetailModal" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-0 md:p-4 backdrop-blur-md transition-opacity duration-300">
@@ -374,7 +384,90 @@
         </div>
     </div>
 
-    <!-- 6. 손풀이 이미지 뷰어 모달 -->
+    <!-- 6. 사용 가이드 모달 -->
+    <div id="userGuideModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeUserGuideModal()">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-lg w-full shadow-2xl flex flex-col max-h-[85vh] animate-fade-in-up overflow-hidden">
+            <div class="flex justify-between items-center p-5 border-b border-gray-800 bg-[#1A1A1A] flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center border border-yellow-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white tracking-tight">Signature 앱 사용 가이드</h3>
+                </div>
+                <button onclick="closeUserGuideModal()" class="text-gray-400 hover:text-white bg-gray-800 rounded-full p-1.5 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="overflow-y-auto flex-grow p-6 space-y-6">
+                <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800 shadow-inner relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                    <h4 class="text-white font-bold text-base mb-2 flex items-center gap-2">
+                        <span class="text-blue-400">1.</span> 앱 접속 및 로그인
+                    </h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-3">
+                        강사님이 부여하신 <span class="text-gray-200 font-bold">아이디</span>와 <span class="text-gray-200 font-bold">비밀번호</span>를 입력하여 로그인합니다. 한 번 로그인하면 스마트폰에 정보가 저장되어 다음부터는 <strong>자동으로 로그인</strong>됩니다.
+                    </p>
+                    <div class="text-xs bg-blue-900/20 text-blue-300 p-2.5 rounded-lg border border-blue-500/20">
+                        * 초기 비밀번호 변경 문의는 강사님께 직접 연락 바랍니다.
+                    </div>
+                </div>
+
+                <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800 shadow-inner relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+                    <h4 class="text-white font-bold text-base mb-3 flex items-center gap-2">
+                        <span class="text-green-500">2.</span> 학생 전용 기능
+                    </h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📝</span></div>
+                            <div>
+                                <p class="text-gray-200 text-sm font-bold mb-1">매일 과제 제출 (가장 중요!)</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">매일 정해진 분량의 숙제를 푼 뒤, <strong>오답 문항</strong>을 체크하고 <strong>사진을 첨부</strong>하여 서버로 제출합니다.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">▶️</span></div>
+                            <div>
+                                <p class="text-gray-200 text-sm font-bold mb-1">오답 해설 시청 및 스케줄</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">숙제를 제출하면 즉시 <strong>해설 영상/손풀이</strong> 링크가 뜹니다. 또한 '수업 스케줄' 메뉴에서 결석 시 보충 영상을 시청할 수 있습니다.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800 shadow-inner relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                    <h4 class="text-white font-bold text-base mb-3 flex items-center gap-2">
+                        <span class="text-purple-400">3.</span> 학부모님 전용 기능
+                    </h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📊</span></div>
+                            <div>
+                                <p class="text-gray-200 text-sm font-bold mb-1">프리미엄 주간 리포트</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">자녀의 출결, 과제 달성률, 주말 테스트 결과를 <strong>인포그래픽</strong>으로 한눈에 파악하고 <strong>취약 단원</strong>을 분석할 수 있습니다.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📢</span></div>
+                            <div>
+                                <p class="text-gray-200 text-sm font-bold mb-1">게시판 (공지사항)</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">학원 휴강, 보강 안내 및 주요 전달 사항을 빠르게 확인하실 수 있습니다.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-800 bg-[#1A1A1A] flex-shrink-0">
+                <button onclick="closeUserGuideModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg border border-gray-700 text-sm">
+                    확인했습니다
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. 손풀이 이미지 뷰어 모달 -->
     <div id="handwrittenModal" class="fixed inset-0 bg-black/95 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeHandwrittenModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-2xl w-full p-4 shadow-2xl flex flex-col h-[80vh] animate-fade-in-up">
             <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
@@ -391,7 +484,7 @@
         </div>
     </div>
 
-    <!-- 7. 영상 플레이어 모달 -->
+    <!-- 8. 영상 플레이어 모달 -->
     <div id="videoModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeVideoModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-3xl w-full p-4 shadow-2xl flex flex-col animate-fade-in-up">
             <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
@@ -441,13 +534,14 @@
 
         let globalDB = null; 
         let currentUser = null;
+        let windowReportsData = []; // 리포트 데이터 파싱 안정화를 위한 전역 배열
+
         const taskStore = {};
         let currentTask = { id: '', date: '', range: '', className: '', checkClass: '', themeName: 'blue' };
         let currentSelectedQs = new Set();
         let selectedPhotos = [];
         let deferredPrompt;
 
-        // ★ PWA 관련 변수 호이스팅 오류 방지를 위해 최상단에 선언
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         const isIos = () => /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
 
@@ -466,7 +560,6 @@
             await fetchDatabase();
             checkAutoLogin();
             
-            // PWA 배너 표시 지연 로직
             const pwaInstallBanner = document.getElementById('pwaInstallBanner');
             const btnInstallPwa = document.getElementById('btnInstallPwa');
             if (!isStandalone) {
@@ -477,7 +570,6 @@
             }
         }
 
-        // DOM이 안전하게 로드된 후에만 초기화 실행
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initApp);
         } else {
@@ -535,6 +627,7 @@
             history.pushState({ screen: targetScreen }, "", "#" + targetScreen);
         }
 
+        // ★ 모달 닫기 로직 메모리 누수 방지 최적화
         window.addEventListener('popstate', (e) => {
             closeTaskModal();
             closeSuccessModal();
@@ -543,6 +636,7 @@
             closeVideoModal();
             closeReportDetailModal();
             closeLoginErrorModal();
+            closeUserGuideModal();
 
             if (e.state && e.state.screen) showScreenOnly(e.state.screen);
             else showScreenOnly(currentUser ? 'main' : 'login');
@@ -713,7 +807,7 @@
         }
 
         // ==========================================
-        // 5. 리포트 렌더링 및 탭 모달
+        // 5. 리포트 및 인포그래픽 모달
         // ==========================================
 
         function renderReports() {
@@ -727,13 +821,15 @@
                 container.innerHTML = `<p class="text-gray-500 text-sm text-center py-10">발행된 리포트가 없습니다.</p>`; return;
             }
 
-            [...myReports].reverse().forEach((rep, idx) => {
+            // ★ 최적화: 데이터를 JSON 문자열로 넘기지 않고 글로벌 배열에 저장 후 인덱스 참조 (오류 완벽 방지)
+            windowReportsData = [...myReports].reverse();
+
+            windowReportsData.forEach((rep, idx) => {
                 let btnHtml = '';
                 if(rep.isOld) {
                     btnHtml = `<button onclick="window.open('${rep.link}', '_blank')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-bold py-2 px-3 rounded-lg border border-gray-600 transition-colors flex items-center gap-1">기존 링크</button>`;
                 } else {
-                    const strData = JSON.stringify(rep).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-                    btnHtml = `<button onclick="openReportDetailModal('${strData}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-md transition-colors flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 분석 보기</button>`;
+                    btnHtml = `<button onclick="openReportDetailModal(${idx})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-3 rounded-lg shadow-md transition-colors flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 분석 보기</button>`;
                 }
 
                 const studentNameDisplay = rep.studentName || currentUser.name;
@@ -749,7 +845,6 @@
             });
         }
 
-        // ★ 누락되었던 탭 제어 함수 완벽 복구
         function switchReportTab(tab) {
             const btnW = document.getElementById('repTabWrong');
             const btnC = document.getElementById('repTabCorrect');
@@ -769,8 +864,21 @@
             }
         }
 
-        function openReportDetailModal(strData) {
-            const data = JSON.parse(strData.replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
+        // ★ 최적화: 외부로 분리된 난이도 뱃지 렌더링 함수
+        function getDiffBadge(level) {
+            let style = "bg-gray-800 text-gray-400 border-gray-700"; 
+            if (level === '하') style = "bg-green-500/20 text-green-400 border-green-500/30";
+            else if (level === '중하') style = "bg-teal-500/20 text-teal-400 border-teal-500/30";
+            else if (level === '중') style = "bg-blue-500/20 text-blue-400 border-blue-500/30";
+            else if (level === '중상') style = "bg-orange-500/20 text-orange-400 border-orange-500/30";
+            else if (level === '상') style = "bg-red-500/20 text-red-400 border-red-500/30";
+            else if (level === '최상') style = "bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30 font-black shadow-[0_0_8px_rgba(217,70,239,0.3)]";
+            return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${style} ml-1 tracking-widest">${level}</span>`;
+        }
+
+        function openReportDetailModal(index) {
+            const data = windowReportsData[index];
+            if (!data) return;
             
             document.getElementById('detReportWeek').textContent = data.week;
             document.getElementById('detReportName').textContent = data.studentName;
@@ -807,17 +915,6 @@
                 }, 100);
 
                 const weekDB = globalDB.clinicDB ? globalDB.clinicDB[data.week] : null;
-
-                const getDiffBadge = (level) => {
-                    let style = "bg-gray-800 text-gray-400 border-gray-700"; 
-                    if (level === '하') style = "bg-green-500/20 text-green-400 border-green-500/30";
-                    else if (level === '중하') style = "bg-teal-500/20 text-teal-400 border-teal-500/30";
-                    else if (level === '중') style = "bg-blue-500/20 text-blue-400 border-blue-500/30";
-                    else if (level === '중상') style = "bg-orange-500/20 text-orange-400 border-orange-500/30";
-                    else if (level === '상') style = "bg-red-500/20 text-red-400 border-red-500/30";
-                    else if (level === '최상') style = "bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30 font-black shadow-[0_0_8px_rgba(217,70,239,0.3)]";
-                    return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${style} ml-1 tracking-widest">${level}</span>`;
-                };
 
                 const analysisContainer = document.getElementById('detReportAnalysisList');
                 analysisContainer.innerHTML = '';
@@ -1177,6 +1274,10 @@
             document.body.style.overflow = '';
         }
 
+        // ==========================================
+        // 7. 기타 유틸리티 함수 및 모달
+        // ==========================================
+
         function showError(title, msg) {
             const titleEl = document.getElementById('errorTitle');
             const msgEl = document.getElementById('errorMessage');
@@ -1195,6 +1296,15 @@
         }
         function closeLoginErrorModal() { document.getElementById('loginErrorModal').classList.add('hidden'); }
 
+        function openUserGuideModal() {
+            document.getElementById('userGuideModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeUserGuideModal() {
+            document.getElementById('userGuideModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
 
         function getDrivePreviewUrl(url) {
             if (!url) return '';
@@ -1298,7 +1408,7 @@
         }
 
         // ==========================================
-        // 7. PWA 배너 관련
+        // 8. PWA 배너 관련
         // ==========================================
         window.addEventListener('beforeinstallprompt', (e) => { 
             e.preventDefault(); 
