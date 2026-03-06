@@ -159,7 +159,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v1.9 <span class="font-normal text-gray-600">(완벽 안정화 배포)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v1.9.5 <span class="font-normal text-gray-600">(현황판 연동 최적화)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -251,7 +251,7 @@
     </div>
 
     <!-- ==========================================
-         [모달 영역 - 최상위 뎁스에 각각 1개씩 존재]
+         [모달 영역]
     =========================================== -->
     
     <!-- 현황판 상세 조회 모달 -->
@@ -401,9 +401,11 @@
                     <svg class="animate-spin h-6 w-6 text-yellow-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     <span class="text-xs font-bold text-yellow-500">데이터를 안전하게 전송 중입니다...</span>
                 </div>
-                <!-- ★ 버튼 문구 변경: 제출하기 -->
                 <button onclick="submitDataAndCopy()" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg">제출하기</button>
-                <button onclick="saveAndCloseTaskModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3.5 rounded-xl border border-gray-700">임시 저장하고 닫기</button>
+                <div class="flex gap-2">
+                    <button onclick="resetTaskSelections()" class="w-1/3 bg-gray-800 hover:bg-red-900/30 hover:text-red-400 hover:border-red-500/50 text-gray-400 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">↻ 초기화</button>
+                    <button onclick="saveAndCloseTaskModal()" class="w-2/3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">임시 저장하고 닫기</button>
+                </div>
             </div>
         </div>
     </div>
@@ -436,7 +438,6 @@
                 <button onclick="finalKakaoRedirect()" id="btnKakaoOpen" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg hidden">
                     카카오톡 바로 열기
                 </button>
-                <!-- ★ 확인 버튼 클릭 시 정상 작동 (닫힘 + 스크롤 복구) -->
                 <button onclick="closeCustomAlert()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">
                     확인 (창 닫기)
                 </button>
@@ -590,12 +591,13 @@
     </div>
 
     <!-- ==========================================
-         [통합 스크립트 블록]
+         [통합 스크립트 블록 - 꼬임 현상 원천 차단]
     =========================================== -->
     <script>
         // ------------------------------------------
         // 1. 전역 변수 및 PWA 설정
         // ------------------------------------------
+        // ★ 강사님이 직접 수정하신 최신 URL로 영구 동기화 완료!
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
@@ -620,10 +622,38 @@
         };
 
         // ------------------------------------------
-        // 문자열 공백 완벽 제거 함수 (오류 방지용)
+        // [핵심 해결] 문자열 공백 완벽 제거 함수
         // ------------------------------------------
         function normalizeKey(str) {
-            return str ? str.replace(/\s+/g, '') : '';
+            return str ? String(str).replace(/\s+/g, '') : '';
+        }
+
+        // ------------------------------------------
+        // [핵심 해결] 아이디 기반 최신 기록 매칭 공통 함수 (리스트 & 현황판 100% 동기화)
+        // ------------------------------------------
+        function getMyHomeworkCompletion(targetId, targetName) {
+            const hwCompletion = {};
+            
+            const myLogs = (globalDB.hwLogs || []).filter(log => {
+                const logUserId = log.userId ? String(log.userId).trim() : "";
+                if (logUserId !== "") {
+                    return logUserId === targetId; // 아이디가 있으면 무조건 아이디로 매칭
+                }
+                return String(log.name).trim() === targetName; // 과거 데이터 등 아이디가 없을 땐 이름으로 폴백 매칭
+            });
+
+            myLogs.forEach(log => {
+                if (log.date) {
+                    const key = normalizeKey(log.date);
+                    // 여러 번 제출 시: 기존에 '완료'로 제출한 이력이 있다면, 나중에 실수로 '미완료'로 제출한 기록이 덮어쓰지 못하도록 방어
+                    if (hwCompletion[key] && hwCompletion[key].status === '완료' && log.status !== '완료') {
+                        return; // 덮어쓰지 않고 기존 '완료' 기록 유지
+                    }
+                    // 그 외에는 항상 최신 기록으로 덮어씌움
+                    hwCompletion[key] = log;
+                }
+            });
+            return hwCompletion;
         }
 
         // ------------------------------------------
@@ -711,9 +741,11 @@
         async function refreshData() {
             await fetchDatabase(); 
             if (currentUser && currentUser.id && globalDB && globalDB.users) {
-                if (globalDB.users[currentUser.id]) {
-                    currentUser = globalDB.users[currentUser.id];
-                    currentUser.id = currentUser.id; 
+                // ★ 버그 수정: 업데이트 중 아이디(ID)가 증발하지 않도록 안전하게 백업 후 재부여
+                const currentId = currentUser.id; 
+                if (globalDB.users[currentId]) {
+                    currentUser = globalDB.users[currentId];
+                    currentUser.id = currentId; // 백업해둔 ID를 잃어버리지 않게 꽉 묶어줍니다.
                 }
                 applyLoginState(); 
             }
@@ -919,7 +951,7 @@
         }
 
         // ------------------------------------------
-        // 5. 숙제 현황판 대시보드 로직 (아이디 기반 최신 기록 매칭)
+        // 5. 숙제 현황판 대시보드 로직
         // ------------------------------------------
         function renderDashboard() {
             const completionContainer = document.getElementById('dash-completion-container');
@@ -945,25 +977,8 @@
                 return;
             }
 
-            const hwCompletion = {};
-            
-            // ★ 최신 기록 유지 및 아이디 기반 완벽 매칭
-            const myLogs = (globalDB.hwLogs || []).filter(log => {
-                const logUserId = log.userId ? String(log.userId).trim() : "";
-                if (logUserId !== "") {
-                    return logUserId === targetId;
-                }
-                // 구 버전(아이디가 없는 옛날 데이터) 대비 이름 일치 폴백
-                return String(log.name).trim() === targetName; 
-            });
-            
-            // forEach는 배열의 순서대로 순회하므로, 여러 번 제출한 경우 가장 마지막(최신) 데이터로 덮어씌워집니다.
-            myLogs.forEach(log => { 
-                if(log.date) {
-                    // 키 매칭 오류를 원천 차단하기 위해 모든 공백을 제거한 키를 사용합니다.
-                    hwCompletion[normalizeKey(log.date)] = log; 
-                }
-            });
+            // ★ 공통 함수로 최신 매칭 데이터 100% 동기화 로드
+            const hwCompletion = getMyHomeworkCompletion(targetId, targetName);
 
             const hwByWeek = {};
             myHomework.forEach(item => { 
@@ -985,10 +1000,8 @@
 
                 hwByWeek[week].forEach((item, index) => {
                     const dayNum = index + 1;
-                    const dateString = item.date;
                     
-                    // 공백 제거 키를 이용한 완벽 매칭 조회
-                    const searchKey = `${week}주차 D${dayNum} (${dateString})`;
+                    const searchKey = `${week}주차 D${dayNum} (${item.date})`;
                     const log = hwCompletion[normalizeKey(searchKey)];
                     
                     const isSubmitted = log && log.status === '완료';
@@ -996,8 +1009,11 @@
                     let circleClass = isSubmitted ? "bg-yellow-500 text-[#121212] shadow-[0_0_10px_rgba(234,179,8,0.4)] border-transparent" : "bg-[#121212] text-gray-600 border-gray-700";
                     let statusBadge = isSubmitted ? `<span class="mt-1 text-[10px] text-green-400 font-bold bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">제출완료</span>` : `<span class="mt-1 text-[10px] text-gray-500 font-bold">미제출</span>`;
 
-                    const logQs = log ? log.questions : '없음';
-                    const args = `'${week}', ${dayNum}, '${item.date}', ${isSubmitted}, '${logQs}', '${item.range}', ${item.count}`;
+                    // ★ 특수문자가 포함된 문자열을 안전하게 이스케이프 처리하여 onclick 에러 원천 차단
+                    const safeRange = item.range ? String(item.range).replace(/'/g, "\\'") : '';
+                    const safeDate = item.date ? String(item.date).replace(/'/g, "\\'") : '';
+                    const logQs = log && log.questions ? String(log.questions).replace(/'/g, "\\'").replace(/\n/g, " ") : '없음';
+                    const args = `'${week}', ${dayNum}, '${safeDate}', ${isSubmitted}, '${logQs}', '${safeRange}', ${parseInt(item.count) || 0}`;
 
                     weekHtml += `
                         <div class="flex-1 flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="openDashboardDetailModal(${args})">
@@ -1327,7 +1343,7 @@
         }
 
         // ------------------------------------------
-        // 7. 숙제 렌더링 및 입력 팝업 (서버 동기화 완벽 반영)
+        // 7. 숙제 렌더링 및 입력 팝업
         // ------------------------------------------
         function renderHomeworkList() {
             const container = document.getElementById('my-homework-container');
@@ -1344,21 +1360,11 @@
                 container.innerHTML = `<div class="col-span-1 md:col-span-2 bg-[#1E1E1E] rounded-2xl border border-gray-800 p-10 text-center"><p class="text-gray-500 text-sm">일정이 없습니다.</p></div>`; return;
             }
 
-            const hwCompletion = {};
             const targetId = String(currentUser.id).trim();
             const targetName = String(currentUser.name).trim(); 
             
-            // ★ 아이디 기반 최신 기록 매칭 (배열 순회 시 자동으로 가장 마지막=최신 데이터로 덮어씌워짐)
-            const myLogs = (globalDB.hwLogs || []).filter(log => {
-                const logUserId = log.userId ? String(log.userId).trim() : "";
-                if (logUserId !== "") {
-                    return logUserId === targetId;
-                }
-                return String(log.name).trim() === targetName;
-            });
-            myLogs.forEach(log => { 
-                if (log.date) hwCompletion[normalizeKey(log.date)] = log; 
-            });
+            // ★ 공통 함수로 최신 매칭 데이터 100% 동기화 로드
+            const hwCompletion = getMyHomeworkCompletion(targetId, targetName);
 
             const hwByWeek = {};
             myHomework.forEach(item => { if(!hwByWeek[item.week]) hwByWeek[item.week] = []; hwByWeek[item.week].push(item); });
@@ -1372,7 +1378,6 @@
                     const dayNum = index + 1;
                     const uniqueId = `hw-w${week}-d${dayNum}`;
                     
-                    // 공백 제거 키를 이용한 완벽 매칭 조회
                     const searchKey = `${week}주차 D${dayNum} (${item.date})`;
                     const log = hwCompletion[normalizeKey(searchKey)];
                     const isSubmitted = log && log.status === '완료';
@@ -1388,8 +1393,12 @@
                     let checkIconOpacity = taskStore[uniqueId].isDone ? 'opacity-100' : 'opacity-0';
                     let boxBorderClass = taskStore[uniqueId].isDone ? `${tData.check} border-transparent` : 'border-gray-600 bg-transparent';
 
+                    // HTML 렌더링 시에도 에러가 발생하지 않도록 이스케이프 처리
+                    const safeRange = item.range ? String(item.range).replace(/'/g, "\\'") : '';
+                    const safeDate = item.date ? String(item.date).replace(/'/g, "\\'") : '';
+
                     html += `
-                        <div onclick="openTaskModal('${uniqueId}', '${item.date}', '${item.range}', '${targetClass}', '${tData.check}', '${classTheme}', ${week}, ${dayNum})" 
+                        <div onclick="openTaskModal('${uniqueId}', '${safeDate}', '${safeRange}', '${targetClass}', '${tData.check}', '${classTheme}', ${week}, ${dayNum})" 
                              class="flex justify-between items-center p-3 hover:bg-[#252525] rounded-xl cursor-pointer transition-all group active:scale-[0.98]">
                             <div class="flex items-center gap-3">
                                 <span class="w-9 h-9 rounded-full ${listIconClass} bg-opacity-10 flex items-center justify-center font-bold text-sm border border-transparent transition-colors">D${dayNum}</span>
@@ -1469,6 +1478,7 @@
             return parseInt(a.substring(1)) - parseInt(b.substring(1));
         }
 
+        // UI 데이터 저장 및 모달 닫기
         function saveAndCloseTaskModal() {
             const isDone = document.getElementById('modalStatusCheck').checked;
             taskStore[currentTask.id] = { isDone: isDone, qs: Array.from(currentSelectedQs).sort(sortQuestions), memo: document.getElementById('modalMemoInput').value.trim() };
@@ -1488,6 +1498,31 @@
                 }
             }
             closeTaskModal();
+        }
+
+        // [초기화] 기능: 입력 데이터 및 UI 완전 복구
+        function resetTaskSelections() {
+            if(!confirm("체크한 문항과 사진, 메모를 모두 초기화하시겠습니까?")) return;
+            
+            document.getElementById('modalStatusCheck').checked = false;
+            document.getElementById('modalStatusCheck').dispatchEvent(new Event('change'));
+            
+            currentSelectedQs.clear();
+            generateQuestionButtons(currentTask.range);
+            
+            removePhoto();
+            document.getElementById('modalMemoInput').value = '';
+            
+            taskStore[currentTask.id] = { isDone: false, qs: [], memo: '' };
+            const box = document.getElementById(`ui-box-${currentTask.id}`);
+            const svg = document.getElementById(`ui-svg-${currentTask.id}`);
+            
+            if(box && svg) {
+                Object.values(themeMapper).forEach(t => box.classList.remove(t.check));
+                box.classList.remove('border-transparent');
+                box.classList.add('border-gray-600');
+                svg.classList.replace('opacity-100', 'opacity-0');
+            }
         }
 
         function resizeAndEncodeImage(file, maxWidth = 1024) {
@@ -1516,7 +1551,7 @@
             });
         }
 
-        // ★ 버튼 문구 변경 및 아이디 기반 서버 전송 로직
+        // 서버 데이터 전송 로직
         async function submitDataAndCopy() {
             const isDone = document.getElementById('modalStatusCheck').checked;
             if(!isDone && currentSelectedQs.size === 0 && selectedPhotos.length === 0) {
@@ -1541,9 +1576,7 @@
                         try {
                             const imgData = await resizeAndEncodeImage(file);
                             if(imgData) base64Images.push(imgData);
-                        } catch(e) {
-                            console.error("이미지 처리 실패:", e);
-                        }
+                        } catch(e) {}
                     }
                 }
 
@@ -1582,7 +1615,7 @@
                 console.error("전송 오류:", error);
                 document.getElementById('loadingOverlay').classList.add('hidden');
                 saveAndCloseTaskModal(); 
-                showError("서버 전송 실패", "인터넷 연결이 원활하지 않아 <b>구글 시트</b>에 데이터를 저장하지 못했습니다.<br>네트워크가 안정된 곳에서 다시 제출해 주세요.");
+                showError("서버 전송 지연", "인터넷 연결이 원활하지 않아 <b>구글 시트</b>에 데이터를 저장하지 못했습니다.<br>네트워크가 안정된 곳에서 다시 시도해 주세요.");
             }
         }
         
@@ -1631,13 +1664,12 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // ★ 모달을 완전히 닫고 화면 스크롤(터치) 잠금을 풀어주는 핵심 함수
+        // ★ 모달을 완전히 닫고 화면 스크롤 잠금을 완벽히 해제
         function closeCustomAlert() { 
             document.getElementById('customAlertModal').classList.add('hidden'); 
             document.body.style.overflow = '';
         }
 
-        // 카카오톡 열기 버튼 작동 시 모달 닫기
         function finalKakaoRedirect() {
             closeCustomAlert();
             window.open("https://open.kakao.com/o/s9qHTzTh", "_blank");
