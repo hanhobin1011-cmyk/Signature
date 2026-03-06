@@ -25,6 +25,7 @@
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
+          serviceWorkerPath: "sw.js" // ★ 추가: 기존 PWA 서비스 워커 파일로 통합 연결
         });
       });
     </script>
