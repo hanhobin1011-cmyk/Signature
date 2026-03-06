@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>한호빈T Signature 관리 어플리케이션</title>
 
-    <!-- ====== PWA 설정을 위한 태그 ====== -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
@@ -51,14 +50,12 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col selection:bg-yellow-500 selection:text-white">
 
-    <!-- [화면 0] 스플래시 화면 -->
     <div id="screen-splash" class="flex-1 flex flex-col items-center justify-center p-6 fixed inset-0 bg-[#121212] z-[100]">
         <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-20 h-20 rounded-[22%] mb-8 animate-pulse shadow-lg shadow-yellow-500/20 border border-gray-800 object-cover">
         <svg class="animate-spin h-8 w-8 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         <p class="text-gray-400 font-bold text-sm">학원 데이터베이스 연동 중...</p>
     </div>
 
-    <!-- [화면 1] 로그인 화면 -->
     <div id="screen-login" class="hidden-screen flex-1 flex flex-col items-center justify-center p-6 fade-in">
         <div class="text-center mb-10">
             <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-24 h-24 rounded-[22%] shadow-lg shadow-yellow-500/20 mx-auto mb-6 object-cover border border-gray-800">
@@ -78,7 +75,6 @@
                 </div>
                 <button onclick="tryLogin()" class="w-full bg-[#FEE500] hover:bg-yellow-400 text-[#191919] font-black py-4 rounded-xl mt-4 transition-colors shadow-lg shadow-yellow-500/20">로그인</button>
                 
-                <!-- 사용 가이드 버튼 -->
                 <button onclick="openUserGuideModal()" class="w-full mt-3 flex items-center justify-center gap-2 text-gray-400 hover:text-white text-sm font-bold transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     앱 사용 가이드 보기
@@ -87,13 +83,12 @@
         </div>
     </div>
 
-    <!-- 앱 공통 상단 헤더 -->
     <header id="app-header" class="hidden-screen sticky top-0 z-40 bg-glass border-b border-gray-800 px-5 py-4">
         <div class="flex justify-between items-center max-w-md mx-auto w-full">
             <div class="flex items-center cursor-pointer" onclick="navTo('main')">
                 <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-8 h-8 rounded-[22%] object-cover border border-gray-700 shadow-sm shadow-yellow-500/20 mr-2.5">
                 <span class="font-signature italic font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 tracking-wider text-xl mt-1">Signature</span>
-                <span class="bg-[#2A2A2A] text-gray-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2 mt-1 border border-gray-700">v1.4</span>
+                <span class="bg-[#2A2A2A] text-gray-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2 mt-1 border border-gray-700">v1.5</span>
             </div>
             <div class="flex gap-2">
                 <button onclick="refreshData()" class="flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-900/20 border border-blue-500/30 px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors">
@@ -105,7 +100,6 @@
         </div>
     </header>
 
-    <!-- [화면 2] 메인 대시보드 -->
     <main id="screen-main" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-10">
         <div class="mb-8 mt-2">
             <div id="userBadge" class="inline-block px-2.5 py-1 rounded-md text-xs font-bold mb-2"></div>
@@ -114,6 +108,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
+            <!-- 매일 과제 제출 (학생 전용) -->
             <button id="menu-homework" onclick="navTo('homework')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-yellow-500 hover:bg-gray-800 transition-all group col-span-2 hidden">
                 <div class="flex justify-between items-center mb-3">
                     <div class="w-10 h-10 bg-yellow-500/20 text-yellow-400 rounded-xl flex items-center justify-center">
@@ -125,12 +120,23 @@
                 <p class="text-gray-400 text-xs mt-1">오늘의 숙제를 서버로 바로 제출하세요.</p>
             </button>
 
-            <button onclick="navTo('report')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-blue-500 hover:bg-gray-800 transition-all group">
-                <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <!-- ★ 신규: 학생별 숙제 현황판 -->
+            <button onclick="navTo('dashboard')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-blue-500 hover:bg-gray-800 transition-all group col-span-2">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                </div>
+                <h3 class="text-white font-bold text-lg">학생별 숙제 현황판</h3>
+                <p class="text-gray-400 text-xs mt-1">일자별 과제 제출 현황 및 성취도 분석</p>
+            </button>
+
+            <button onclick="navTo('report')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-purple-500 hover:bg-gray-800 transition-all group">
+                <div class="w-10 h-10 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center mb-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
                 </div>
                 <h3 class="text-white font-bold">주간 리포트</h3>
-                <p class="text-gray-400 text-xs mt-1">인포그래픽 종합 분석</p>
+                <p class="text-gray-400 text-xs mt-1">클리닉/인포그래픽</p>
             </button>
 
             <button onclick="navTo('schedule')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-green-500 hover:bg-gray-800 transition-all group">
@@ -141,8 +147,8 @@
                 <p class="text-gray-400 text-xs mt-1">진도 및 복습 영상</p>
             </button>
 
-            <button id="menu-board" onclick="navTo('board')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-purple-500 hover:bg-gray-800 transition-all group col-span-2 hidden">
-                <div class="w-10 h-10 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center mb-3">
+            <button id="menu-board" onclick="navTo('board')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-red-500 hover:bg-gray-800 transition-all group col-span-2 hidden">
+                <div class="w-10 h-10 bg-red-500/20 text-red-400 rounded-xl flex items-center justify-center mb-3">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15M9 11l3 3L22 4"></path></svg>
                 </div>
                 <h3 class="text-white font-bold text-lg">알림 & 자료실</h3>
@@ -151,21 +157,65 @@
         </div>
 
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v1.4 <span class="font-normal text-gray-600">(최적화 완료)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v1.5 <span class="font-normal text-gray-600">(숙제 대시보드 추가)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
 
-    <!-- [화면 3] 숙제 관리 -->
+    <!-- [화면 3] 매일 과제 제출 (숙제 관리) -->
     <div id="screen-homework" class="hidden-screen flex-1 p-5 max-w-4xl mx-auto w-full fade-in pb-24">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
         </button>
         <div class="flex justify-between items-end mb-6">
-            <div><span id="hwClassBadge" class="px-2 py-1 rounded text-xs font-bold mb-2 inline-block border"></span><h2 class="text-2xl font-bold text-white tracking-tight">매일 숙제 점검표</h2></div>
+            <div><span id="hwClassBadge" class="px-2 py-1 rounded text-xs font-bold mb-2 inline-block border"></span><h2 class="text-2xl font-bold text-white tracking-tight">매일 숙제 제출</h2></div>
             <div class="text-right"><p class="text-xs text-gray-500 mb-1">학습 목표</p><p id="hwTargetText" class="text-sm font-bold text-white"></p></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="my-homework-container"></div>
+    </div>
+
+    <!-- ★ [신규 화면 7] 숙제 현황판 대시보드 -->
+    <div id="screen-dashboard" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-20">
+        <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
+        </button>
+        <div class="mb-5">
+            <h2 class="text-2xl font-bold text-white tracking-tight">학습 현황 대시보드</h2>
+            <p class="text-gray-400 text-sm mt-1">학생의 과제 이행 상태 및 성취도를 확인합니다.</p>
+        </div>
+
+        <!-- ★ 신규 추가: 새로고침 안내 배너 -->
+        <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 mb-8 flex items-start gap-2.5 shadow-inner">
+            <span class="text-blue-400 text-sm mt-0.5">💡</span>
+            <p class="text-blue-300 text-[11px] leading-relaxed break-keep font-medium">
+                방금 과제를 제출하셨나요?<br>우측 상단의 <strong class="text-white">새로고침</strong> 버튼을 누르면 현황판에 최신 데이터가 즉시 반영됩니다!
+            </p>
+        </div>
+        
+        <!-- 1. 날짜별 숙제 이행 측정 영역 -->
+        <h3 class="text-white font-bold text-lg mb-3">📅 날짜별 과제 제출 현황</h3>
+        <div id="dash-completion-container" class="space-y-4 mb-8">
+            <!-- JS 렌더링 -->
+        </div>
+
+        <!-- 2. 정답률 분석 영역 (학생 권한일 때만 표시됨) -->
+        <div id="dash-accuracy-wrapper" class="hidden">
+            <h3 class="text-white font-bold text-lg mb-3 pt-4 border-t border-gray-800">📊 나의 정답률 분석</h3>
+            
+            <div class="flex gap-4 mb-4">
+                <div class="bg-blue-900/20 border border-blue-500/30 p-5 rounded-2xl flex-1 text-center shadow-inner">
+                    <div class="text-blue-400 text-xs font-bold mb-1">전체 누적 정답률</div>
+                    <div class="text-3xl font-black text-white" id="dash-total-accuracy">0%</div>
+                </div>
+            </div>
+
+            <div class="bg-[#1E1E1E] p-5 rounded-2xl border border-gray-800">
+                <h4 class="text-gray-400 text-xs font-bold mb-4">단원별 정답률</h4>
+                <div id="dash-topic-container" class="space-y-4">
+                    <!-- JS 렌더링 -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- [화면 4] 주간 리포트 화면 -->
@@ -199,7 +249,7 @@
     </div>
 
     <!-- ==========================================
-         [모달 영역] 중복 없이 한 개씩만 존재
+         [모달 영역]
     =========================================== -->
 
     <!-- 1. 프리미엄 인포그래픽 리포트 모달 -->
@@ -433,6 +483,13 @@
                                 <p class="text-gray-400 text-xs leading-relaxed break-keep">숙제를 제출하면 즉시 <strong>해설 영상/손풀이</strong> 링크가 뜹니다. 또한 '수업 스케줄' 메뉴에서 결석 시 보충 영상을 시청할 수 있습니다.</p>
                             </div>
                         </li>
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📈</span></div>
+                            <div>
+                                <p class="text-gray-200 text-sm font-bold mb-1">숙제 현황판 대시보드</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">나의 <strong>과제 제출 현황</strong>을 일자별로 확인하고, <strong>단원별 정답률</strong>을 분석하여 취약점을 파악합니다.</p>
+                            </div>
+                        </li>
                     </ul>
                 </div>
 
@@ -450,10 +507,10 @@
                             </div>
                         </li>
                         <li class="flex items-start gap-3">
-                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📢</span></div>
+                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">✅</span></div>
                             <div>
-                                <p class="text-gray-200 text-sm font-bold mb-1">게시판 (공지사항)</p>
-                                <p class="text-gray-400 text-xs leading-relaxed break-keep">학원 휴강, 보강 안내 및 주요 전달 사항을 빠르게 확인하실 수 있습니다.</p>
+                                <p class="text-gray-200 text-sm font-bold mb-1">숙제 제출 여부 확인</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">자녀가 매일매일 과제를 서버에 잘 제출하고 있는지 <strong>숙제 현황판</strong>에서 불빛으로 확인할 수 있습니다.</p>
                             </div>
                         </li>
                     </ul>
@@ -528,13 +585,13 @@
 
     <script>
         // ==========================================
-        // 1. 전역 변수 및 초기 세팅 (안전하게 최상단 배치)
+        // 1. 전역 변수 및 초기 세팅
         // ==========================================
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
         let currentUser = null;
-        let windowReportsData = []; // 리포트 데이터 파싱 안정화를 위한 전역 배열
+        let windowReportsData = []; 
 
         const taskStore = {};
         let currentTask = { id: '', date: '', range: '', className: '', checkClass: '', themeName: 'blue' };
@@ -611,7 +668,7 @@
         // ==========================================
         // 3. 네비게이션 및 로그인
         // ==========================================
-        const screens = ['login', 'main', 'homework', 'report', 'schedule', 'board'];
+        const screens = ['login', 'main', 'homework', 'report', 'schedule', 'board', 'dashboard'];
         function showScreenOnly(targetScreen) {
             screens.forEach(s => {
                 const el = document.getElementById(`screen-${s}`);
@@ -627,7 +684,6 @@
             history.pushState({ screen: targetScreen }, "", "#" + targetScreen);
         }
 
-        // ★ 모달 닫기 로직 메모리 누수 방지 최적화
         window.addEventListener('popstate', (e) => {
             closeTaskModal();
             closeSuccessModal();
@@ -714,6 +770,7 @@
             renderSchedule();
             renderReports();
             if (currentUser.role === 'student') renderHomeworkList();
+            renderDashboard(); // ★ 신규: 현황판 데이터 렌더링
         }
 
         function logout() {
@@ -728,7 +785,7 @@
         }
 
         // ==========================================
-        // 4. 화면 렌더링 로직
+        // 4. 화면 렌더링 로직 (게시판, 일정 등)
         // ==========================================
         function renderBoard() {
             const container = document.getElementById('boardListContainer');
@@ -807,7 +864,145 @@
         }
 
         // ==========================================
-        // 5. 리포트 및 인포그래픽 모달
+        // 5. 숙제 현황판 대시보드 로직 (NEW)
+        // ==========================================
+        function renderDashboard() {
+            const completionContainer = document.getElementById('dash-completion-container');
+            const accuracyContainer = document.getElementById('dash-topic-container');
+            const accuracyWrapper = document.getElementById('dash-accuracy-wrapper');
+            
+            completionContainer.innerHTML = '';
+            accuracyContainer.innerHTML = '';
+
+            const targetName = currentUser.role === 'parent' ? (globalDB.users[currentUser.childId]?.name || "자녀") : currentUser.name;
+            const targetClass = currentUser.className;
+
+            // 1. 해당 반의 숙제 전체 스케줄 가져오기
+            const myHomework = (globalDB.homework || []).filter(h => h.className === targetClass);
+            
+            if(myHomework.length === 0) {
+                completionContainer.innerHTML = `<p class="text-gray-500 text-sm text-center py-6 bg-[#1E1E1E] rounded-xl border border-gray-800">등록된 과제 일정이 없습니다.</p>`;
+                return;
+            }
+
+            // 2. 학생의 제출 기록 가져오기 (가장 최신 기록이 덮어쓰도록 설계)
+            const hwCompletion = {};
+            const myLogs = (globalDB.hwLogs || []).filter(log => log.name === targetName);
+            myLogs.forEach(log => {
+                hwCompletion[log.date] = log; // log.date = "1주차 D1 (3/3(화))" 형식
+            });
+
+            // 주차별로 스케줄 그룹화
+            const hwByWeek = {};
+            myHomework.forEach(item => { if(!hwByWeek[item.week]) hwByWeek[item.week] = []; hwByWeek[item.week].push(item); });
+
+            let totalQ = 0;
+            let totalW = 0;
+            const topicStats = {};
+
+            // [영역 1] 날짜별 숙제 이행 현황 그리기
+            Object.keys(hwByWeek).sort((a,b) => parseInt(a) - parseInt(b)).forEach(week => {
+                let weekHtml = `
+                <div class="bg-[#1E1E1E] p-4 rounded-2xl border border-gray-800 shadow-sm">
+                    <h4 class="text-white font-bold text-sm mb-3 flex items-center gap-2">
+                        <span class="w-1 h-3 bg-yellow-500 rounded-full"></span>${week}주차
+                    </h4>
+                    <div class="flex justify-between gap-1">
+                `;
+
+                hwByWeek[week].forEach((item, index) => {
+                    const dayNum = index + 1;
+                    const dateString = item.date; // 예: "3/3(화)"
+                    
+                    // 로그 매칭 키 생성 (프론트 제출 형식과 동일하게 조립)
+                    const searchKey = `${week}주차 D${dayNum} (${dateString})`;
+                    const log = hwCompletion[searchKey];
+                    const isSubmitted = log && log.status === '완료';
+
+                    // 버튼 UI 결정
+                    let circleClass = isSubmitted 
+                        ? "bg-yellow-500 text-[#121212] shadow-[0_0_10px_rgba(234,179,8,0.4)] border-transparent" 
+                        : "bg-[#121212] text-gray-600 border-gray-700";
+
+                    weekHtml += `
+                        <div class="flex-1 flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border ${circleClass} transition-all">
+                                D${dayNum}
+                            </div>
+                            <span class="text-[10px] text-gray-500 mt-1 font-medium">${dateString.split('(')[0]}</span>
+                        </div>
+                    `;
+
+                    // 정답률 계산을 위한 데이터 누적 (학생이 '완료' 한 항목에 한해서만 계산)
+                    if (isSubmitted) {
+                        const count = parseInt(item.count) || 0;
+                        totalQ += count;
+
+                        let wCount = 0;
+                        if (log.questions && log.questions !== '없음') {
+                            wCount = log.questions.split(',').length;
+                        }
+                        totalW += wCount;
+
+                        // 단원명 추출 (예: "01.지수 B 9~35" -> "01.지수")
+                        const topicMatch = item.range.match(/\d+\.[가-힣A-Za-z]+/);
+                        const topic = topicMatch ? topicMatch[0] : "종합 단원";
+
+                        if (!topicStats[topic]) topicStats[topic] = { total: 0, wrong: 0 };
+                        topicStats[topic].total += count;
+                        topicStats[topic].wrong += wCount;
+                    }
+                });
+
+                weekHtml += `</div></div>`;
+                completionContainer.innerHTML += weekHtml;
+            });
+
+            // [영역 2] 정답률 표시 (학부모는 숨김 처리)
+            if (currentUser.role === 'student') {
+                accuracyWrapper.classList.remove('hidden');
+                
+                // 누적 정답률
+                let totalAccuracy = totalQ > 0 ? Math.round(((totalQ - totalW) / totalQ) * 100) : 0;
+                document.getElementById('dash-total-accuracy').textContent = `${totalAccuracy}%`;
+
+                // 단원별 정답률
+                let topicHtml = '';
+                const topics = Object.keys(topicStats).sort();
+                
+                if (topics.length === 0) {
+                    topicHtml = '<p class="text-gray-500 text-xs text-center py-2">아직 제출 완료된 과제가 없어 분석할 수 없습니다.</p>';
+                } else {
+                    topics.forEach(topic => {
+                        const stats = topicStats[topic];
+                        const acc = stats.total > 0 ? Math.round(((stats.total - stats.wrong) / stats.total) * 100) : 0;
+                        
+                        // 정답률에 따른 바 색상
+                        let barColor = "bg-blue-500";
+                        if (acc < 60) barColor = "bg-red-500";
+                        else if (acc < 80) barColor = "bg-yellow-500";
+
+                        topicHtml += `
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <span class="text-gray-300 font-medium">${topic}</span>
+                                    <span class="text-white font-bold">${acc}%</span>
+                                </div>
+                                <div class="w-full bg-[#121212] rounded-full h-2 shadow-inner border border-gray-800">
+                                    <div class="${barColor} h-2 rounded-full bar-fill" style="width: ${acc}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                accuracyContainer.innerHTML = topicHtml;
+            } else {
+                accuracyWrapper.classList.add('hidden');
+            }
+        }
+
+        // ==========================================
+        // 6. 리포트 인포그래픽 모달
         // ==========================================
 
         function renderReports() {
@@ -821,7 +1016,6 @@
                 container.innerHTML = `<p class="text-gray-500 text-sm text-center py-10">발행된 리포트가 없습니다.</p>`; return;
             }
 
-            // ★ 최적화: 데이터를 JSON 문자열로 넘기지 않고 글로벌 배열에 저장 후 인덱스 참조 (오류 완벽 방지)
             windowReportsData = [...myReports].reverse();
 
             windowReportsData.forEach((rep, idx) => {
@@ -864,7 +1058,6 @@
             }
         }
 
-        // ★ 최적화: 외부로 분리된 난이도 뱃지 렌더링 함수
         function getDiffBadge(level) {
             let style = "bg-gray-800 text-gray-400 border-gray-700"; 
             if (level === '하') style = "bg-green-500/20 text-green-400 border-green-500/30";
@@ -1023,7 +1216,7 @@
         }
 
         // ==========================================
-        // 6. 숙제 렌더링 및 모달 처리
+        // 7. 숙제 렌더링 및 입력 팝업
         // ==========================================
         function renderHomeworkList() {
             const container = document.getElementById('my-homework-container');
@@ -1052,8 +1245,9 @@
                     const uniqueId = `hw-w${week}-d${index+1}`;
                     if (!taskStore[uniqueId]) taskStore[uniqueId] = { isDone: false, qs: [], memo: '' };
 
+                    // 날짜 스트링(3/3(화))도 함께 모달에 전달
                     html += `
-                        <div onclick="openTaskModal('${uniqueId}', '${item.date}', '${item.range}', '${targetClass}', '${tData.check}', '${classTheme}')" 
+                        <div onclick="openTaskModal('${uniqueId}', '${item.date}', '${item.range}', '${targetClass}', '${tData.check}', '${classTheme}', ${week}, ${index+1})" 
                              class="flex justify-between items-center p-3 hover:bg-[#252525] rounded-xl cursor-pointer transition-all group active:scale-[0.98]">
                             <div class="flex items-center gap-3">
                                 <span class="w-9 h-9 rounded-full ${listIconClass} bg-opacity-10 flex items-center justify-center font-bold text-sm border border-transparent transition-colors">D${index+1}</span>
@@ -1074,8 +1268,8 @@
             container.innerHTML = html;
         }
 
-        function openTaskModal(id, date, range, className, checkClass, themeName) {
-            currentTask = { id, date, range, className, checkClass, themeName: themeName || 'blue' };
+        function openTaskModal(id, date, range, className, checkClass, themeName, weekNum, dayNum) {
+            currentTask = { id, date, range, className, checkClass, themeName: themeName || 'blue', weekNum, dayNum };
             const data = taskStore[id];
             const tData = themeMapper[currentTask.themeName] || themeMapper['blue'];
 
@@ -1198,10 +1392,13 @@
                     }
                 }
 
+                // 서버가 "1주차 D1 (3/3(화))" 형식으로 날짜를 식별할 수 있게 조립 전송
+                const formattedDateStr = `${currentTask.weekNum}주차 D${currentTask.dayNum} (${currentTask.date})`;
+
                 const payload = {
                     name: studentName,
                     className: currentTask.className,
-                    date: currentTask.date,
+                    date: formattedDateStr,
                     range: currentTask.range,
                     status: isDone ? "완료" : "미완료",
                     questions: qsText,
@@ -1275,7 +1472,7 @@
         }
 
         // ==========================================
-        // 7. 기타 유틸리티 함수 및 모달
+        // 8. 기타 유틸리티 함수 및 모달
         // ==========================================
 
         function showError(title, msg) {
@@ -1407,9 +1604,7 @@
             document.getElementById('photoUploadBtn').classList.remove('hidden');
         }
 
-        // ==========================================
-        // 8. PWA 배너 관련
-        // ==========================================
+        // PWA 배너 관련
         window.addEventListener('beforeinstallprompt', (e) => { 
             e.preventDefault(); 
             deferredPrompt = e; 
