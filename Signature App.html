@@ -17,7 +17,8 @@
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
-          serviceWorkerPath: "sw.js", // PWA 서비스 워커와 통합된 파일 경로 명시
+          serviceWorkerPath: "/Signature/sw.js", // ★ 핵심: 파일의 절대 경로를 짚어줍니다.
+          serviceWorkerParam: { scope: "/Signature/" }, // ★ 핵심: 하위 폴더에서만 작동하도록 범위를 강제합니다.
           notifyButton: {
             enable: false, // 원시그널 기본 종 모양(Bell) 비활성화
           },
