@@ -10,22 +10,32 @@
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
     
-    <!-- ★ 수정: 수동 서비스 워커(sw.js) 등록 코드 완전 삭제 (OneSignal에 전적으로 위임) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
+            });
+        }
+    </script>
     
-    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 ====== -->
+    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 (하위 폴더 구조 완벽 대응) ====== -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
-          serviceWorkerPath: "sw.js", // 원시그널이 직접 sw.js를 컨트롤하도록 설정
+          
+          // ★ 핵심 변경 사항: 경로와 범위를 하위 폴더(/Signature/)로 강제 고정합니다.
+          serviceWorkerPath: "/Signature/sw.js", 
+          serviceWorkerParam: { scope: "/Signature/" }, 
+          
           notifyButton: {
             enable: false, // 원시그널 기본 종 모양(Bell) 비활성화
           },
           promptOptions: {
               slidedown: {
-                  prompts: [] // 원시그널 기본 팝업 비활성화
+                  prompts: [] // 원시그널 기본 슬라이드 다운 팝업 비활성화
               }
           }
         });
