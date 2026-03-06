@@ -1,4 +1,11 @@
-<!-- ====== PWA 설정을 위한 태그 ====== -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>한호빈T Signature 관리 어플리케이션</title>
+
+    <!-- ====== PWA 설정을 위한 태그 ====== -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
@@ -165,7 +172,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v1.9.5 <span class="font-normal text-gray-600">(현황판 연동 최적화)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v2.0 <span class="font-normal text-gray-600">(완벽 안정화 배포)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -257,7 +264,7 @@
     </div>
 
     <!-- ==========================================
-         [모달 영역]
+         [모달 영역 - 최상위 뎁스에 각각 1개씩 존재]
     =========================================== -->
     
     <!-- 현황판 상세 조회 모달 -->
@@ -407,8 +414,10 @@
                     <svg class="animate-spin h-6 w-6 text-yellow-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     <span class="text-xs font-bold text-yellow-500">데이터를 안전하게 전송 중입니다...</span>
                 </div>
+                <!-- ★ 요청하신 버튼 문구 변경: "제출하기" -->
                 <button onclick="submitDataAndCopy()" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg">제출하기</button>
                 <div class="flex gap-2">
+                    <!-- ★ 추가하신 폼 내용 초기화 버튼 -->
                     <button onclick="resetTaskSelections()" class="w-1/3 bg-gray-800 hover:bg-red-900/30 hover:text-red-400 hover:border-red-500/50 text-gray-400 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">↻ 초기화</button>
                     <button onclick="saveAndCloseTaskModal()" class="w-2/3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">임시 저장하고 닫기</button>
                 </div>
@@ -444,7 +453,8 @@
                 <button onclick="finalKakaoRedirect()" id="btnKakaoOpen" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg hidden">
                     카카오톡 바로 열기
                 </button>
-                <button onclick="closeCustomAlert()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">
+                <!-- ★ 확인 버튼 클릭 시 정상적으로 창이 닫히고 터치가 풀리도록 복구됨 -->
+                <button onclick="closeCustomAlert()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg mt-2">
                     확인 (창 닫기)
                 </button>
             </div>
@@ -597,13 +607,13 @@
     </div>
 
     <!-- ==========================================
-         [통합 스크립트 블록 - 꼬임 현상 원천 차단]
+         [통합 스크립트 블록]
     =========================================== -->
     <script>
         // ------------------------------------------
         // 1. 전역 변수 및 PWA 설정
         // ------------------------------------------
-        // ★ 강사님이 직접 수정하신 최신 URL로 영구 동기화 완료!
+        // 강사님의 최신 URL 영구 적용 완료
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
@@ -628,14 +638,14 @@
         };
 
         // ------------------------------------------
-        // [핵심 해결] 문자열 공백 완벽 제거 함수
+        // 문자열 공백 제거 함수 (매칭 오류 방지)
         // ------------------------------------------
         function normalizeKey(str) {
             return str ? String(str).replace(/\s+/g, '') : '';
         }
 
         // ------------------------------------------
-        // [핵심 해결] 아이디 기반 최신 기록 매칭 공통 함수 (리스트 & 현황판 100% 동기화)
+        // [해결 3, 4] 아이디 기반 최신 기록 무조건 덮어쓰기 로직
         // ------------------------------------------
         function getMyHomeworkCompletion(targetId, targetName) {
             const hwCompletion = {};
@@ -643,19 +653,15 @@
             const myLogs = (globalDB.hwLogs || []).filter(log => {
                 const logUserId = log.userId ? String(log.userId).trim() : "";
                 if (logUserId !== "") {
-                    return logUserId === targetId; // 아이디가 있으면 무조건 아이디로 매칭
+                    return logUserId === targetId; 
                 }
-                return String(log.name).trim() === targetName; // 과거 데이터 등 아이디가 없을 땐 이름으로 폴백 매칭
+                return String(log.name).trim() === targetName; 
             });
 
+            // 배열을 순서대로 돌기 때문에, 가장 마지막(최신) 데이터가 무조건 덮어씌워짐.
             myLogs.forEach(log => {
                 if (log.date) {
                     const key = normalizeKey(log.date);
-                    // 여러 번 제출 시: 기존에 '완료'로 제출한 이력이 있다면, 나중에 실수로 '미완료'로 제출한 기록이 덮어쓰지 못하도록 방어
-                    if (hwCompletion[key] && hwCompletion[key].status === '완료' && log.status !== '완료') {
-                        return; // 덮어쓰지 않고 기존 '완료' 기록 유지
-                    }
-                    // 그 외에는 항상 최신 기록으로 덮어씌움
                     hwCompletion[key] = log;
                 }
             });
@@ -747,11 +753,10 @@
         async function refreshData() {
             await fetchDatabase(); 
             if (currentUser && currentUser.id && globalDB && globalDB.users) {
-                // ★ 버그 수정: 업데이트 중 아이디(ID)가 증발하지 않도록 안전하게 백업 후 재부여
                 const currentId = currentUser.id; 
                 if (globalDB.users[currentId]) {
                     currentUser = globalDB.users[currentId];
-                    currentUser.id = currentId; // 백업해둔 ID를 잃어버리지 않게 꽉 묶어줍니다.
+                    currentUser.id = currentId; 
                 }
                 applyLoginState(); 
             }
@@ -865,24 +870,17 @@
             if (currentUser.role === 'student') renderHomeworkList();
             renderDashboard(); 
             
-            // ====== 🔔 로그인 성공 시 OneSignal 식별 및 권한 요청 ======
+            // ====== 🔔 로그인 성공 시 OneSignal 식별 및 태그 부여 ======
             if (window.OneSignalDeferred) {
                 window.OneSignalDeferred.push(async function(OneSignal) {
-                    // 1. 로그인한 아이디로 기기 연결 (나중에 아이디로 특정해서 보낼 수 있음)
                     await OneSignal.login(currentUser.id);
-                    
-                    // 2. 그룹 발송용 태그(Tag) 달아주기 (예: 수직반 전체 보내기용)
                     await OneSignal.User.addTags({
                         role: currentUser.role,
                         className: currentUser.className,
                         name: currentUser.name
                     });
-                    
-                    // 3. 브라우저 알림 권한 묻기 (처음 한 번만 뜸)
-                    await OneSignal.slidedown.promptPush();
                 });
             }
-            // =========================================================
         }
 
         function logout() {
@@ -893,13 +891,11 @@
             document.getElementById('loginPw').value = '';
             document.getElementById('app-header').classList.add('hidden-screen');
             
-            // ====== 🔔 로그아웃 시 알림 연결 해제 ======
             if (window.OneSignalDeferred) {
                 window.OneSignalDeferred.push(async function(OneSignal) {
                     await OneSignal.logout();
                 });
             }
-            // ==========================================
             
             showScreenOnly('login');
             history.pushState({ screen: 'login' }, "", "#login");
@@ -1011,7 +1007,6 @@
                 return;
             }
 
-            // ★ 공통 함수로 최신 매칭 데이터 100% 동기화 로드
             const hwCompletion = getMyHomeworkCompletion(targetId, targetName);
 
             const hwByWeek = {};
@@ -1043,7 +1038,6 @@
                     let circleClass = isSubmitted ? "bg-yellow-500 text-[#121212] shadow-[0_0_10px_rgba(234,179,8,0.4)] border-transparent" : "bg-[#121212] text-gray-600 border-gray-700";
                     let statusBadge = isSubmitted ? `<span class="mt-1 text-[10px] text-green-400 font-bold bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">제출완료</span>` : `<span class="mt-1 text-[10px] text-gray-500 font-bold">미제출</span>`;
 
-                    // ★ 특수문자가 포함된 문자열을 안전하게 이스케이프 처리하여 onclick 에러 원천 차단
                     const safeRange = item.range ? String(item.range).replace(/'/g, "\\'") : '';
                     const safeDate = item.date ? String(item.date).replace(/'/g, "\\'") : '';
                     const logQs = log && log.questions ? String(log.questions).replace(/'/g, "\\'").replace(/\n/g, " ") : '없음';
@@ -1397,7 +1391,7 @@
             const targetId = String(currentUser.id).trim();
             const targetName = String(currentUser.name).trim(); 
             
-            // ★ 공통 함수로 최신 매칭 데이터 100% 동기화 로드
+            // 공통 함수로 최신 매칭 데이터 로드
             const hwCompletion = getMyHomeworkCompletion(targetId, targetName);
 
             const hwByWeek = {};
@@ -1427,7 +1421,6 @@
                     let checkIconOpacity = taskStore[uniqueId].isDone ? 'opacity-100' : 'opacity-0';
                     let boxBorderClass = taskStore[uniqueId].isDone ? `${tData.check} border-transparent` : 'border-gray-600 bg-transparent';
 
-                    // HTML 렌더링 시에도 에러가 발생하지 않도록 이스케이프 처리
                     const safeRange = item.range ? String(item.range).replace(/'/g, "\\'") : '';
                     const safeDate = item.date ? String(item.date).replace(/'/g, "\\'") : '';
 
@@ -1534,7 +1527,7 @@
             closeTaskModal();
         }
 
-        // [초기화] 기능: 입력 데이터 및 UI 완전 복구
+        // [추가 기능] 폼 작성 내용 및 사진 완전 초기화
         function resetTaskSelections() {
             if(!confirm("체크한 문항과 사진, 메모를 모두 초기화하시겠습니까?")) return;
             
@@ -1585,7 +1578,7 @@
             });
         }
 
-        // 서버 데이터 전송 로직
+        // 서버 전송 로직
         async function submitDataAndCopy() {
             const isDone = document.getElementById('modalStatusCheck').checked;
             if(!isDone && currentSelectedQs.size === 0 && selectedPhotos.length === 0) {
@@ -1698,7 +1691,7 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // ★ 모달을 완전히 닫고 화면 스크롤 잠금을 완벽히 해제
+        // ★ 해결: 모달 닫기 시 overflow 속성을 지워서 스크롤(터치) 잠금을 확실하게 해제
         function closeCustomAlert() { 
             document.getElementById('customAlertModal').classList.add('hidden'); 
             document.body.style.overflow = '';
@@ -1707,22 +1700,6 @@
         function finalKakaoRedirect() {
             closeCustomAlert();
             window.open("https://open.kakao.com/o/s9qHTzTh", "_blank");
-        }
-
-        // --- 🔔 푸시 알림 커스텀 모달 로직 ---
-        function closePushModal() {
-            document.getElementById('pushPermissionModal').classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-
-        function requestNativePush() {
-            closePushModal();
-            if (window.OneSignalDeferred) {
-                OneSignalDeferred.push(async function(OneSignal) {
-                    // 폼을 밀어내는 가짜 UI 없이 기기(스마트폰) 자체의 순정 권한 창만 띄움
-                    await OneSignal.Notifications.requestPermission();
-                });
-            }
         }
 
         // ------------------------------------------
