@@ -128,8 +128,8 @@
             
             <div class="flex justify-between items-end mt-2">
                 <p id="userClassInfo" class="text-sm text-gray-400 font-medium"></p>
-                <!-- ★ [신규] 종 모양을 대체하는 영구적인 알림 수동 설정 버튼 -->
-                <button onclick="requestPushPermission()" class="text-[11px] bg-gray-800 text-blue-400 px-2.5 py-1.5 rounded-lg border border-gray-700 hover:text-white hover:bg-blue-600 transition-all flex items-center gap-1.5 shadow-sm font-bold">
+                <!-- ★ 수정: 즉시 알림 창을 띄우지 않고, 예쁜 배너를 보여주도록 함수 변경(showPushBanner) -->
+                <button onclick="showPushBanner()" class="text-[11px] bg-gray-800 text-blue-400 px-2.5 py-1.5 rounded-lg border border-gray-700 hover:text-white hover:bg-blue-600 transition-all flex items-center gap-1.5 shadow-sm font-bold">
                     🔔 알림 설정
                 </button>
             </div>
@@ -957,6 +957,21 @@
             // 배너 닫기 누르면 해당 아이디에 대해서만 기억
             localStorage.setItem('hideSignaturePushBanner_' + currentUser.id, 'true'); 
             document.getElementById('pushSubscribeBanner').classList.add('hidden');
+        }
+
+        // ★ 신규 추가: 종 모양 버튼을 누르면 배너를 다시 띄우는 함수
+        function showPushBanner() {
+            if (!currentUser) return;
+            
+            // 사용자가 명시적으로 다시 열었으므로, 기존의 '숨김 기억(캐시)'을 지워줍니다.
+            localStorage.removeItem('hideSignaturePushBanner_' + currentUser.id); 
+            
+            const banner = document.getElementById('pushSubscribeBanner');
+            if (banner) {
+                banner.classList.remove('hidden'); // 배너 다시 보이기
+                // 배너 위치로 살짝 스크롤 포커스 이동 (자연스러운 UX)
+                banner.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            }
         }
 
         function requestPushPermission() {
