@@ -18,14 +18,22 @@
         }
     </script>
     
-    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 ====== -->
+    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 (통합 sw.js 사용 및 기본 UI 완전 배제) ====== -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
-          serviceWorkerPath: "sw.js" // ★ 추가: 기존 PWA 서비스 워커 파일로 통합 연결
+          serviceWorkerPath: "sw.js", // PWA 서비스 워커와 통합된 파일 경로 명시
+          notifyButton: {
+            enable: false, // 원시그널 기본 종 모양(Bell) 비활성화
+          },
+          promptOptions: {
+              slidedown: {
+                  prompts: [] // 원시그널 기본 슬라이드 다운 팝업 비활성화 (커스텀 배너 사용)
+              }
+          }
         });
       });
     </script>
@@ -133,7 +141,7 @@
             </div>
         </div>
 
-        <!-- 푸시 알림 유도 배너 -->
+        <!-- ★ 푸시 알림 유도 배너 (부드러운 애니메이션 적용, 우리만의 UI) -->
         <div id="pushBannerWrapper" class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0 transform -translate-y-2">
             <div id="pushSubscribeBanner" class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-6 shadow-lg border border-blue-500/30 relative">
                 <button onclick="dismissPushBanner()" class="absolute top-2 right-2 text-blue-200 hover:text-white p-1 transition-colors">
@@ -198,7 +206,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v2.2.1 <span class="font-normal text-gray-600">(UI 최적화)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v2.3 <span class="font-normal text-gray-600">(알림 구독 최적화)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -449,7 +457,7 @@
         </div>
     </div>
 
-    <!-- ★ [신규] 초기화 재확인용 커스텀 모달 (브라우저 기본 confirm 팝업 대체) -->
+    <!-- 초기화 재확인용 커스텀 모달 -->
     <div id="resetConfirmModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeResetConfirmModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
@@ -909,6 +917,7 @@
                 });
             }
             
+            // 로그인 성공 시 알림 상태 체크하여 커스텀 배너 띄우기
             checkPushStatus();
         }
 
@@ -937,24 +946,25 @@
         }
 
         // ==========================================
-        // 🔔 푸시 알림: 배너 무한루프 오류 완전 해결
+        // 🔔 푸시 알림: 구독 및 커스텀 배너 완벽 통제 로직
         // ==========================================
         function checkPushStatus() {
             if (!currentUser) return;
             if (!window.OneSignalDeferred) return;
             
             OneSignalDeferred.push(async function(OneSignal) {
-                // OneSignal 최신 v16 API를 통해 정확한 권한 상태 확인
+                // OneSignal.Notifications.permission 으로 현재 권한 상태 확인
                 const isGranted = OneSignal.Notifications.permission;
+                // 학생이 명시적으로 "나중에(X)"를 누른 기록이 있는지 확인
                 const isDismissed = localStorage.getItem('hideSignaturePushBanner_' + currentUser.id) === 'true';
                 
                 if (isGranted || isDismissed) {
                     hideBannerSmoothly();
                 } else {
-                    setTimeout(() => { showBannerSmoothly(); }, 100);
+                    setTimeout(() => { showBannerSmoothly(); }, 300);
                 }
 
-                // 권한 변경 감지 (알림 허용하는 순간 배너 숨김)
+                // 권한 변경 감지 (알림 켜는 순간 배너 숨김)
                 OneSignal.Notifications.addEventListener("permissionChange", function(permission) {
                     if (permission) hideBannerSmoothly();
                 });
@@ -977,16 +987,17 @@
             }
         }
 
+        // [X] 닫기 버튼 누를 때
         function dismissPushBanner() {
             if (!currentUser) return;
-            // 배너 [X] 누르면 영구 닫힘 처리
             localStorage.setItem('hideSignaturePushBanner_' + currentUser.id, 'true'); 
             hideBannerSmoothly();
         }
 
+        // [알림 설정] 메뉴(버튼) 누를 때
         function showPushBanner() {
             if (!currentUser) return;
-            // 수동으로 [🔔 알림 설정] 버튼을 누른 경우, 닫힘 기억 삭제 후 배너 오픈
+            // 닫힘 기록 지우고 배너 재오픈
             localStorage.removeItem('hideSignaturePushBanner_' + currentUser.id); 
             showBannerSmoothly();
             
@@ -994,34 +1005,32 @@
             if (wrapper) {
                 setTimeout(() => {
                     wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-                }, 150);
+                }, 200);
             }
         }
 
-        // ★ [수정됨] 설정하기 버튼 동작 로직 완벽 개선
+        // ★ [설정하기] 버튼 누를 때: 가장 직관적인 권한 요청
         function requestPushPermission() {
             if (!currentUser) return;
 
-            // 1. 이미 스마트폰(브라우저) 설정에서 영구 차단(denied)을 한 학생인지 확인
+            // 1. 이미 스마트폰(브라우저)에서 알림을 '차단'해 놓은 경우 안내
             if (window.Notification && Notification.permission === 'denied') {
-                alert("스마트폰 또는 브라우저 설정에서 알림이 강제로 차단되어 있습니다.\n[설정] > [앱 권한] > [알림] 메뉴에서 직접 '허용'으로 변경해 주셔야 합니다.");
+                alert("스마트폰 또는 브라우저 설정에서 알림이 강제로 차단되어 있습니다.\n\n해결방법: [브라우저 주소창 왼쪽 자물쇠 아이콘] 또는 폰의 [설정] > [앱 권한] > [알림] 메뉴에서 '허용'으로 변경해 주세요.");
                 hideBannerSmoothly();
                 return;
             }
             
-            // 2. 권한 요청 창 띄우기
+            // 2. 권한 팝업을 띄움과 동시에 우리 커스텀 배너는 자연스럽게 숨김
+            hideBannerSmoothly();
+
             if (window.OneSignalDeferred) {
                 OneSignalDeferred.push(async function(OneSignal) {
                     try {
-                        // 브라우저 순정 권한 팝업을 띄움
+                        // 브라우저의 순정 권한 허용/차단 팝업을 띄움
                         await OneSignal.Notifications.requestPermission();
-                        
-                        // 사용자가 '허용' 또는 '차단'을 눌러 팝업이 닫히면 배너를 부드럽게 숨김
-                        // (단, X 버튼을 누른 게 아니므로 localStorage에 영구 숨김 처리는 하지 않음 -> 나중에 수동으로 다시 시도 가능)
-                        hideBannerSmoothly();
-                        
+                        // 팝업 응답 후의 처리는 이벤트 리스너(permissionChange)가 담당함
                     } catch (error) {
-                        console.error("알림 권한 요청 중 오류 발생:", error);
+                        console.error("푸시 권한 요청 오류:", error);
                     }
                 });
             }
@@ -1651,7 +1660,6 @@
             closeTaskModal();
         }
 
-        // ★ [개선 1] 초기화 커스텀 팝업 호출 함수
         function resetTaskSelections() {
             document.getElementById('resetConfirmModal').classList.remove('hidden');
         }
@@ -1661,7 +1669,7 @@
         }
 
         function executeResetTask() {
-            closeResetConfirmModal(); // 커스텀 모달 닫기
+            closeResetConfirmModal(); 
             
             document.getElementById('modalStatusCheck').checked = false;
             document.getElementById('modalStatusCheck').dispatchEvent(new Event('change'));
@@ -1962,40 +1970,6 @@
             document.getElementById('photoUploadBtn').classList.remove('hidden');
         }
 
-        // ==========================================
-        // ★ [개선 2] PWA 앱 설치 로직 완벽 복구
-        // ==========================================
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-
-        function hideInstallBanner() {
-            const banner = document.getElementById('pwaInstallBanner');
-            if (banner) banner.classList.add('translate-y-full');
-        }
-
-        // 화면 로딩이 완료된 후 버튼에 이벤트 리스너 부착
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnInstallPwa = document.getElementById('btnInstallPwa');
-            if (btnInstallPwa) {
-                btnInstallPwa.addEventListener('click', async () => {
-                    if (isIos()) {
-                        // 아이폰인 경우 수동 설치 가이드 페이지로 이동
-                        window.location.href = './Install.html';
-                    } else if (deferredPrompt) {
-                        // 안드로이드/PC인 경우 즉시 네이티브 설치 팝업 호출
-                        hideInstallBanner();
-                        deferredPrompt.prompt();
-                        const { outcome } = await deferredPrompt.userChoice;
-                        deferredPrompt = null;
-                    } else {
-                        // 이미 설치되었거나 지원하지 않는 브라우저일 경우
-                        window.location.href = './Install.html';
-                    }
-                });
-            }
-        });
     </script>
     
     <!-- 보안 설정 -->
