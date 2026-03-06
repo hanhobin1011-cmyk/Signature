@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>한호빈T Signature 관리 어플리케이션</title>
-
+<!-- ====== PWA 설정을 위한 태그 ====== -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
@@ -16,6 +10,18 @@
             });
         }
     </script>
+    
+    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 추가 ====== -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
+        });
+      });
+    </script>
+    <!-- ================================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
@@ -858,6 +864,25 @@
             renderReports();
             if (currentUser.role === 'student') renderHomeworkList();
             renderDashboard(); 
+            
+            // ====== 🔔 로그인 성공 시 OneSignal 식별 및 권한 요청 ======
+            if (window.OneSignalDeferred) {
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    // 1. 로그인한 아이디로 기기 연결 (나중에 아이디로 특정해서 보낼 수 있음)
+                    await OneSignal.login(currentUser.id);
+                    
+                    // 2. 그룹 발송용 태그(Tag) 달아주기 (예: 수직반 전체 보내기용)
+                    await OneSignal.User.addTags({
+                        role: currentUser.role,
+                        className: currentUser.className,
+                        name: currentUser.name
+                    });
+                    
+                    // 3. 브라우저 알림 권한 묻기 (처음 한 번만 뜸)
+                    await OneSignal.slidedown.promptPush();
+                });
+            }
+            // =========================================================
         }
 
         function logout() {
@@ -867,6 +892,15 @@
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             document.getElementById('app-header').classList.add('hidden-screen');
+            
+            // ====== 🔔 로그아웃 시 알림 연결 해제 ======
+            if (window.OneSignalDeferred) {
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.logout();
+                });
+            }
+            // ==========================================
+            
             showScreenOnly('login');
             history.pushState({ screen: 'login' }, "", "#login");
         }
