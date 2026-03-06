@@ -10,32 +10,20 @@
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
     
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
-            });
-        }
-    </script>
-    
-    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 (하위 폴더 구조 완벽 대응) ====== -->
+    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 (통합 sw.js 사용 및 기본 UI 완전 배제) ====== -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
-          
-          // ★ 핵심 변경 사항: 경로와 범위를 하위 폴더(/Signature/)로 강제 고정합니다.
-          serviceWorkerPath: "/Signature/sw.js", 
-          serviceWorkerParam: { scope: "/Signature/" }, 
-          
+          serviceWorkerPath: "sw.js", // PWA 서비스 워커와 통합된 파일 경로 명시
           notifyButton: {
             enable: false, // 원시그널 기본 종 모양(Bell) 비활성화
           },
           promptOptions: {
               slidedown: {
-                  prompts: [] // 원시그널 기본 슬라이드 다운 팝업 비활성화
+                  prompts: [] // 원시그널 기본 슬라이드 다운 팝업 비활성화 (커스텀 배너 사용)
               }
           }
         });
@@ -138,13 +126,14 @@
             
             <div class="flex justify-between items-end mt-2">
                 <p id="userClassInfo" class="text-sm text-gray-400 font-medium"></p>
+                <!-- 영구적인 알림 수동 설정 버튼 -->
                 <button onclick="showPushBanner()" class="text-[11px] bg-gray-800 text-blue-400 px-2.5 py-1.5 rounded-lg border border-gray-700 hover:text-white hover:bg-blue-600 transition-all flex items-center gap-1.5 shadow-sm font-bold">
                     🔔 알림 설정
                 </button>
             </div>
         </div>
 
-        <!-- 푸시 알림 유도 배너 -->
+        <!-- 푸시 알림 유도 배너 (부드러운 애니메이션 적용) -->
         <div id="pushBannerWrapper" class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0 transform -translate-y-2">
             <div id="pushSubscribeBanner" class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-6 shadow-lg border border-blue-500/30 relative">
                 <button onclick="dismissPushBanner()" class="absolute top-2 right-2 text-blue-200 hover:text-white p-1 transition-colors">
@@ -209,7 +198,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v2.4 <span class="font-normal text-gray-600">(알림 검증 및 버그픽스)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v2.5 <span class="font-normal text-gray-600">(안정화 배포)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -637,7 +626,7 @@
         </div>
     </div>
 
-    <!-- PWA 앱 설치 유도 배너 -->
+    <!-- PWA 앱 설치 유도 배너 (수정됨: onclick 로직으로 직접 연결) -->
     <div id="pwaInstallBanner" class="fixed bottom-0 left-0 w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 shadow-[0_-5px_20px_rgba(0,0,0,0.5)] flex justify-between items-center z-[80] transform translate-y-full transition-transform duration-500 rounded-t-2xl md:rounded-none">
         <div class="flex items-center gap-3">
             <div class="bg-white/20 p-2.5 rounded-xl">
@@ -649,8 +638,12 @@
             </div>
         </div>
         <div class="flex gap-2 items-center">
-            <button id="btnInstallPwa" class="bg-[#FEE500] text-[#191919] px-4 py-2 rounded-xl font-bold text-sm shadow hover:bg-yellow-400 transition-colors whitespace-nowrap">앱 설치</button>
-            <button onclick="hideInstallBanner()" class="text-white/60 hover:text-white p-1 ml-1 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <button onclick="handleInstallClick()" class="bg-[#FEE500] text-[#191919] px-4 py-2 rounded-xl font-bold text-sm shadow hover:bg-yellow-400 transition-colors whitespace-nowrap">
+                앱 설치
+            </button>
+            <button onclick="hideInstallBanner()" class="text-white/60 hover:text-white p-1 ml-1 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
     </div>
 
@@ -658,9 +651,6 @@
          [통합 스크립트 블록]
     =========================================== -->
     <script>
-        // ------------------------------------------
-        // 1. 전역 변수 및 PWA 설정
-        // ------------------------------------------
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
@@ -690,7 +680,6 @@
 
         function getMyHomeworkCompletion(targetId, targetName) {
             const hwCompletion = {};
-            
             const myLogs = (globalDB.hwLogs || []).filter(log => {
                 const logUserId = log.userId ? String(log.userId).trim() : "";
                 if (logUserId !== "") {
@@ -712,12 +701,11 @@
             await fetchDatabase();
             checkAutoLogin();
             
-            const pwaInstallBanner = document.getElementById('pwaInstallBanner');
-            const btnInstallPwa = document.getElementById('btnInstallPwa');
+            // PWA 설치 배너 트리거
             if (!isStandalone) {
                 setTimeout(() => {
-                    if (isIos() && btnInstallPwa) btnInstallPwa.textContent = '설치 방법'; 
-                    if (pwaInstallBanner) pwaInstallBanner.classList.remove('translate-y-full');
+                    const banner = document.getElementById('pwaInstallBanner');
+                    if (banner) banner.classList.remove('translate-y-full');
                 }, 2000);
             }
         }
@@ -799,9 +787,6 @@
             }
         }
 
-        // ------------------------------------------
-        // 3. 네비게이션 및 로그인 로직
-        // ------------------------------------------
         const screens = ['login', 'main', 'homework', 'report', 'schedule', 'board', 'dashboard'];
         function showScreenOnly(targetScreen) {
             screens.forEach(s => {
@@ -947,14 +932,13 @@
         }
 
         // ==========================================
-        // 🔔 푸시 알림: 실제 구독(optedIn) 여부 검증 및 커스텀 제어
+        // 🔔 푸시 알림
         // ==========================================
         function checkPushStatus() {
             if (!currentUser) return;
             if (!window.OneSignalDeferred) return;
             
             OneSignalDeferred.push(async function(OneSignal) {
-                // 브라우저 허용 여부가 아니라 "실제 푸시 구독(Token 발급)"이 완료되었는지 확인
                 const isOptedIn = OneSignal.User.PushSubscription.optedIn;
                 const isDismissed = localStorage.getItem('hideSignaturePushBanner_' + currentUser.id) === 'true';
                 
@@ -964,7 +948,6 @@
                     setTimeout(() => { showBannerSmoothly(); }, 300);
                 }
 
-                // 구독 상태 변경 감지 (허용 후 실제 토큰이 발급되는 순간)
                 OneSignal.User.PushSubscription.addEventListener("change", function(subscription) {
                     if (subscription.current.optedIn) {
                         hideBannerSmoothly();
@@ -1008,11 +991,9 @@
             }
         }
 
-        // ★ 설정하기 클릭: 직관적인 순정 팝업 띄우기 및 구독 시도
         function requestPushPermission() {
             if (!currentUser) return;
             
-            // 배너 [설정하기] 클릭 시 중복 팝업을 막기 위해 우선 배너는 부드럽게 숨김
             localStorage.setItem('hideSignaturePushBanner_' + currentUser.id, 'true');
             hideBannerSmoothly();
 
@@ -1024,12 +1005,38 @@
             if (window.OneSignalDeferred) {
                 OneSignalDeferred.push(async function(OneSignal) {
                     try {
-                        // 브라우저의 순정 알림 권한 요청 (이후 결과 처리는 change 이벤트 리스너가 담당)
                         await OneSignal.Notifications.requestPermission();
                     } catch (error) {
                         console.error("푸시 권한 요청 오류:", error);
                     }
                 });
+            }
+        }
+
+        // ==========================================
+        // 🚀 PWA 앱 설치 로직 (중복 에러 완벽 해결)
+        // ==========================================
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function hideInstallBanner() {
+            const banner = document.getElementById('pwaInstallBanner');
+            if (banner) banner.classList.add('translate-y-full');
+        }
+
+        // 앱 설치 버튼을 눌렀을 때 호출되는 함수
+        async function handleInstallClick() {
+            if (isIos()) {
+                window.location.href = './Install.html';
+            } else if (deferredPrompt) {
+                hideInstallBanner();
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            } else {
+                window.location.href = './Install.html';
             }
         }
 
