@@ -159,7 +159,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v1.9 <span class="font-normal text-gray-600">(UX/오류 완전 수정)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v1.9 <span class="font-normal text-gray-600">(완벽 안정화 배포)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -289,7 +289,7 @@
                 </h3>
             </div>
             
-            <div class="overflow-y-auto flex-grow p-6 space-y-6 pb-20">
+            <div class="overflow-y-auto flex-grow p-6 space-y-6 pb-20 custom-scrollbar">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-[#121212] p-4 rounded-2xl border border-gray-800 flex flex-col justify-center items-center text-center shadow-inner">
                         <span class="text-[10px] text-gray-500 font-bold mb-1 uppercase tracking-widest">정규수업 출결</span>
@@ -357,7 +357,7 @@
                 <div><h3 id="modalDateTitle" class="text-xl font-bold text-white"></h3><p id="modalRangeDesc" class="text-sm text-gray-400 mt-1 font-medium"></p></div>
                 <button onclick="closeTaskModal()" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            <div class="space-y-4 mb-5 overflow-y-auto flex-grow pr-1">
+            <div class="space-y-4 mb-5 overflow-y-auto flex-grow pr-1 custom-scrollbar">
                 <div class="flex items-center justify-between bg-[#121212] p-3 rounded-lg border border-gray-800">
                     <span class="text-gray-300 font-bold text-sm">진행 상태</span>
                     <label class="relative inline-flex items-center cursor-pointer">
@@ -370,7 +370,7 @@
                     <label class="block text-gray-300 font-bold text-sm mb-2 flex flex-col md:flex-row md:items-center justify-between gap-2">
                         <div class="flex items-center gap-2"><span class="bg-yellow-500/20 text-yellow-500 p-1 rounded">❓</span>오답/질문 문항 <span class="text-xs text-gray-500 font-normal">(영상/손풀이 매칭)</span></div>
                     </label>
-                    <div id="modalQsContainer" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-3 bg-[#121212] border border-gray-700 rounded-lg"></div>
+                    <div id="modalQsContainer" class="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-3 bg-[#121212] border border-gray-700 rounded-lg custom-scrollbar"></div>
                 </div>
                 <div>
                     <label class="block text-gray-300 font-bold text-sm mb-2 flex items-center justify-between">
@@ -401,8 +401,8 @@
                     <svg class="animate-spin h-6 w-6 text-yellow-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     <span class="text-xs font-bold text-yellow-500">데이터를 안전하게 전송 중입니다...</span>
                 </div>
-                <!-- ★ 버튼 이름 변경됨: "제출하기" -->
-                <button onclick="submitDataToServer()" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg">제출하기</button>
+                <!-- ★ 버튼 문구 변경: 제출하기 -->
+                <button onclick="submitDataAndCopy()" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg">제출하기</button>
                 <button onclick="saveAndCloseTaskModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3.5 rounded-xl border border-gray-700">임시 저장하고 닫기</button>
             </div>
         </div>
@@ -411,7 +411,6 @@
     <!-- 제출 성공 및 영상 복습 모달 -->
     <div id="customAlertModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl animate-fade-in-up max-h-[90vh] overflow-y-auto flex flex-col">
-            
             <div class="w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20 flex-shrink-0">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
@@ -422,16 +421,23 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     내가 질문한 문항 해설영상
                 </p>
-                <div id="videoLinksContainer" class="flex flex-col gap-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar"></div>
+                <div id="videoLinksContainer" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar"></div>
             </div>
 
             <p class="text-gray-400 text-sm mb-4 leading-relaxed mt-2">
                 숙제 데이터와 사진이 서버에 안전하게 저장되었습니다.<br>지금 바로 해설 영상을 시청하며 복습해 보세요!
             </p>
             
-            <div class="flex-shrink-0">
-                <!-- ★ 확인 버튼 클릭 시 정상적으로 창이 닫히고 터치가 풀리도록 복구됨 -->
-                <button onclick="closeCustomAlert()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg mt-2">
+            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-6 flex-shrink-0 hidden" id="kakaoWarningBox">
+                <p id="customAlertWarning" class="text-yellow-500 text-xs font-bold leading-relaxed"></p>
+            </div>
+            
+            <div class="flex flex-col gap-2 flex-shrink-0">
+                <button onclick="finalKakaoRedirect()" id="btnKakaoOpen" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg hidden">
+                    카카오톡 바로 열기
+                </button>
+                <!-- ★ 확인 버튼 클릭 시 정상 작동 (닫힘 + 스크롤 복구) -->
+                <button onclick="closeCustomAlert()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">
                     확인 (창 닫기)
                 </button>
             </div>
@@ -584,7 +590,7 @@
     </div>
 
     <!-- ==========================================
-         [통합 스크립트 블록 - 꼬임 현상 원천 차단]
+         [통합 스크립트 블록]
     =========================================== -->
     <script>
         // ------------------------------------------
@@ -612,6 +618,13 @@
             purple: { badge: "bg-purple-500/20 text-purple-400 border-purple-500/30", text: "text-purple-400", bg: "bg-purple-500", check: "checked-purple", toggle: "peer-checked:bg-purple-500" },
             yellow: { badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", text: "text-yellow-400", bg: "bg-yellow-500", check: "checked-yellow", toggle: "peer-checked:bg-yellow-500" }
         };
+
+        // ------------------------------------------
+        // 문자열 공백 완벽 제거 함수 (오류 방지용)
+        // ------------------------------------------
+        function normalizeKey(str) {
+            return str ? str.replace(/\s+/g, '') : '';
+        }
 
         // ------------------------------------------
         // 2. 앱 구동 및 통신 로직
@@ -906,7 +919,7 @@
         }
 
         // ------------------------------------------
-        // 5. 숙제 현황판 대시보드 로직 (아이디 매칭)
+        // 5. 숙제 현황판 대시보드 로직 (아이디 기반 최신 기록 매칭)
         // ------------------------------------------
         function renderDashboard() {
             const completionContainer = document.getElementById('dash-completion-container');
@@ -916,11 +929,12 @@
             completionContainer.innerHTML = '';
             accuracyContainer.innerHTML = '';
 
-            let targetId = currentUser.id;
-            let targetName = currentUser.name;
+            let targetId = String(currentUser.id).trim();
+            let targetName = String(currentUser.name).trim();
+            
             if (currentUser.role === 'parent') {
-                 targetId = currentUser.childId;
-                 targetName = (currentUser.childId && globalDB.users[currentUser.childId]) ? globalDB.users[currentUser.childId].name : "자녀";
+                 targetId = currentUser.childId ? String(currentUser.childId).trim() : "";
+                 targetName = (currentUser.childId && globalDB.users[currentUser.childId]) ? String(globalDB.users[currentUser.childId].name).trim() : "자녀";
             }
             const targetClass = currentUser.className;
 
@@ -933,21 +947,29 @@
 
             const hwCompletion = {};
             
-            // ★ 최신 기록 유지 및 아이디 기반 매칭: 
-            // forEach를 통해 배열을 처음부터 끝까지 순회하므로, 가장 아래(최신)에 있는 기록이 hwCompletion 맵에 최종적으로 덮어씌워집니다.
+            // ★ 최신 기록 유지 및 아이디 기반 완벽 매칭
             const myLogs = (globalDB.hwLogs || []).filter(log => {
-                if (log.userId && log.userId.trim() !== "") {
-                    return log.userId.trim() === targetId;
+                const logUserId = log.userId ? String(log.userId).trim() : "";
+                if (logUserId !== "") {
+                    return logUserId === targetId;
                 }
-                return log.name.trim() === targetName; 
+                // 구 버전(아이디가 없는 옛날 데이터) 대비 이름 일치 폴백
+                return String(log.name).trim() === targetName; 
             });
             
+            // forEach는 배열의 순서대로 순회하므로, 여러 번 제출한 경우 가장 마지막(최신) 데이터로 덮어씌워집니다.
             myLogs.forEach(log => { 
-                hwCompletion[log.date] = log; 
+                if(log.date) {
+                    // 키 매칭 오류를 원천 차단하기 위해 모든 공백을 제거한 키를 사용합니다.
+                    hwCompletion[normalizeKey(log.date)] = log; 
+                }
             });
 
             const hwByWeek = {};
-            myHomework.forEach(item => { if(!hwByWeek[item.week]) hwByWeek[item.week] = []; hwByWeek[item.week].push(item); });
+            myHomework.forEach(item => { 
+                if(!hwByWeek[item.week]) hwByWeek[item.week] = []; 
+                hwByWeek[item.week].push(item); 
+            });
 
             let totalQ = 0, totalW = 0;
             const topicStats = {};
@@ -965,8 +987,10 @@
                     const dayNum = index + 1;
                     const dateString = item.date;
                     
+                    // 공백 제거 키를 이용한 완벽 매칭 조회
                     const searchKey = `${week}주차 D${dayNum} (${dateString})`;
-                    const log = hwCompletion[searchKey];
+                    const log = hwCompletion[normalizeKey(searchKey)];
+                    
                     const isSubmitted = log && log.status === '완료';
 
                     let circleClass = isSubmitted ? "bg-yellow-500 text-[#121212] shadow-[0_0_10px_rgba(234,179,8,0.4)] border-transparent" : "bg-[#121212] text-gray-600 border-gray-700";
@@ -1303,7 +1327,7 @@
         }
 
         // ------------------------------------------
-        // 7. 숙제 렌더링 및 입력 팝업 (서버 동기화 반영)
+        // 7. 숙제 렌더링 및 입력 팝업 (서버 동기화 완벽 반영)
         // ------------------------------------------
         function renderHomeworkList() {
             const container = document.getElementById('my-homework-container');
@@ -1321,15 +1345,20 @@
             }
 
             const hwCompletion = {};
-            const targetId = currentUser.id;
-            const targetName = currentUser.name; 
+            const targetId = String(currentUser.id).trim();
+            const targetName = String(currentUser.name).trim(); 
             
-            // ★ 아이디 기반 최신 기록 매칭 (forEach는 배열의 순서대로 순회하므로 결국 가장 마지막 데이터로 덮어씌워짐)
+            // ★ 아이디 기반 최신 기록 매칭 (배열 순회 시 자동으로 가장 마지막=최신 데이터로 덮어씌워짐)
             const myLogs = (globalDB.hwLogs || []).filter(log => {
-                if (log.userId && log.userId.trim() !== "") return log.userId.trim() === targetId;
-                return log.name.trim() === targetName.trim();
+                const logUserId = log.userId ? String(log.userId).trim() : "";
+                if (logUserId !== "") {
+                    return logUserId === targetId;
+                }
+                return String(log.name).trim() === targetName;
             });
-            myLogs.forEach(log => { hwCompletion[log.date] = log; });
+            myLogs.forEach(log => { 
+                if (log.date) hwCompletion[normalizeKey(log.date)] = log; 
+            });
 
             const hwByWeek = {};
             myHomework.forEach(item => { if(!hwByWeek[item.week]) hwByWeek[item.week] = []; hwByWeek[item.week].push(item); });
@@ -1343,8 +1372,9 @@
                     const dayNum = index + 1;
                     const uniqueId = `hw-w${week}-d${dayNum}`;
                     
+                    // 공백 제거 키를 이용한 완벽 매칭 조회
                     const searchKey = `${week}주차 D${dayNum} (${item.date})`;
-                    const log = hwCompletion[searchKey];
+                    const log = hwCompletion[normalizeKey(searchKey)];
                     const isSubmitted = log && log.status === '완료';
 
                     if (!taskStore[uniqueId]) {
@@ -1486,8 +1516,8 @@
             });
         }
 
-        // ★ 이름 입력 단계 생략 & userId(아이디) 백엔드 전송 추가
-        async function submitDataToServer() {
+        // ★ 버튼 문구 변경 및 아이디 기반 서버 전송 로직
+        async function submitDataAndCopy() {
             const isDone = document.getElementById('modalStatusCheck').checked;
             if(!isDone && currentSelectedQs.size === 0 && selectedPhotos.length === 0) {
                 showError("제출 불가", "완료 체크, 질문 문항, 또는 인증 사진 중 하나는 필수입니다.");
@@ -1497,10 +1527,10 @@
             const qsArr = Array.from(currentSelectedQs).sort(sortQuestions);
             const qsText = qsArr.length > 0 ? qsArr.join(', ') : '없음';
             const memo = document.getElementById('modalMemoInput').value.trim();
+            const stateText = isDone ? "완료" : "미완료";
             
-            // 로그인 된 정보에서 즉시 이름과 아이디를 가져옵니다.
+            const studentId = currentUser ? String(currentUser.id) : "";
             const studentName = currentUser ? currentUser.name : "알수없음";
-            const studentId = currentUser ? currentUser.id : "";
 
             document.getElementById('loadingOverlay').classList.remove('hidden');
 
@@ -1520,12 +1550,12 @@
                 const formattedDateStr = `${currentTask.weekNum}주차 D${currentTask.dayNum} (${currentTask.date})`;
 
                 const payload = {
-                    userId: studentId, // ★ Code.gs의 J열에 기록하기 위해 아이디 추가
+                    userId: studentId,
                     name: studentName,
                     className: currentTask.className,
                     date: formattedDateStr,
                     range: currentTask.range,
-                    status: isDone ? "완료" : "미완료",
+                    status: stateText,
                     questions: qsText,
                     memo: memo,
                     images: base64Images
@@ -1552,7 +1582,7 @@
                 console.error("전송 오류:", error);
                 document.getElementById('loadingOverlay').classList.add('hidden');
                 saveAndCloseTaskModal(); 
-                showError("서버 전송 지연", "인터넷 연결이 원활하지 않아 <b>구글 시트</b>에 데이터를 저장하지 못했습니다.<br>잠시 후 다시 시도해 주세요.");
+                showError("서버 전송 실패", "인터넷 연결이 원활하지 않아 <b>구글 시트</b>에 데이터를 저장하지 못했습니다.<br>네트워크가 안정된 곳에서 다시 제출해 주세요.");
             }
         }
         
@@ -1601,10 +1631,16 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // ★ 해결: 커스텀 알림창을 닫을 때 화면 잠금을 함께 풀어주어 터치 먹통 현상 수정
+        // ★ 모달을 완전히 닫고 화면 스크롤(터치) 잠금을 풀어주는 핵심 함수
         function closeCustomAlert() { 
             document.getElementById('customAlertModal').classList.add('hidden'); 
             document.body.style.overflow = '';
+        }
+
+        // 카카오톡 열기 버튼 작동 시 모달 닫기
+        function finalKakaoRedirect() {
+            closeCustomAlert();
+            window.open("https://open.kakao.com/o/s9qHTzTh", "_blank");
         }
 
         // ------------------------------------------
