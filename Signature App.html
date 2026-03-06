@@ -128,26 +128,28 @@
             
             <div class="flex justify-between items-end mt-2">
                 <p id="userClassInfo" class="text-sm text-gray-400 font-medium"></p>
-                <!-- ★ 수정: 즉시 알림 창을 띄우지 않고, 예쁜 배너를 보여주도록 함수 변경(showPushBanner) -->
+                <!-- 종 모양을 대체하는 영구적인 알림 수동 설정 버튼 -->
                 <button onclick="showPushBanner()" class="text-[11px] bg-gray-800 text-blue-400 px-2.5 py-1.5 rounded-lg border border-gray-700 hover:text-white hover:bg-blue-600 transition-all flex items-center gap-1.5 shadow-sm font-bold">
                     🔔 알림 설정
                 </button>
             </div>
         </div>
 
-        <!-- ★ 푸시 알림 유도 배너 (닫기 버튼 포함) -->
-        <div id="pushSubscribeBanner" class="hidden bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-6 shadow-lg border border-blue-500/30 relative transition-all">
-            <button onclick="dismissPushBanner()" class="absolute top-2 right-2 text-blue-200 hover:text-white p-1 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <div class="flex justify-between items-center mt-1">
-                <div>
-                    <p class="text-white font-bold text-sm flex items-center gap-1.5"><span class="animate-bounce">🔔</span> 실시간 알림 켜기</p>
-                    <p class="text-blue-100 text-[11px] mt-1 font-medium leading-tight">숙제 피드백, 공지사항을<br>가장 빠르게 받아보세요!</p>
-                </div>
-                <button onclick="requestPushPermission()" class="bg-white text-blue-600 font-black text-xs px-4 py-2.5 rounded-xl shadow-md active:scale-95 transition-transform whitespace-nowrap">
-                    설정하기
+        <!-- ★ [완벽 수정] 푸시 알림 유도 배너 (부드러운 애니메이션 적용) -->
+        <div id="pushBannerWrapper" class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0 transform -translate-y-2">
+            <div id="pushSubscribeBanner" class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-6 shadow-lg border border-blue-500/30 relative">
+                <button onclick="dismissPushBanner()" class="absolute top-2 right-2 text-blue-200 hover:text-white p-1 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
+                <div class="flex justify-between items-center mt-1">
+                    <div>
+                        <p class="text-white font-bold text-sm flex items-center gap-1.5"><span class="animate-bounce">🔔</span> 실시간 알림 켜기</p>
+                        <p class="text-blue-100 text-[11px] mt-1 font-medium leading-tight">숙제 피드백, 공지사항을<br>가장 빠르게 받아보세요!</p>
+                    </div>
+                    <button onclick="requestPushPermission()" class="bg-white text-blue-600 font-black text-xs px-4 py-2.5 rounded-xl shadow-md active:scale-95 transition-transform whitespace-nowrap">
+                        설정하기
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -198,7 +200,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v2.1 <span class="font-normal text-gray-600">(알림 고도화 배포)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v2.1.1 <span class="font-normal text-gray-600">(알림 고도화 배포)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -440,7 +442,6 @@
                     <svg class="animate-spin h-6 w-6 text-yellow-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     <span class="text-xs font-bold text-yellow-500">데이터를 안전하게 전송 중입니다...</span>
                 </div>
-                <!-- ★ 버튼 문구 직관화 -->
                 <button onclick="submitDataAndCopy()" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg">제출하기</button>
                 <div class="flex gap-2">
                     <button onclick="resetTaskSelections()" class="w-1/3 bg-gray-800 hover:bg-red-900/30 hover:text-red-400 hover:border-red-500/50 text-gray-400 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">↻ 초기화</button>
@@ -660,16 +661,10 @@
             yellow: { badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", text: "text-yellow-400", bg: "bg-yellow-500", check: "checked-yellow", toggle: "peer-checked:bg-yellow-500" }
         };
 
-        // ------------------------------------------
-        // 문자열 공백 제거 함수 (매칭 오류 방지)
-        // ------------------------------------------
         function normalizeKey(str) {
             return str ? String(str).replace(/\s+/g, '') : '';
         }
 
-        // ------------------------------------------
-        // 아이디 기반 최신 기록 무조건 덮어쓰기 로직
-        // ------------------------------------------
         function getMyHomeworkCompletion(targetId, targetName) {
             const hwCompletion = {};
             
@@ -690,9 +685,6 @@
             return hwCompletion;
         }
 
-        // ------------------------------------------
-        // 2. 앱 구동 및 통신 로직
-        // ------------------------------------------
         async function initApp() {
             await fetchDatabase();
             checkAutoLogin();
@@ -892,7 +884,6 @@
             if (currentUser.role === 'student') renderHomeworkList();
             renderDashboard(); 
             
-            // ====== 🔔 OneSignal 처리 ======
             if (window.OneSignalDeferred) {
                 window.OneSignalDeferred.push(async function(OneSignal) {
                     await OneSignal.login(currentUser.id);
@@ -920,35 +911,60 @@
                     await OneSignal.logout();
                 });
             }
+
+            // 로그아웃 시 배너 애니메이션 상태 초기화
+            const wrapper = document.getElementById('pushBannerWrapper');
+            if (wrapper) {
+                wrapper.classList.remove('max-h-[300px]', 'opacity-100', 'translate-y-0');
+                wrapper.classList.add('max-h-0', 'opacity-0', '-translate-y-4');
+            }
             
             showScreenOnly('login');
             history.pushState({ screen: 'login' }, "", "#login");
         }
 
         // ==========================================
-        // 🔔 푸시 알림 상태 체크 및 권한 요청 로직 (아이디별 관리)
+        // 🔔 푸시 알림 상태 체크 및 권한 요청 로직 (부드러운 애니메이션 적용)
         // ==========================================
         function checkPushStatus() {
             if (!currentUser) return;
             
             const isGranted = window.Notification && Notification.permission === 'granted';
-            // ★ 아이디별로 배너 닫힘 상태를 개별 기억합니다 (다중 접속 대응)
             const isDismissed = localStorage.getItem('hideSignaturePushBanner_' + currentUser.id) === 'true';
             
-            const banner = document.getElementById('pushSubscribeBanner');
-            
-            if (isGranted || isDismissed) {
-                banner.classList.add('hidden');
-            } else {
-                banner.classList.remove('hidden');
+            if (!isGranted && !isDismissed) {
+                // 권한이 없거나 닫은 적이 없다면 로그인 시 부드럽게 배너가 나타납니다.
+                setTimeout(() => {
+                    showBannerSmoothly();
+                }, 100);
             }
 
             if (window.OneSignalDeferred) {
                 OneSignalDeferred.push(async function(OneSignal) {
                     OneSignal.Notifications.addEventListener("permissionChange", function(permission) {
-                        if (permission) banner.classList.add('hidden');
+                        if (permission) hideBannerSmoothly();
                     });
                 });
+            }
+        }
+
+        // ★ 애니메이션으로 부드럽게 나타나기
+        function showBannerSmoothly() {
+            const wrapper = document.getElementById('pushBannerWrapper');
+            if (wrapper) {
+                // Tailwind 클래스 교체로 부드러운 스르륵 효과 발생
+                wrapper.classList.remove('max-h-0', 'opacity-0', '-translate-y-2');
+                wrapper.classList.add('max-h-[300px]', 'opacity-100', 'translate-y-0');
+            }
+        }
+
+        // ★ 애니메이션으로 부드럽게 닫히기
+        function hideBannerSmoothly() {
+            const wrapper = document.getElementById('pushBannerWrapper');
+            if (wrapper) {
+                // Tailwind 클래스 교체로 부드럽게 위로 접히며 사라짐
+                wrapper.classList.remove('max-h-[300px]', 'opacity-100', 'translate-y-0');
+                wrapper.classList.add('max-h-0', 'opacity-0', '-translate-y-2');
             }
         }
 
@@ -956,26 +972,27 @@
             if (!currentUser) return;
             // 배너 닫기 누르면 해당 아이디에 대해서만 기억
             localStorage.setItem('hideSignaturePushBanner_' + currentUser.id, 'true'); 
-            document.getElementById('pushSubscribeBanner').classList.add('hidden');
+            hideBannerSmoothly();
         }
 
-        // ★ 신규 추가: 종 모양 버튼을 누르면 배너를 다시 띄우는 함수
         function showPushBanner() {
             if (!currentUser) return;
-            
-            // 사용자가 명시적으로 다시 열었으므로, 기존의 '숨김 기억(캐시)'을 지워줍니다.
+            // 사용자가 명시적으로 열었으므로 닫힘 기억을 삭제합니다.
             localStorage.removeItem('hideSignaturePushBanner_' + currentUser.id); 
             
-            const banner = document.getElementById('pushSubscribeBanner');
-            if (banner) {
-                banner.classList.remove('hidden'); // 배너 다시 보이기
-                // 배너 위치로 살짝 스크롤 포커스 이동 (자연스러운 UX)
-                banner.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            showBannerSmoothly();
+            
+            // 배너가 다 펼쳐질 즈음 부드럽게 포커스 스크롤 이동
+            const wrapper = document.getElementById('pushBannerWrapper');
+            if (wrapper) {
+                setTimeout(() => {
+                    wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                }, 150);
             }
         }
 
         function requestPushPermission() {
-            dismissPushBanner(); // [설정하기] 혹은 [알림 켜기] 누를 때 무조건 배너 숨김
+            hideBannerSmoothly(); // [설정하기] 누르면 즉시 부드럽게 배너가 접힘
 
             if (window.Notification && Notification.permission === 'denied') {
                 alert("스마트폰(브라우저) 설정에서 알림이 강제로 차단되어 있습니다.\n[설정] > [알림] 에서 허용으로 변경해 주세요.");
@@ -1013,7 +1030,7 @@
                 let linkHtml = post.link ? `
                     <div class="mt-3 pt-3 border-t border-gray-700">
                         <button onclick="window.open('${post.link}', '_blank')" class="w-full flex items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-700 text-blue-400 text-xs font-bold py-2.5 rounded-lg transition-colors border border-gray-600 shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4-4m4 4V4"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             첨부자료 열기
                         </button>
                     </div>` : '';
