@@ -1709,6 +1709,22 @@
             window.open("https://open.kakao.com/o/s9qHTzTh", "_blank");
         }
 
+        // --- 🔔 푸시 알림 커스텀 모달 로직 ---
+        function closePushModal() {
+            document.getElementById('pushPermissionModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function requestNativePush() {
+            closePushModal();
+            if (window.OneSignalDeferred) {
+                OneSignalDeferred.push(async function(OneSignal) {
+                    // 폼을 밀어내는 가짜 UI 없이 기기(스마트폰) 자체의 순정 권한 창만 띄움
+                    await OneSignal.Notifications.requestPermission();
+                });
+            }
+        }
+
         // ------------------------------------------
         // 8. 기타 유틸리티 함수 및 모달 (뷰어)
         // ------------------------------------------
