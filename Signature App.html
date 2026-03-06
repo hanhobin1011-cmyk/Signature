@@ -10,23 +10,36 @@
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
     
-    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 (통합 sw.js 사용 및 기본 UI 완전 배제) ====== -->
+    <!-- ★ 진단 및 서비스 워커 강제 등록 로직 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // URL 파라미터를 붙여 브라우저 캐시를 무시하고 무조건 최신 파일을 강제 다운로드
+                const swUrl = 'sw.js?v=' + new Date().getTime();
+                navigator.serviceWorker.register(swUrl, { scope: './' })
+                    .then(reg => {
+                        console.log('SW Registration Success:', reg);
+                    })
+                    .catch(err => {
+                        // 만약 파일 경로를 못 찾거나 에러가 나면 화면에 즉시 알림창 표시
+                        alert('🚨 서비스워커 등록 실패!\n원인: ' + err.message + '\n\nGitHub 파일 경로(sw.js)를 확인해주세요.');
+                    });
+            });
+        }
+    </script>
+
+    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 ====== -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
-          appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
-          serviceWorkerPath: "/Signature/sw.js", // ★ 핵심: 파일의 절대 경로를 짚어줍니다.
-          serviceWorkerParam: { scope: "/Signature/" }, // ★ 핵심: 하위 폴더에서만 작동하도록 범위를 강제합니다.
-          notifyButton: {
-            enable: false, // 원시그널 기본 종 모양(Bell) 비활성화
-          },
-          promptOptions: {
-              slidedown: {
-                  prompts: [] // 원시그널 기본 슬라이드 다운 팝업 비활성화 (커스텀 배너 사용)
-              }
-          }
+          appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", 
+          // 상대 경로를 사용하여 폴더 위치와 무관하게 무조건 찾아가도록 설정
+          serviceWorkerPath: "sw.js", 
+          serviceWorkerParam: { scope: "./" }, 
+          notifyButton: { enable: false },
+          promptOptions: { slidedown: { prompts: [] } }
         });
       });
     </script>
@@ -134,7 +147,7 @@
             </div>
         </div>
 
-        <!-- 푸시 알림 유도 배너 (부드러운 애니메이션 적용) -->
+        <!-- 푸시 알림 유도 배너 -->
         <div id="pushBannerWrapper" class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0 transform -translate-y-2">
             <div id="pushSubscribeBanner" class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-6 shadow-lg border border-blue-500/30 relative">
                 <button onclick="dismissPushBanner()" class="absolute top-2 right-2 text-blue-200 hover:text-white p-1 transition-colors">
@@ -199,7 +212,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v2.5 <span class="font-normal text-gray-600">(안정화 배포)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v2.6 <span class="font-normal text-gray-600">(알림 핫픽스)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
