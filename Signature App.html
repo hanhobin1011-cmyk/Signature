@@ -85,10 +85,9 @@
 
     <header id="app-header" class="hidden-screen sticky top-0 z-40 bg-glass border-b border-gray-800 px-5 py-4">
         <div class="flex justify-between items-center max-w-md mx-auto w-full">
-            <div class="flex items-center cursor-pointer" onclick="navTo('main')">
-                <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-8 h-8 rounded-[22%] object-cover border border-gray-700 shadow-sm shadow-yellow-500/20 mr-2.5">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navTo('main')">
+                <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-8 h-8 rounded-[22%] object-cover border border-gray-700 shadow-sm shadow-yellow-500/20">
                 <span class="font-signature italic font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 tracking-wider text-xl mt-1">Signature</span>
-                <span class="bg-[#2A2A2A] text-gray-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2 mt-1 border border-gray-700">v1.5</span>
             </div>
             <div class="flex gap-2">
                 <button onclick="refreshData()" class="flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-900/20 border border-blue-500/30 px-3 py-1.5 rounded-full hover:bg-blue-500 hover:text-white transition-colors">
@@ -100,7 +99,7 @@
         </div>
     </header>
 
-    <main id="screen-main" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-10">
+    <main id="screen-main" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-24">
         <div class="mb-8 mt-2">
             <div id="userBadge" class="inline-block px-2.5 py-1 rounded-md text-xs font-bold mb-2"></div>
             <h2 class="text-2xl font-bold text-white"><span id="userName" class="text-yellow-400"></span> 님,<br>오늘도 환영합니다!</h2>
@@ -108,7 +107,6 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <!-- 매일 과제 제출 (학생 전용) -->
             <button id="menu-homework" onclick="navTo('homework')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-yellow-500 hover:bg-gray-800 transition-all group col-span-2 hidden">
                 <div class="flex justify-between items-center mb-3">
                     <div class="w-10 h-10 bg-yellow-500/20 text-yellow-400 rounded-xl flex items-center justify-center">
@@ -120,7 +118,6 @@
                 <p class="text-gray-400 text-xs mt-1">오늘의 숙제를 서버로 바로 제출하세요.</p>
             </button>
 
-            <!-- ★ 신규: 학생별 숙제 현황판 -->
             <button onclick="navTo('dashboard')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-blue-500 hover:bg-gray-800 transition-all group col-span-2">
                 <div class="flex justify-between items-center mb-3">
                     <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center">
@@ -155,14 +152,13 @@
                 <p class="text-gray-400 text-xs mt-1">강사 공지사항 및 보충 학습 자료</p>
             </button>
         </div>
-
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v1.5 <span class="font-normal text-gray-600">(숙제 대시보드 추가)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v1.5 <span class="font-normal text-gray-600">(안정화 1차 배포)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
 
-    <!-- [화면 3] 매일 과제 제출 (숙제 관리) -->
+    <!-- [화면 3] 숙제 제출 리스트 -->
     <div id="screen-homework" class="hidden-screen flex-1 p-5 max-w-4xl mx-auto w-full fade-in pb-24">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -174,7 +170,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="my-homework-container"></div>
     </div>
 
-    <!-- ★ [신규 화면 7] 숙제 현황판 대시보드 -->
+    <!-- [화면 7] 숙제 현황판 대시보드 -->
     <div id="screen-dashboard" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-20">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -184,41 +180,41 @@
             <p class="text-gray-400 text-sm mt-1">학생의 과제 이행 상태 및 성취도를 확인합니다.</p>
         </div>
 
-        <!-- ★ 신규 추가: 새로고침 안내 배너 -->
-        <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 mb-8 flex items-start gap-2.5 shadow-inner">
-            <span class="text-blue-400 text-sm mt-0.5">💡</span>
-            <p class="text-blue-300 text-[11px] leading-relaxed break-keep font-medium">
-                방금 과제를 제출하셨나요?<br>우측 상단의 <strong class="text-white">새로고침</strong> 버튼을 누르면 현황판에 최신 데이터가 즉시 반영됩니다!
-            </p>
+        <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-3 mb-8 space-y-2.5 shadow-inner">
+            <div class="flex items-start gap-2.5">
+                <span class="text-blue-400 text-sm mt-0.5">💡</span>
+                <p class="text-blue-300 text-[11px] leading-relaxed break-keep font-medium">
+                    과제를 갓 제출하셨다면, 우측 상단의 <strong class="text-white">새로고침</strong> 버튼을 눌러야 현황판에 반영됩니다!
+                </p>
+            </div>
+            <div class="flex items-start gap-2.5 pt-2.5 border-t border-blue-500/20">
+                <span class="text-red-400 text-sm mt-0.5">⚠️</span>
+                <p class="text-gray-300 text-[11px] leading-relaxed break-keep font-medium">
+                    주의! 과제를 제출하더라도 상태를 <strong class="text-red-400 font-bold">"미완료"</strong>로 전송하면 현황판에 불이 켜지지 않습니다.
+                </p>
+            </div>
         </div>
         
-        <!-- 1. 날짜별 숙제 이행 측정 영역 -->
         <h3 class="text-white font-bold text-lg mb-3">📅 날짜별 과제 제출 현황</h3>
-        <div id="dash-completion-container" class="space-y-4 mb-8">
-            <!-- JS 렌더링 -->
-        </div>
+        <p class="text-gray-500 text-xs mb-4">해당 일자(D1, D2 등)를 클릭하면 상세 오답 분석을 볼 수 있습니다.</p>
+        <div id="dash-completion-container" class="space-y-4 mb-8"></div>
 
-        <!-- 2. 정답률 분석 영역 (학생 권한일 때만 표시됨) -->
         <div id="dash-accuracy-wrapper" class="hidden">
             <h3 class="text-white font-bold text-lg mb-3 pt-4 border-t border-gray-800">📊 나의 정답률 분석</h3>
-            
             <div class="flex gap-4 mb-4">
                 <div class="bg-blue-900/20 border border-blue-500/30 p-5 rounded-2xl flex-1 text-center shadow-inner">
                     <div class="text-blue-400 text-xs font-bold mb-1">전체 누적 정답률</div>
                     <div class="text-3xl font-black text-white" id="dash-total-accuracy">0%</div>
                 </div>
             </div>
-
             <div class="bg-[#1E1E1E] p-5 rounded-2xl border border-gray-800">
                 <h4 class="text-gray-400 text-xs font-bold mb-4">단원별 정답률</h4>
-                <div id="dash-topic-container" class="space-y-4">
-                    <!-- JS 렌더링 -->
-                </div>
+                <div id="dash-topic-container" class="space-y-4"></div>
             </div>
         </div>
     </div>
 
-    <!-- [화면 4] 주간 리포트 화면 -->
+    <!-- [화면 4] 주간 리포트 -->
     <div id="screen-report" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in pb-20">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -230,7 +226,7 @@
         <div id="reportListContainer" class="space-y-4"></div>
     </div>
 
-    <!-- [화면 5] 스케줄 화면 -->
+    <!-- [화면 5] 스케줄 -->
     <div id="screen-schedule" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -239,7 +235,7 @@
         <div class="relative pl-4 space-y-6" id="scheduleListContainer"></div>
     </div>
     
-    <!-- [화면 6] 게시판 화면 -->
+    <!-- [화면 6] 게시판 -->
     <div id="screen-board" class="hidden-screen flex-1 p-5 max-w-md mx-auto w-full fade-in">
         <button onclick="navTo('main')" class="flex items-center gap-1 text-gray-400 text-sm mb-6 hover:text-white transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
@@ -251,8 +247,25 @@
     <!-- ==========================================
          [모달 영역]
     =========================================== -->
+    
+    <!-- 현황판 상세 조회 모달 -->
+    <div id="dashboardDetailModal" class="fixed inset-0 bg-black/90 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeDashboardDetailModal()">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 shadow-2xl flex flex-col animate-fade-in-up">
+            <div class="flex justify-between items-start mb-4 border-b border-gray-800 pb-3">
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-1" id="dashModalTitle">상세 내역</h3>
+                    <p class="text-gray-400 text-xs" id="dashModalDate">-</p>
+                </div>
+                <button onclick="closeDashboardDetailModal()" class="text-gray-400 hover:text-white transition-colors bg-gray-800 rounded-full p-1.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="dashModalContent" class="space-y-4"></div>
+            <button onclick="closeDashboardDetailModal()" class="w-full mt-6 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg text-sm">닫기</button>
+        </div>
+    </div>
 
-    <!-- 1. 프리미엄 인포그래픽 리포트 모달 -->
+    <!-- 리포트 인포그래픽 모달 -->
     <div id="reportDetailModal" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-0 md:p-4 backdrop-blur-md transition-opacity duration-300">
         <div class="bg-[#191919] w-full h-full md:h-auto md:max-h-[90vh] md:max-w-lg md:rounded-3xl shadow-2xl flex flex-col relative overflow-hidden animate-fade-in-up">
             <div class="bg-gradient-to-br from-blue-900/40 via-[#191919] to-purple-900/20 p-6 border-b border-gray-800 flex-shrink-0 relative">
@@ -317,7 +330,6 @@
                         </div>
                     </div>
 
-                    <!-- 미응시 전용 뷰 -->
                     <div id="detReportNoTestArea" class="hidden flex flex-col items-center justify-center py-6 bg-[#191919] rounded-xl border border-gray-800">
                         <span class="text-3xl mb-2">🚫</span>
                         <span class="text-gray-400 font-bold text-sm">이번 주 클리닉 테스트 미응시</span>
@@ -333,7 +345,7 @@
         </div>
     </div>
 
-    <!-- 2. 숙제 입력(제출) 모달 -->
+    <!-- 숙제 제출 모달 -->
     <div id="taskModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeTaskModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-fade-in-up flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-start mb-4 border-b border-gray-700 pb-4 flex-shrink-0">
@@ -390,27 +402,37 @@
         </div>
     </div>
 
-    <!-- 3. 제출 성공 피드백 & 복습자료 모달 -->
-    <div id="submitSuccessModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl animate-fade-in-up max-h-[90vh] flex flex-col">
-            <div class="w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-3 border border-green-500/20 flex-shrink-0">
+    <!-- 제출 성공 및 영상 복습 모달 -->
+    <div id="customAlertModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl animate-fade-in-up max-h-[90vh] overflow-y-auto flex flex-col">
+            
+            <div class="w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20 flex-shrink-0">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
-            <h3 class="text-xl font-bold text-white mb-1">제출 성공!</h3>
-            <p class="text-gray-400 text-sm mb-4">숙제 내용과 사진이 서버에 안전하게 저장되었습니다.</p>
+            <h3 class="text-xl font-bold text-white mb-2">제출 완료!</h3>
             
-            <div id="solutionLinksWrapper" class="bg-[#121212] border border-gray-800 rounded-xl p-4 mb-4 hidden text-left flex-shrink flex flex-col min-h-0">
-                <p class="text-gray-300 text-sm font-bold mb-3 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    오답 문항 복습 자료
+            <!-- ★ 구글 시트 기반 해설 영상 링크 제공 영역 -->
+            <div id="videoLinksWrapper" class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4 my-4 hidden text-left flex-shrink-0">
+                <p class="text-blue-400 text-sm font-bold mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    내가 질문한 문항 복습하기
                 </p>
-                <div id="solutionLinksContainer" class="flex flex-col gap-2 overflow-y-auto pr-1"></div>
+                <div id="videoLinksContainer" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar"></div>
             </div>
-            <button onclick="closeSuccessModal()" class="w-full mt-auto bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">닫기</button>
+
+            <p class="text-gray-400 text-sm mb-4 leading-relaxed mt-2">
+                숙제 데이터와 사진이 서버에 안전하게 저장되었습니다.<br>지금 바로 해설 영상을 시청하며 복습해 보세요!
+            </p>
+            
+            <div class="flex-shrink-0">
+                <button onclick="closeCustomAlert()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg mt-2">
+                    확인 (창 닫기)
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- 4. 일반/시스템 에러 안내 모달 -->
+    <!-- 일반/시스템 에러 안내 모달 -->
     <div id="submitErrorModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
@@ -422,7 +444,7 @@
         </div>
     </div>
 
-    <!-- 5. 로그인 전용 에러 모달 -->
+    <!-- 로그인 에러 모달 -->
     <div id="loginErrorModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
             <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
@@ -434,7 +456,7 @@
         </div>
     </div>
 
-    <!-- 6. 사용 가이드 모달 -->
+    <!-- 사용 가이드 모달 -->
     <div id="userGuideModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeUserGuideModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-lg w-full shadow-2xl flex flex-col max-h-[85vh] animate-fade-in-up overflow-hidden">
             <div class="flex justify-between items-center p-5 border-b border-gray-800 bg-[#1A1A1A] flex-shrink-0">
@@ -442,7 +464,7 @@
                     <div class="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center border border-yellow-500/30">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     </div>
-                    <h3 class="text-xl font-bold text-white tracking-tight">Signature 앱 사용 가이드</h3>
+                    <h3 class="text-xl font-bold text-white tracking-tight">Signature 앱 가이드</h3>
                 </div>
                 <button onclick="closeUserGuideModal()" class="text-gray-400 hover:text-white bg-gray-800 rounded-full p-1.5 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -452,22 +474,13 @@
             <div class="overflow-y-auto flex-grow p-6 space-y-6">
                 <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800 shadow-inner relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-                    <h4 class="text-white font-bold text-base mb-2 flex items-center gap-2">
-                        <span class="text-blue-400">1.</span> 앱 접속 및 로그인
-                    </h4>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-3">
-                        강사님이 부여하신 <span class="text-gray-200 font-bold">아이디</span>와 <span class="text-gray-200 font-bold">비밀번호</span>를 입력하여 로그인합니다. 한 번 로그인하면 스마트폰에 정보가 저장되어 다음부터는 <strong>자동으로 로그인</strong>됩니다.
-                    </p>
-                    <div class="text-xs bg-blue-900/20 text-blue-300 p-2.5 rounded-lg border border-blue-500/20">
-                        * 초기 비밀번호 변경 문의는 강사님께 직접 연락 바랍니다.
-                    </div>
+                    <h4 class="text-white font-bold text-base mb-2 flex items-center gap-2"><span class="text-blue-400">1.</span> 앱 접속 및 로그인</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-3">한 번 로그인하면 스마트폰에 정보가 저장되어 다음부터는 <strong>자동으로 로그인</strong>됩니다.</p>
                 </div>
 
                 <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800 shadow-inner relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                    <h4 class="text-white font-bold text-base mb-3 flex items-center gap-2">
-                        <span class="text-green-500">2.</span> 학생 전용 기능
-                    </h4>
+                    <h4 class="text-white font-bold text-base mb-3 flex items-center gap-2"><span class="text-green-500">2.</span> 학생 전용 기능</h4>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3">
                             <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📝</span></div>
@@ -479,15 +492,8 @@
                         <li class="flex items-start gap-3">
                             <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">▶️</span></div>
                             <div>
-                                <p class="text-gray-200 text-sm font-bold mb-1">오답 해설 시청 및 스케줄</p>
-                                <p class="text-gray-400 text-xs leading-relaxed break-keep">숙제를 제출하면 즉시 <strong>해설 영상/손풀이</strong> 링크가 뜹니다. 또한 '수업 스케줄' 메뉴에서 결석 시 보충 영상을 시청할 수 있습니다.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📈</span></div>
-                            <div>
-                                <p class="text-gray-200 text-sm font-bold mb-1">숙제 현황판 대시보드</p>
-                                <p class="text-gray-400 text-xs leading-relaxed break-keep">나의 <strong>과제 제출 현황</strong>을 일자별로 확인하고, <strong>단원별 정답률</strong>을 분석하여 취약점을 파악합니다.</p>
+                                <p class="text-gray-200 text-sm font-bold mb-1">오답 해설 및 현황판</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">숙제를 제출하면 즉시 <strong>해설 영상/손풀이</strong>가 제공됩니다. 현황판에서 나의 정답률을 분석하세요.</p>
                             </div>
                         </li>
                     </ul>
@@ -495,37 +501,26 @@
 
                 <div class="bg-[#121212] p-5 rounded-2xl border border-gray-800 shadow-inner relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
-                    <h4 class="text-white font-bold text-base mb-3 flex items-center gap-2">
-                        <span class="text-purple-400">3.</span> 학부모님 전용 기능
-                    </h4>
+                    <h4 class="text-white font-bold text-base mb-3 flex items-center gap-2"><span class="text-purple-400">3.</span> 학부모님 전용 기능</h4>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3">
                             <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">📊</span></div>
                             <div>
-                                <p class="text-gray-200 text-sm font-bold mb-1">프리미엄 주간 리포트</p>
-                                <p class="text-gray-400 text-xs leading-relaxed break-keep">자녀의 출결, 과제 달성률, 주말 테스트 결과를 <strong>인포그래픽</strong>으로 한눈에 파악하고 <strong>취약 단원</strong>을 분석할 수 있습니다.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-600"><span class="text-xs">✅</span></div>
-                            <div>
-                                <p class="text-gray-200 text-sm font-bold mb-1">숙제 제출 여부 확인</p>
-                                <p class="text-gray-400 text-xs leading-relaxed break-keep">자녀가 매일매일 과제를 서버에 잘 제출하고 있는지 <strong>숙제 현황판</strong>에서 불빛으로 확인할 수 있습니다.</p>
+                                <p class="text-gray-200 text-sm font-bold mb-1">프리미엄 주간 리포트 및 과제 확인</p>
+                                <p class="text-gray-400 text-xs leading-relaxed break-keep">자녀의 종합 성취도를 <strong>인포그래픽 리포트</strong>와 <strong>현황판의 불빛(제출 여부)</strong>을 통해 직관적으로 확인할 수 있습니다.</p>
                             </div>
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="p-4 border-t border-gray-800 bg-[#1A1A1A] flex-shrink-0">
-                <button onclick="closeUserGuideModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg border border-gray-700 text-sm">
-                    확인했습니다
-                </button>
+                <button onclick="closeUserGuideModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg border border-gray-700 text-sm">확인했습니다</button>
             </div>
         </div>
     </div>
 
-    <!-- 7. 손풀이 이미지 뷰어 모달 -->
-    <div id="handwrittenModal" class="fixed inset-0 bg-black/95 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeHandwrittenModal()">
+    <!-- 이미지 뷰어 및 유튜브 모달 공통 영역 -->
+    <div id="handwrittenModal" class="fixed inset-0 bg-black/95 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeHandwrittenModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-2xl w-full p-4 shadow-2xl flex flex-col h-[80vh] animate-fade-in-up">
             <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">📝 손풀이 해설</h3>
@@ -541,8 +536,7 @@
         </div>
     </div>
 
-    <!-- 8. 영상 플레이어 모달 -->
-    <div id="videoModal" class="fixed inset-0 bg-black/95 z-[90] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeVideoModal()">
+    <div id="videoModal" class="fixed inset-0 bg-black/95 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeVideoModal()">
         <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-3xl w-full p-4 shadow-2xl flex flex-col animate-fade-in-up">
             <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-3 flex-shrink-0">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">▶ 영상 시청</h3>
@@ -587,6 +581,7 @@
         // ==========================================
         // 1. 전역 변수 및 초기 세팅
         // ==========================================
+        // ★ 중요: 강사님의 실제 앱스 스크립트 주소입니다. 
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
 
         let globalDB = null; 
@@ -646,9 +641,13 @@
                 const response = await fetch(GOOGLE_SCRIPT_URL, { signal: controller.signal });
                 clearTimeout(timeoutId);
                 const text = await response.text(); 
-                try { globalDB = JSON.parse(text); } catch (e) { throw new Error("JSON 파싱 실패"); }
+                try { 
+                    globalDB = JSON.parse(text); 
+                } catch (e) { 
+                    throw new Error("서버 연동 오류 (구글 스크립트 배포 확인 필요)"); 
+                }
             } catch (error) {
-                showError("연결 실패", "데이터베이스에 연결할 수 없습니다. 새로고침 해주세요.");
+                showError("연결 실패", "데이터베이스 연결에 실패했습니다. 인터넷 상태를 확인하거나 우측 상단 새로고침을 눌러주세요.");
             } finally {
                 hideSplashScreen();
             }
@@ -693,6 +692,7 @@
             closeReportDetailModal();
             closeLoginErrorModal();
             closeUserGuideModal();
+            closeDashboardDetailModal(); 
 
             if (e.state && e.state.screen) showScreenOnly(e.state.screen);
             else showScreenOnly(currentUser ? 'main' : 'login');
@@ -770,7 +770,7 @@
             renderSchedule();
             renderReports();
             if (currentUser.role === 'student') renderHomeworkList();
-            renderDashboard(); // ★ 신규: 현황판 데이터 렌더링
+            renderDashboard(); 
         }
 
         function logout() {
@@ -864,7 +864,7 @@
         }
 
         // ==========================================
-        // 5. 숙제 현황판 대시보드 로직 (NEW)
+        // 5. 숙제 현황판 대시보드 로직 
         // ==========================================
         function renderDashboard() {
             const completionContainer = document.getElementById('dash-completion-container');
@@ -877,7 +877,6 @@
             const targetName = currentUser.role === 'parent' ? (globalDB.users[currentUser.childId]?.name || "자녀") : currentUser.name;
             const targetClass = currentUser.className;
 
-            // 1. 해당 반의 숙제 전체 스케줄 가져오기
             const myHomework = (globalDB.homework || []).filter(h => h.className === targetClass);
             
             if(myHomework.length === 0) {
@@ -885,14 +884,12 @@
                 return;
             }
 
-            // 2. 학생의 제출 기록 가져오기 (가장 최신 기록이 덮어쓰도록 설계)
             const hwCompletion = {};
             const myLogs = (globalDB.hwLogs || []).filter(log => log.name === targetName);
             myLogs.forEach(log => {
-                hwCompletion[log.date] = log; // log.date = "1주차 D1 (3/3(화))" 형식
+                hwCompletion[log.date] = log; 
             });
 
-            // 주차별로 스케줄 그룹화
             const hwByWeek = {};
             myHomework.forEach(item => { if(!hwByWeek[item.week]) hwByWeek[item.week] = []; hwByWeek[item.week].push(item); });
 
@@ -900,40 +897,44 @@
             let totalW = 0;
             const topicStats = {};
 
-            // [영역 1] 날짜별 숙제 이행 현황 그리기
             Object.keys(hwByWeek).sort((a,b) => parseInt(a) - parseInt(b)).forEach(week => {
                 let weekHtml = `
-                <div class="bg-[#1E1E1E] p-4 rounded-2xl border border-gray-800 shadow-sm">
+                <div class="bg-[#1E1E1E] p-4 rounded-2xl border border-gray-800 shadow-sm mb-4">
                     <h4 class="text-white font-bold text-sm mb-3 flex items-center gap-2">
                         <span class="w-1 h-3 bg-yellow-500 rounded-full"></span>${week}주차
                     </h4>
-                    <div class="flex justify-between gap-1">
+                    <div class="flex justify-between gap-1 items-start">
                 `;
 
                 hwByWeek[week].forEach((item, index) => {
                     const dayNum = index + 1;
-                    const dateString = item.date; // 예: "3/3(화)"
+                    const dateString = item.date;
                     
-                    // 로그 매칭 키 생성 (프론트 제출 형식과 동일하게 조립)
                     const searchKey = `${week}주차 D${dayNum} (${dateString})`;
                     const log = hwCompletion[searchKey];
                     const isSubmitted = log && log.status === '완료';
 
-                    // 버튼 UI 결정
                     let circleClass = isSubmitted 
                         ? "bg-yellow-500 text-[#121212] shadow-[0_0_10px_rgba(234,179,8,0.4)] border-transparent" 
                         : "bg-[#121212] text-gray-600 border-gray-700";
 
+                    let statusBadge = isSubmitted 
+                        ? `<span class="mt-1 text-[10px] text-green-400 font-bold bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20">제출완료</span>` 
+                        : `<span class="mt-1 text-[10px] text-gray-500 font-bold">미제출</span>`;
+
+                    const logQs = log ? log.questions : '없음';
+                    const args = `'${week}', ${dayNum}, '${dateString}', ${isSubmitted}, '${logQs}', '${item.range}', ${item.count}`;
+
                     weekHtml += `
-                        <div class="flex-1 flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border ${circleClass} transition-all">
+                        <div class="flex-1 flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="openDashboardDetailModal(${args})">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border ${circleClass} transition-all flex-shrink-0">
                                 D${dayNum}
                             </div>
-                            <span class="text-[10px] text-gray-500 mt-1 font-medium">${dateString.split('(')[0]}</span>
+                            <span class="text-[10px] text-gray-400 mt-1.5 font-medium">${dateString.split('(')[0]}</span>
+                            ${statusBadge}
                         </div>
                     `;
 
-                    // 정답률 계산을 위한 데이터 누적 (학생이 '완료' 한 항목에 한해서만 계산)
                     if (isSubmitted) {
                         const count = parseInt(item.count) || 0;
                         totalQ += count;
@@ -944,7 +945,6 @@
                         }
                         totalW += wCount;
 
-                        // 단원명 추출 (예: "01.지수 B 9~35" -> "01.지수")
                         const topicMatch = item.range.match(/\d+\.[가-힣A-Za-z]+/);
                         const topic = topicMatch ? topicMatch[0] : "종합 단원";
 
@@ -958,15 +958,12 @@
                 completionContainer.innerHTML += weekHtml;
             });
 
-            // [영역 2] 정답률 표시 (학부모는 숨김 처리)
             if (currentUser.role === 'student') {
                 accuracyWrapper.classList.remove('hidden');
                 
-                // 누적 정답률
                 let totalAccuracy = totalQ > 0 ? Math.round(((totalQ - totalW) / totalQ) * 100) : 0;
                 document.getElementById('dash-total-accuracy').textContent = `${totalAccuracy}%`;
 
-                // 단원별 정답률
                 let topicHtml = '';
                 const topics = Object.keys(topicStats).sort();
                 
@@ -977,7 +974,6 @@
                         const stats = topicStats[topic];
                         const acc = stats.total > 0 ? Math.round(((stats.total - stats.wrong) / stats.total) * 100) : 0;
                         
-                        // 정답률에 따른 바 색상
                         let barColor = "bg-blue-500";
                         if (acc < 60) barColor = "bg-red-500";
                         else if (acc < 80) barColor = "bg-yellow-500";
@@ -1001,10 +997,76 @@
             }
         }
 
+        function openDashboardDetailModal(week, dayNum, dateStr, isSubmitted, questions, range, totalCount) {
+            document.getElementById('dashModalTitle').textContent = `${week}주차 D${dayNum} 상세 내역`;
+            document.getElementById('dashModalDate').textContent = dateStr;
+            
+            const content = document.getElementById('dashModalContent');
+            
+            if (!isSubmitted) {
+                content.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-8 text-center bg-[#121212] rounded-xl border border-gray-800">
+                        <span class="text-4xl mb-3">🚫</span>
+                        <p class="text-gray-300 font-bold text-sm">아직 과제를 제출하지 않았습니다.</p>
+                        <p class="text-gray-500 text-xs mt-1">숙제를 완료하고 서버로 전송해주세요.</p>
+                    </div>
+                `;
+            } else {
+                let qsArr = [];
+                if (questions && questions !== '없음') {
+                    qsArr = questions.split(',').map(s => s.trim());
+                }
+                
+                const wrongCount = qsArr.length;
+                const correctCount = totalCount - wrongCount;
+                
+                let qsHtml = '<div class="text-gray-500 text-xs mt-2 p-2 bg-[#191919] rounded border border-gray-700 text-center">🎉 질문 문항 없음 (전원 정답)</div>';
+                if (wrongCount > 0) {
+                    qsHtml = `<div class="flex flex-wrap gap-1.5 mt-2">`;
+                    qsArr.forEach(q => {
+                        qsHtml += `<span class="bg-red-500/10 text-red-400 px-2 py-1 rounded-md border border-red-500/20 text-xs font-bold shadow-sm">${q}번</span>`;
+                    });
+                    qsHtml += `</div>`;
+                }
+
+                content.innerHTML = `
+                    <div class="bg-[#121212] p-4 rounded-xl border border-gray-800 mb-3 shadow-inner">
+                        <div class="text-xs text-gray-500 mb-1 font-bold">학습 범위</div>
+                        <div class="text-sm font-bold text-gray-200">${range} <span class="text-gray-500 text-xs">(총 ${totalCount}제)</span></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-blue-900/10 border border-blue-500/20 rounded-xl p-4 text-center shadow-inner">
+                            <div class="text-[11px] text-blue-400 font-bold mb-1">정답 문항</div>
+                            <div class="text-2xl font-black text-white">${correctCount}개</div>
+                        </div>
+                        <div class="bg-red-900/10 border border-red-500/20 rounded-xl p-4 text-center shadow-inner">
+                            <div class="text-[11px] text-red-400 font-bold mb-1">오답/질문 문항</div>
+                            <div class="text-2xl font-black text-white">${wrongCount}개</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-[#121212] p-4 rounded-xl border border-gray-800 shadow-inner">
+                        <div class="flex items-center gap-1.5 text-sm font-bold text-gray-300">
+                            <span class="text-red-400">❓</span> 내가 질문한 문항 리스트
+                        </div>
+                        ${qsHtml}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('dashboardDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDashboardDetailModal() {
+            document.getElementById('dashboardDetailModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
         // ==========================================
         // 6. 리포트 인포그래픽 모달
         // ==========================================
-
         function renderReports() {
             const container = document.getElementById('reportListContainer');
             container.innerHTML = '';
@@ -1216,7 +1278,7 @@
         }
 
         // ==========================================
-        // 7. 숙제 렌더링 및 입력 팝업
+        // 7. 숙제 렌더링 및 입력 팝업 (서버 동기화 반영)
         // ==========================================
         function renderHomeworkList() {
             const container = document.getElementById('my-homework-container');
@@ -1233,6 +1295,13 @@
                 container.innerHTML = `<div class="col-span-1 md:col-span-2 bg-[#1E1E1E] rounded-2xl border border-gray-800 p-10 text-center"><p class="text-gray-500 text-sm">일정이 없습니다.</p></div>`; return;
             }
 
+            // ★ 최적화: 시트에 기록된 숙제 제출 로그를 가져와 UI에 동기화
+            const hwCompletion = {};
+            const myLogs = (globalDB.hwLogs || []).filter(log => log.name === currentUser.name);
+            myLogs.forEach(log => {
+                hwCompletion[log.date] = log; 
+            });
+
             const hwByWeek = {};
             myHomework.forEach(item => { if(!hwByWeek[item.week]) hwByWeek[item.week] = []; hwByWeek[item.week].push(item); });
 
@@ -1242,22 +1311,43 @@
             Object.keys(hwByWeek).sort((a,b) => parseInt(a) - parseInt(b)).forEach(week => {
                 html += `<div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-5 shadow-lg"><h3 class="text-lg font-bold mb-4 text-white border-b border-gray-800 pb-3">${week}주차</h3><div class="space-y-1">`;
                 hwByWeek[week].forEach((item, index) => {
-                    const uniqueId = `hw-w${week}-d${index+1}`;
-                    if (!taskStore[uniqueId]) taskStore[uniqueId] = { isDone: false, qs: [], memo: '' };
+                    const dayNum = index + 1;
+                    const uniqueId = `hw-w${week}-d${dayNum}`;
+                    
+                    // 서버 로그와 매칭
+                    const searchKey = `${week}주차 D${dayNum} (${item.date})`;
+                    const log = hwCompletion[searchKey];
+                    const isSubmitted = log && log.status === '완료';
 
-                    // 날짜 스트링(3/3(화))도 함께 모달에 전달
+                    // taskStore 초기화 시 서버 데이터 덮어쓰기
+                    if (!taskStore[uniqueId]) {
+                        let logQs = [];
+                        if (log && log.questions && log.questions !== '없음') {
+                            logQs = log.questions.split(',').map(s => s.trim());
+                        }
+                        taskStore[uniqueId] = { 
+                            isDone: isSubmitted, 
+                            qs: logQs, 
+                            memo: log ? log.memo : '' 
+                        };
+                    }
+
+                    // UI 박스 상태 결정
+                    let checkIconOpacity = taskStore[uniqueId].isDone ? 'opacity-100' : 'opacity-0';
+                    let boxBorderClass = taskStore[uniqueId].isDone ? `${tData.check} border-transparent` : 'border-gray-600 bg-transparent';
+
                     html += `
-                        <div onclick="openTaskModal('${uniqueId}', '${item.date}', '${item.range}', '${targetClass}', '${tData.check}', '${classTheme}', ${week}, ${index+1})" 
+                        <div onclick="openTaskModal('${uniqueId}', '${item.date}', '${item.range}', '${targetClass}', '${tData.check}', '${classTheme}', ${week}, ${dayNum})" 
                              class="flex justify-between items-center p-3 hover:bg-[#252525] rounded-xl cursor-pointer transition-all group active:scale-[0.98]">
                             <div class="flex items-center gap-3">
-                                <span class="w-9 h-9 rounded-full ${listIconClass} bg-opacity-10 flex items-center justify-center font-bold text-sm border border-transparent transition-colors">D${index+1}</span>
+                                <span class="w-9 h-9 rounded-full ${listIconClass} bg-opacity-10 flex items-center justify-center font-bold text-sm border border-transparent transition-colors">D${dayNum}</span>
                                 <div><div class="text-xs text-gray-500 font-medium mb-0.5">${item.date}</div><div class="text-gray-200 font-medium text-sm">${item.range}</div></div>
                             </div>
                             <div class="flex items-center gap-4">
                                 <span class="text-xs font-bold text-gray-500 bg-[#121212] px-2 py-1 rounded hidden md:inline-block">${item.count}제</span>
                                 <div class="relative flex items-center justify-center">
-                                    <div id="ui-box-${uniqueId}" class="w-6 h-6 border-2 border-gray-600 rounded check-btn flex items-center justify-center bg-transparent">
-                                        <svg id="ui-svg-${uniqueId}" class="w-4 h-4 opacity-0 text-white transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    <div id="ui-box-${uniqueId}" class="w-6 h-6 border-2 rounded check-btn flex items-center justify-center ${boxBorderClass}">
+                                        <svg id="ui-svg-${uniqueId}" class="w-4 h-4 text-white transition-opacity ${checkIconOpacity}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                     </div>
                                 </div>
                             </div>
@@ -1335,10 +1425,12 @@
             
             Object.values(themeMapper).forEach(t => box.classList.remove(t.check));
             if (isDone) {
-                box.classList.add(currentTask.checkClass); box.classList.add('border-transparent');
+                box.classList.add(currentTask.checkClass); 
+                box.classList.replace('border-gray-600', 'border-transparent');
                 svg.classList.replace('opacity-0', 'opacity-100');
             } else {
                 box.classList.remove('border-transparent');
+                box.classList.add('border-gray-600');
                 svg.classList.replace('opacity-100', 'opacity-0');
             }
             closeTaskModal();
@@ -1346,25 +1438,20 @@
 
         function resizeAndEncodeImage(file, maxWidth = 1024) {
             return new Promise((resolve) => {
-                if (!file.type.match(/image.*/)) return resolve(null);
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     const img = new Image();
                     img.onload = () => {
-                        try {
-                            const canvas = document.createElement('canvas');
-                            let w = img.width, h = img.height;
-                            if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
-                            canvas.width = w; canvas.height = h;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, w, h);
-                            resolve({ data: canvas.toDataURL('image/jpeg', 0.7), mimeType: 'image/jpeg' });
-                        } catch(e) { resolve({ data: event.target.result, mimeType: file.type }); }
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve({ data: canvas.toDataURL('image/jpeg', 0.7), mimeType: 'image/jpeg' });
                     };
-                    img.onerror = () => resolve({ data: event.target.result, mimeType: file.type });
                     img.src = event.target.result;
                 };
-                reader.onerror = () => resolve(null);
                 reader.readAsDataURL(file);
             });
         }
@@ -1392,7 +1479,6 @@
                     }
                 }
 
-                // 서버가 "1주차 D1 (3/3(화))" 형식으로 날짜를 식별할 수 있게 조립 전송
                 const formattedDateStr = `${currentTask.weekNum}주차 D${currentTask.dayNum} (${currentTask.date})`;
 
                 const payload = {
@@ -1425,30 +1511,34 @@
         }
         
         function executeSuccessModal(qsArr) {
-            const wrapper = document.getElementById('solutionLinksWrapper');
-            const container = document.getElementById('solutionLinksContainer');
+            const wrapper = document.getElementById('videoLinksWrapper');
+            const container = document.getElementById('videoLinksContainer');
             container.innerHTML = '';
             let foundCount = 0;
             
             if (qsArr && qsArr.length > 0) {
                 qsArr.forEach(qId => {
+                    // ★ 최적화: 하드코딩 DB가 아닌 구글시트 '해설영상' 탭의 데이터를 직접 사용합니다.
                     const vLink = globalDB.videos ? globalDB.videos[qId] : null;
                     const hLink = globalDB.handwritten ? globalDB.handwritten[qId] : null;
                     
                     if (vLink || hLink) {
                         foundCount++;
-                        const level = qId.charAt(0);
-                        const qNum = qId.substring(1);
+                        const level = qId.charAt(0); // A, B, C
+                        const qNum = qId.substring(1); // 숫자
                         let colorClass = level === 'A' ? 'green' : level === 'B' ? 'blue' : 'red';
                         
                         let buttonsHtml = '';
-                        if (vLink) buttonsHtml += `<button onclick="openVideoModal('${vLink}')" class="bg-${colorClass}-500/20 px-2 py-1.5 rounded text-${colorClass}-400 text-xs font-bold hover:bg-${colorClass}-500/40 transition-colors shadow-sm">▶ 영상</button>`;
-                        if (hLink) buttonsHtml += `<button onclick="openHandwrittenModal('${hLink}')" class="bg-gray-700 px-2 py-1.5 rounded text-white text-xs font-bold hover:bg-gray-600 transition-colors shadow-sm border border-gray-600">📝 손풀이</button>`;
+                        if (vLink) buttonsHtml += `<button onclick="openVideoModal('${vLink}')" class="bg-blue-500/20 px-3 py-1.5 rounded text-blue-400 text-[11px] font-bold hover:bg-blue-500/40 transition-colors shadow-sm">▶ 영상해설</button>`;
+                        if (hLink) buttonsHtml += `<button onclick="openHandwrittenModal('${hLink}')" class="bg-gray-700 px-3 py-1.5 rounded text-white text-[11px] font-bold hover:bg-gray-600 transition-colors shadow-sm border border-gray-600">📝 손풀이</button>`;
 
                         container.innerHTML += `
-                            <div class="bg-[#181818] text-gray-300 text-sm py-3 px-4 rounded-lg flex justify-between items-center border border-gray-800">
-                                <span class="font-bold text-${colorClass}-400">${level}단계 ${qNum}번</span>
-                                <div class="flex gap-2">
+                            <div class="bg-[#191919] border border-gray-800 rounded-xl p-3 flex justify-between items-center shadow-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] bg-${colorClass}-500/20 text-${colorClass}-400 px-1.5 py-0.5 rounded border border-${colorClass}-500/30">${level}단계</span>
+                                    <span class="font-black text-white text-sm">${qNum}번</span>
+                                </div>
+                                <div class="flex gap-1.5">
                                     ${buttonsHtml}
                                 </div>
                             </div>
@@ -1462,17 +1552,17 @@
                 wrapper.classList.add('hidden');
             }
 
-            document.getElementById('submitSuccessModal').classList.remove('hidden');
+            document.getElementById('customAlertModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeSuccessModal() { 
-            document.getElementById('submitSuccessModal').classList.add('hidden'); 
+        function closeCustomAlert() { 
+            document.getElementById('customAlertModal').classList.add('hidden'); 
             document.body.style.overflow = '';
         }
 
         // ==========================================
-        // 8. 기타 유틸리티 함수 및 모달
+        // 8. 기타 유틸리티 함수 및 모달 (뷰어)
         // ==========================================
 
         function showError(title, msg) {
@@ -1550,8 +1640,6 @@
                 document.getElementById('videoLoading').classList.add('hidden');
                 iframe.src = '';
             }
-            
-            document.getElementById('videoFallbackLink').href = url;
         }
         
         function closeVideoModal() {
@@ -1604,35 +1692,6 @@
             document.getElementById('photoUploadBtn').classList.remove('hidden');
         }
 
-        // PWA 배너 관련
-        window.addEventListener('beforeinstallprompt', (e) => { 
-            e.preventDefault(); 
-            deferredPrompt = e; 
-        });
-        
-        function showInstallBanner() { 
-            const pwaInstallBanner = document.getElementById('pwaInstallBanner');
-            if (pwaInstallBanner) pwaInstallBanner.classList.remove('translate-y-full'); 
-        }
-        
-        function hideInstallBanner() { 
-            const pwaInstallBanner = document.getElementById('pwaInstallBanner');
-            if (pwaInstallBanner) pwaInstallBanner.classList.add('translate-y-full'); 
-        }
-
-        const btnInstallPwa = document.getElementById('btnInstallPwa');
-        if (btnInstallPwa) {
-            btnInstallPwa.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    hideInstallBanner();
-                    deferredPrompt.prompt();
-                    await deferredPrompt.userChoice;
-                    deferredPrompt = null;
-                } else {
-                    window.location.href = './Install.html';
-                }
-            });
-        }
     </script>
     
     <!-- 보안 설정 -->
