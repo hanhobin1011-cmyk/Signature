@@ -25,7 +25,6 @@
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", // 원장님 App ID
-          // ★ 요청사항 반영: notifyButton(종 모양) 옵션 완전 제거
         });
       });
     </script>
@@ -126,14 +125,14 @@
             
             <div class="flex justify-between items-end mt-2">
                 <p id="userClassInfo" class="text-sm text-gray-400 font-medium"></p>
-                <!-- 영구적인 알림 수동 설정 버튼 (종모양 대체) -->
+                <!-- 영구적인 알림 수동 설정 버튼 -->
                 <button onclick="showPushBanner()" class="text-[11px] bg-gray-800 text-blue-400 px-2.5 py-1.5 rounded-lg border border-gray-700 hover:text-white hover:bg-blue-600 transition-all flex items-center gap-1.5 shadow-sm font-bold">
                     🔔 알림 설정
                 </button>
             </div>
         </div>
 
-        <!-- 푸시 알림 유도 배너 (애니메이션 적용) -->
+        <!-- 푸시 알림 유도 배너 -->
         <div id="pushBannerWrapper" class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0 transform -translate-y-2">
             <div id="pushSubscribeBanner" class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-6 shadow-lg border border-blue-500/30 relative">
                 <button onclick="dismissPushBanner()" class="absolute top-2 right-2 text-blue-200 hover:text-white p-1 transition-colors">
@@ -198,7 +197,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v2.2 <span class="font-normal text-gray-600">(알림 UI 최적화)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v2.2.1 <span class="font-normal text-gray-600">(UI 최적화)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -445,6 +444,21 @@
                     <button onclick="resetTaskSelections()" class="w-1/3 bg-gray-800 hover:bg-red-900/30 hover:text-red-400 hover:border-red-500/50 text-gray-400 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">↻ 초기화</button>
                     <button onclick="saveAndCloseTaskModal()" class="w-2/3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">임시 저장하고 닫기</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ★ [신규] 초기화 재확인용 커스텀 모달 (브라우저 기본 confirm 팝업 대체) -->
+    <div id="resetConfirmModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) closeResetConfirmModal()">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">초기화하시겠습니까?</h3>
+            <p class="text-gray-400 text-sm mb-6 leading-relaxed">체크한 문항, 사진, 코멘트가 모두 지워지며<br>이 작업은 되돌릴 수 없습니다.</p>
+            <div class="flex gap-2">
+                <button onclick="closeResetConfirmModal()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-sm text-sm">취소</button>
+                <button onclick="executeResetTask()" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg text-sm">초기화 진행</button>
             </div>
         </div>
     </div>
@@ -803,6 +817,7 @@
             closeUserGuideModal();
             closeDashboardDetailModal(); 
             closeCustomAlert();
+            closeResetConfirmModal();
 
             if (e.state && e.state.screen) showScreenOnly(e.state.screen);
             else showScreenOnly(currentUser ? 'main' : 'login');
@@ -982,7 +997,6 @@
             }
         }
 
-        // ★ 설정하기 누르면 일어나는 일: 배너를 강제로 즉시 닫고 기억시킵니다.
         function requestPushPermission() {
             if (!currentUser) return;
             
@@ -998,7 +1012,6 @@
             if (window.OneSignalDeferred) {
                 OneSignalDeferred.push(async function(OneSignal) {
                     await OneSignal.Notifications.requestPermission();
-                    // checkPushStatus()를 굳이 다시 부르지 않습니다. (무한 반복 원인 제거)
                 });
             }
         }
@@ -1627,8 +1640,17 @@
             closeTaskModal();
         }
 
+        // ★ [개선 1] 초기화 커스텀 팝업 호출 함수
         function resetTaskSelections() {
-            if(!confirm("체크한 문항과 사진, 메모를 모두 초기화하시겠습니까?")) return;
+            document.getElementById('resetConfirmModal').classList.remove('hidden');
+        }
+
+        function closeResetConfirmModal() {
+            document.getElementById('resetConfirmModal').classList.add('hidden');
+        }
+
+        function executeResetTask() {
+            closeResetConfirmModal(); // 커스텀 모달 닫기
             
             document.getElementById('modalStatusCheck').checked = false;
             document.getElementById('modalStatusCheck').dispatchEvent(new Event('change'));
@@ -1929,6 +1951,40 @@
             document.getElementById('photoUploadBtn').classList.remove('hidden');
         }
 
+        // ==========================================
+        // ★ [개선 2] PWA 앱 설치 로직 완벽 복구
+        // ==========================================
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function hideInstallBanner() {
+            const banner = document.getElementById('pwaInstallBanner');
+            if (banner) banner.classList.add('translate-y-full');
+        }
+
+        // 화면 로딩이 완료된 후 버튼에 이벤트 리스너 부착
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnInstallPwa = document.getElementById('btnInstallPwa');
+            if (btnInstallPwa) {
+                btnInstallPwa.addEventListener('click', async () => {
+                    if (isIos()) {
+                        // 아이폰인 경우 수동 설치 가이드 페이지로 이동
+                        window.location.href = './Install.html';
+                    } else if (deferredPrompt) {
+                        // 안드로이드/PC인 경우 즉시 네이티브 설치 팝업 호출
+                        hideInstallBanner();
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        deferredPrompt = null;
+                    } else {
+                        // 이미 설치되었거나 지원하지 않는 브라우저일 경우
+                        window.location.href = './Install.html';
+                    }
+                });
+            }
+        });
     </script>
     
     <!-- 보안 설정 -->
