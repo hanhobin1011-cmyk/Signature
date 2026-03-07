@@ -385,15 +385,16 @@
                 </div>
             </div>
             
+            <!-- 하단 액션 버튼부 -->
             <div class="flex flex-col gap-3 flex-shrink-0 pt-2 relative">
                 <div id="loadingOverlay" class="absolute inset-0 bg-[#1E1E1E]/90 backdrop-blur-sm z-10 hidden flex-col items-center justify-center rounded-xl">
                     <svg class="animate-spin h-6 w-6 text-yellow-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     <span class="text-xs font-bold text-yellow-500">데이터를 안전하게 전송 중입니다...</span>
                 </div>
                 <button onclick="submitDataAndCopy()" class="w-full bg-[#FEE500] hover:bg-[#E5CF00] text-[#191919] font-bold py-3.5 rounded-xl transition-colors shadow-lg">제출하기</button>
+                
                 <div class="flex gap-2">
                     <button onclick="saveAndCloseTaskModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-3.5 rounded-xl border border-gray-700 transition-colors text-sm">임시 저장하고 닫기</button>
-                    <!-- ★ 초기화 버튼 하단 고정 배치 -->
                     <button onclick="resetTaskSelections()" class="w-1/3 bg-red-900/20 hover:bg-red-900/40 text-red-400 font-bold py-3.5 rounded-xl border border-red-500/30 transition-colors text-sm whitespace-nowrap">초기화</button>
                 </div>
             </div>
@@ -452,6 +453,18 @@
             <h3 class="text-xl font-bold text-white mb-2" id="errorTitle">오류 안내</h3>
             <p id="errorMessage" class="text-gray-400 text-sm mb-6 leading-relaxed">문제가 발생했습니다.</p>
             <button onclick="closeErrorModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">확인</button>
+        </div>
+    </div>
+
+    <!-- 로그인 에러 모달 -->
+    <div id="loginErrorModal" class="fixed inset-0 bg-black/90 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-[#1E1E1E] border border-gray-700 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl flex flex-col animate-fade-in-up">
+            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">로그인 실패</h3>
+            <p id="loginErrorMessage" class="text-gray-400 text-sm mb-6 leading-relaxed">아이디 또는 비밀번호가 일치하지 않습니다.</p>
+            <button onclick="closeLoginErrorModal()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3.5 rounded-xl transition-colors border border-gray-700 shadow-lg">다시 시도하기</button>
         </div>
     </div>
 
@@ -756,7 +769,7 @@
         });
 
         // ==========================================
-        // 3. UI 렌더링 로직 (XSS 방어 적용 완료)
+        // 3. UI 렌더링 로직
         // ==========================================
         function renderBoard() {
             const container = document.getElementById('boardListContainer');
@@ -1169,7 +1182,7 @@
                             <div class="flex items-center gap-4">
                                 <span class="text-xs font-bold text-gray-500 bg-[#121212] px-2 py-1 rounded hidden md:inline-block">${item.count}제</span>
                                 <div class="relative flex items-center justify-center">
-                                    <div id="ui-box-${uniqueId}" class="w-6 h-6 border-2 border-gray-600 rounded check-btn flex items-center justify-center bg-transparent ${taskStore[uniqueId].isDone ? boxBorderClass : ''}">
+                                    <div id="ui-box-${uniqueId}" class="w-6 h-6 border-2 rounded check-btn flex items-center justify-center bg-transparent border-gray-600 ${taskStore[uniqueId].isDone ? boxBorderClass : ''}">
                                         <svg id="ui-svg-${uniqueId}" class="w-4 h-4 text-white transition-opacity ${checkIconOpacity}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                     </div>
                                 </div>
@@ -1217,6 +1230,8 @@
                     btn.textContent = i; btn.dataset.level = level;
                     let selectedClass = level === 'A' ? 'border-green-500 bg-green-500' : level === 'B' ? 'border-blue-500 bg-blue-500' : 'border-red-500 bg-red-500';
                     let defaultClass = level === 'A' ? 'border-green-900/50 text-green-400 bg-green-900/10' : level === 'B' ? 'border-blue-900/50 text-blue-400 bg-blue-900/10' : 'border-red-900/50 text-red-400 bg-red-900/10';
+                    
+                    // 문항 고유 식별자 (예: B9, C15)
                     const qId = level + i.toString(); 
 
                     if (currentSelectedQs.has(qId)) btn.className = `w-[42px] h-[42px] rounded-lg text-sm font-bold border-2 ${selectedClass} text-white shadow-lg scale-105 flex items-center justify-center transition-all`;
@@ -1234,8 +1249,10 @@
             document.getElementById('modalStatusText').className = this.checked ? `ml-3 text-sm font-bold ${tData.text}` : 'ml-3 text-sm font-bold text-gray-400';
         });
 
+        // 스마트 정렬 (예: B9, B10, C1 순서로 정렬)
         function sortQuestions(a, b) {
-            const levelA = a.charAt(0); const levelB = b.charAt(0);
+            const levelA = a.charAt(0); 
+            const levelB = b.charAt(0);
             if (levelA !== levelB) return levelA.localeCompare(levelB);
             return parseInt(a.substring(1)) - parseInt(b.substring(1));
         }
@@ -1331,6 +1348,9 @@
             loadingOverlay.classList.remove('hidden');
 
             try {
+                // 클립보드 복사는 비동기 딜레이 이전에 가장 먼저 실행 (권한 회피)
+                copyToClipboardText(studentName, `${currentTask.weekNum}주차 D${currentTask.dayNum} (${currentTask.date})`, stateText, qsText, memo);
+
                 const base64Images = [];
                 if (selectedPhotos && selectedPhotos.length > 0) {
                     for (let i=0; i<selectedPhotos.length; i++) {
@@ -1380,7 +1400,6 @@
                 loadingOverlay.classList.add('hidden');
 
                 if (resultJson.success) {
-                    copyToClipboardText(studentName, formattedDateStr, stateText, qsText, memo);
                     saveAndCloseTaskModal();
                     executeSuccessModal(qsArr);
                     if (resultJson.imageWarning) console.warn(resultJson.imageWarning);
@@ -1414,6 +1433,7 @@
             } catch(e) {}
         }
 
+        // 해설 영상 자동 매칭 및 성공 모달 띄우기
         function executeSuccessModal(qsArr) {
             const wrapper = document.getElementById('videoLinksWrapper');
             const container = document.getElementById('videoLinksContainer');
@@ -1421,14 +1441,17 @@
             let foundCount = 0;
             
             if (qsArr && qsArr.length > 0) {
-                qsArr.forEach(qId => {
+                qsArr.forEach(qId => { // qId 예: 'B9', 'C15'
+                    // 글로벌 DB의 해설영상 탭 정보 활용
                     const vLink = globalDB.videos ? globalDB.videos[qId] : null;
                     const hLink = globalDB.handwritten ? globalDB.handwritten[qId] : null;
                     
                     if (vLink || hLink) {
                         foundCount++;
-                        const level = qId.charAt(0); 
-                        const qNum = qId.substring(1); 
+                        const match = qId.match(/^([A-Z])(\d+)$/);
+                        const level = match ? match[1] : '?'; 
+                        const qNum = match ? match[2] : qId; 
+                        
                         let colorClass = level === 'A' ? 'green' : level === 'B' ? 'blue' : 'red';
                         
                         let buttonsHtml = '';
@@ -1436,10 +1459,10 @@
                         if (hLink) buttonsHtml += `<button onclick="openHandwrittenModal('${encodeURI(hLink)}')" class="bg-gray-700 px-3 py-1.5 rounded text-white text-[11px] font-bold hover:bg-gray-600 transition-colors shadow-sm border border-gray-600">📝 손풀이</button>`;
 
                         container.innerHTML += `
-                            <div class="bg-[#191919] border border-gray-800 rounded-xl p-3 flex justify-between items-center shadow-sm">
+                            <div class="bg-[#191919] border border-gray-800 rounded-xl p-3 flex justify-between items-center shadow-sm mb-2">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] bg-${colorClass}-500/20 text-${colorClass}-400 px-1.5 py-0.5 rounded border border-${colorClass}-500/30">${level}단계</span>
-                                    <span class="font-black text-white text-sm">${qNum}번</span>
+                                    <span class="text-[10px] bg-${colorClass}-500/20 text-${colorClass}-400 px-1.5 py-0.5 rounded border border-${colorClass}-500/30">${escapeHTML(level)}단계</span>
+                                    <span class="font-black text-white text-sm">${escapeHTML(qNum)}번</span>
                                 </div>
                                 <div class="flex gap-1.5">
                                     ${buttonsHtml}
@@ -1449,8 +1472,12 @@
                     }
                 });
                 
-                if (foundCount > 0) wrapper.classList.remove('hidden');
-                else wrapper.classList.add('hidden');
+                if (foundCount > 0) {
+                    wrapper.classList.remove('hidden');
+                } else {
+                    wrapper.classList.remove('hidden');
+                    container.innerHTML = `<p class="text-gray-400 text-xs text-center py-3 bg-gray-800/50 rounded-lg">아직 해당 문항의 해설 영상이 등록되지 않았습니다.</p>`;
+                }
             } else {
                 wrapper.classList.add('hidden');
             }
