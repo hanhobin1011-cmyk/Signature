@@ -616,7 +616,14 @@
          [통합 스크립트 블록]
     =========================================== -->
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4goHVoKhC0u4Ixwa4a7PccPBfteAOZqnlAipBCjLZbZ1zEeIpTa3peBtcKyL3QW61ZQ/exec"; 
+        // ==========================================
+        // 1. 전역 변수 및 초기 세팅
+        // ==========================================
+        // ★ 중요: 강사님의 실제 앱스 스크립트 주소입니다. 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBO-fZw-58tAfn_TvfIhDzpku5cPs1gpSDwpRJaexycgVW1AsZEJVhg5bpN_yRhwv1/exec"; 
+        
+        // ★ 추가: 백엔드와 통신하기 위한 보안 시크릿 키
+        const APP_SECRET_KEY = "Signature2026!@";
 
         let globalDB = null; 
         let currentUser = null;
@@ -626,41 +633,6 @@
         let currentTask = { id: '', date: '', range: '', className: '', checkClass: '', themeName: 'blue' };
         let currentSelectedQs = new Set();
         let selectedPhotos = [];
-        
-        let deferredPrompt;
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        const isIos = () => /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
-
-        const themeMapper = {
-            blue: { badge: "bg-blue-500/20 text-blue-400 border-blue-500/30", text: "text-blue-400", bg: "bg-blue-500", check: "checked-blue", toggle: "peer-checked:bg-blue-500" },
-            red: { badge: "bg-red-500/20 text-red-400 border-red-500/30", text: "text-red-400", bg: "bg-red-500", check: "checked-red", toggle: "peer-checked:bg-red-500" },
-            green: { badge: "bg-green-500/20 text-green-400 border-green-500/30", text: "text-green-400", bg: "bg-green-500", check: "checked-green", toggle: "peer-checked:bg-green-500" },
-            purple: { badge: "bg-purple-500/20 text-purple-400 border-purple-500/30", text: "text-purple-400", bg: "bg-purple-500", check: "checked-purple", toggle: "peer-checked:bg-purple-500" },
-            yellow: { badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", text: "text-yellow-400", bg: "bg-yellow-500", check: "checked-yellow", toggle: "peer-checked:bg-yellow-500" }
-        };
-
-        function normalizeKey(str) {
-            return str ? String(str).replace(/\s+/g, '') : '';
-        }
-
-        function getMyHomeworkCompletion(targetId, targetName) {
-            const hwCompletion = {};
-            const myLogs = (globalDB.hwLogs || []).filter(log => {
-                const logUserId = log.userId ? String(log.userId).trim() : "";
-                if (logUserId !== "") {
-                    return logUserId === targetId; 
-                }
-                return String(log.name).trim() === targetName; 
-            });
-
-            myLogs.forEach(log => {
-                if (log.date) {
-                    const key = normalizeKey(log.date);
-                    hwCompletion[key] = log;
-                }
-            });
-            return hwCompletion;
-        }
 
         async function initApp() {
             await fetchDatabase();
@@ -686,6 +658,7 @@
             if (splash) splash.classList.add('hidden-screen');
         }
 
+        // ★ 수정: 데이터를 받아올 때 암호(appKey)를 URL에 붙여서 보냅니다.
         async function fetchDatabase() {
             document.getElementById('screen-splash').classList.remove('hidden-screen');
             const splashText = document.getElementById('splash-text');
@@ -703,7 +676,9 @@
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
                     
-                    const fetchUrl = GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime() + "&attempt=" + attempt;
+                    // URL에 시크릿 키 파라미터 추가
+                    const fetchUrl = GOOGLE_SCRIPT_URL + "?appKey=" + encodeURIComponent(APP_SECRET_KEY) + "&t=" + new Date().getTime() + "&attempt=" + attempt;
+                    
                     const response = await fetch(fetchUrl, { 
                         method: 'GET',
                         mode: 'cors',
@@ -720,11 +695,16 @@
                     if (text.trim().startsWith('<')) throw new Error("서버 에러 페이지 반환");
 
                     try { 
-                        globalDB = JSON.parse(text); 
+                        const parsedData = JSON.parse(text); 
+                        // 백엔드에서 거부 메시지가 왔는지 확인
+                        if (parsedData.error && parsedData.error.includes("Access Denied")) {
+                            throw new Error("보안 인증 실패 (Key Error)");
+                        }
+                        globalDB = parsedData;
                         if (splashText) splashText.textContent = '학원 데이터베이스 연동 중...';
                         break; 
                     } catch (e) { 
-                        throw new Error("JSON 파싱 실패"); 
+                        throw new Error("JSON 파싱 실패 또는 인증 오류"); 
                     }
                 } catch (error) {
                     console.error(`Fetch Attempt ${attempt} Error:`, error);
@@ -741,14 +721,87 @@
         }
 
         async function refreshData() {
-            await fetchDatabase(); 
-            if (currentUser && currentUser.id && globalDB && globalDB.users) {
-                const currentId = currentUser.id; 
-                if (globalDB.users[currentId]) {
-                    currentUser = globalDB.users[currentId];
-                    currentUser.id = currentId; 
+        // ★ 수정: 데이터를 보낼 때 암호(appKey)를 짐 속에 몰래 숨겨 보냅니다.
+        async function submitDataAndCopy() {
+            const studentName = document.getElementById('modalStudentName').value.trim();
+            if (!studentName) {
+                alert("학생 이름을 입력해주세요!");
+                document.getElementById('modalStudentName').focus();
+                return;
+            }
+            
+            // 이름 기억하기
+            localStorage.setItem('signatureStudentName', studentName);
+
+            const isDone = modalToggleCheck.checked;
+            const qsArr = Array.from(currentSelectedQs).sort((a, b) => parseInt(a) - parseInt(b));
+            const qsText = qsArr.length > 0 ? qsArr.join(', ') : '없음';
+            const memo = document.getElementById('modalMemoInput').value.trim();
+            const stateText = isDone ? "완료" : "미완료";
+            const stateIcon = isDone ? "⭕ 완료" : "❌ 미완료";
+
+            // 1. 카카오톡용 텍스트 조립
+            let copyText = `[Signature ${currentTask.className} 숙제 인증]\n` +
+                           `🧑‍🎓 이름: ${studentName}\n` +
+                           `📅 일자: ${currentTask.weekNum}주차 D${currentTask.dayNum} (${currentTask.date})\n` +
+                           `📚 범위: ${currentTask.range}\n` +
+                           `✅ 상태: ${stateIcon}\n` +
+                           `❓ 질문문항: ${qsText}\n`;
+            if (memo) copyText += `📝 코멘트: ${memo}\n`;
+
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = copyText;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px"; 
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy'); 
+                textArea.remove();
+            } catch (err) {
+                console.error("클립보드 복사 실패:", err);
+            }
+
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+
+            try {
+                const base64Images = [];
+                if (selectedPhotos.length > 0) {
+                    for (let file of selectedPhotos) {
+                        const encoded = await resizeAndEncodeImage(file);
+                        base64Images.push(encoded);
+                    }
                 }
-                applyLoginState(); 
+
+                // 구글 스프레드시트로 전송할 데이터 페이로드에 보안 키 추가
+                const payload = {
+                    appKey: APP_SECRET_KEY, // ★ 추가: 서버로 데이터 보낼 때 통행증 제시
+                    name: studentName,
+                    className: currentTask.className,
+                    date: `${currentTask.weekNum}주차 D${currentTask.dayNum} (${currentTask.date})`,
+                    range: currentTask.range,
+                    status: stateText,
+                    questions: qsText,
+                    memo: memo,
+                    images: base64Images
+                };
+
+                if (GOOGLE_SCRIPT_URL.startsWith("https://script.google.com/")) {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                }
+            } catch (error) {
+                console.error("스프레드시트 전송 오류:", error);
+            } finally {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                executeKakaoRedirect(qsArr);
             }
         }
 
