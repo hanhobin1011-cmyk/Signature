@@ -1,11 +1,12 @@
 // 캐시 버전 (업데이트 시 숫자를 올리면 기기의 이전 캐시가 강제 초기화됩니다)
-const CACHE_NAME = 'signature-app-v4';
+const CACHE_NAME = 'signature-app-v5';
 
 // 오프라인에서도 앱이 열리도록 돕는 최소한의 핵심 파일들
+// ★ 수정: 파일명에 띄어쓰기가 있는 경우 %20으로 인코딩하여 캐시 에러 방지
 const urlsToCache = [
   './',
-  './Signature App.html',
-  './Install.html', // 앱 설치 안내 페이지 추가
+  './Signature%20App.html',
+  './Install.html',
   './manifest.json',
   './icon-192x192.png',
   './icon-512x512.png'
@@ -17,7 +18,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('[ServiceWorker] Caching App Shell');
-      return cache.addAll(urlsToCache).catch(err => console.warn('Cache error:', err));
+      return cache.addAll(urlsToCache).catch(err => console.warn('[ServiceWorker] Cache addAll error:', err));
     })
   );
 });
@@ -43,16 +44,21 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const reqUrl = event.request.url;
 
+  // ★ 방어막: http나 https로 시작하는 정상적인 웹 요청만 처리 (크롬 확장프로그램 에러 원천 차단)
+  if (!reqUrl.startsWith('http')) {
+    return;
+  }
+
   // [전략 A] 외부 API 통신: 캐시 절대 금지 (무조건 네트워크 직행)
   if (reqUrl.includes('script.google.com') || 
       reqUrl.includes('googleusercontent.com') || 
       reqUrl.includes('api.telegram.org') || 
       reqUrl.includes('kakaoapi')) {
-    return event.respondWith(fetch(event.request));
+    event.respondWith(fetch(event.request));
+    return;
   }
 
   // [전략 B] 메인 HTML 파일: Network-First (항상 최신 코드 유지)
-  // 인터넷이 연결되어 있으면 새 코드를 받고, 오프라인일 때만 폰에 저장된 화면을 보여줍니다.
   if (event.request.mode === 'navigate' || event.request.headers.get('accept').includes('text/html')) {
     event.respondWith(
       fetch(event.request)
@@ -64,7 +70,7 @@ self.addEventListener('fetch', event => {
         .catch(() => {
           // 인터넷이 끊겼을 때 캐시된 HTML 반환
           return caches.match(event.request).then(cachedResponse => {
-            return cachedResponse || caches.match('./Signature App.html'); 
+            return cachedResponse || caches.match('./Signature%20App.html'); 
           });
         })
     );
@@ -72,10 +78,10 @@ self.addEventListener('fetch', event => {
   }
 
   // [전략 C] 이미지, 아이콘 등 정적 리소스: Stale-while-revalidate
-  // 일단 빠른 로딩을 위해 폰에 저장된 캐시를 먼저 보여주고, 백그라운드에서 몰래 새 파일로 교체해 둡니다.
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       const fetchPromise = fetch(event.request).then(networkResponse => {
+        // 정상적인 응답(200)일 때만 캐시를 갱신
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
