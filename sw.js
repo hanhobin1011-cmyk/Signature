@@ -1,25 +1,37 @@
-const CACHE_NAME = 'signature-app-v3-stale';
+// 캐시 버전 (업데이트 시 숫자를 올리면 기기의 이전 캐시가 강제 초기화됩니다)
+const CACHE_NAME = 'signature-app-v4';
 
-// 최소한의 껍데기만 캐싱 (오프라인 지원용)
+// 오프라인에서도 앱이 열리도록 돕는 최소한의 핵심 파일들
 const urlsToCache = [
   './',
   './Signature App.html',
+  './Install.html', // 앱 설치 안내 페이지 추가
   './manifest.json',
   './icon-192x192.png',
   './icon-512x512.png'
 ];
 
+// 1. 설치 (Install) - 새로운 서비스워커 대기 없이 즉시 적용
 self.addEventListener('install', event => {
-  self.skipWaiting(); // 즉시 새 워커 활성화
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[ServiceWorker] Caching App Shell');
+      return cache.addAll(urlsToCache).catch(err => console.warn('Cache error:', err));
+    })
+  );
 });
 
+// 2. 활성화 (Activate) - 이전 버전의 캐시 쓰레기 청소
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) return caches.delete(cacheName); // 이전 버전 찌꺼기 삭제
+          if (cacheName !== CACHE_NAME) {
+            console.log('[ServiceWorker] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
       );
     })
@@ -27,28 +39,52 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// 전략: Stale-while-revalidate (일단 캐시를 보여주고, 뒤에서 몰래 네트워크로 갱신함)
+// 3. 네트워크 가로채기 (Fetch) - 스마트 하이브리드 캐시 전략
 self.addEventListener('fetch', event => {
-  // 구글 스크립트 API 요청은 절대 캐시하지 않고 무조건 네트워크 통과
-  if (event.request.url.includes('script.google.com')) {
-    event.respondWith(fetch(event.request));
+  const reqUrl = event.request.url;
+
+  // [전략 A] 외부 API 통신: 캐시 절대 금지 (무조건 네트워크 직행)
+  if (reqUrl.includes('script.google.com') || 
+      reqUrl.includes('googleusercontent.com') || 
+      reqUrl.includes('api.telegram.org') || 
+      reqUrl.includes('kakaoapi')) {
+    return event.respondWith(fetch(event.request));
+  }
+
+  // [전략 B] 메인 HTML 파일: Network-First (항상 최신 코드 유지)
+  // 인터넷이 연결되어 있으면 새 코드를 받고, 오프라인일 때만 폰에 저장된 화면을 보여줍니다.
+  if (event.request.mode === 'navigate' || event.request.headers.get('accept').includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          return networkResponse;
+        })
+        .catch(() => {
+          // 인터넷이 끊겼을 때 캐시된 HTML 반환
+          return caches.match(event.request).then(cachedResponse => {
+            return cachedResponse || caches.match('./Signature App.html'); 
+          });
+        })
+    );
     return;
   }
 
+  // [전략 C] 이미지, 아이콘 등 정적 리소스: Stale-while-revalidate
+  // 일단 빠른 로딩을 위해 폰에 저장된 캐시를 먼저 보여주고, 백그라운드에서 몰래 새 파일로 교체해 둡니다.
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       const fetchPromise = fetch(event.request).then(networkResponse => {
-        // 네트워크에서 성공적으로 가져오면 캐시 업데이트
-        if(networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
         }
         return networkResponse;
-      }).catch(() => {
-          // 오프라인일 때 처리 로직 (생략 가능)
+      }).catch(err => {
+        console.warn('[ServiceWorker] Fetch failed, keeping offline mode', err);
       });
 
-      // 캐시가 있으면 즉시 반환(빠른 로딩), 없으면 네트워크 응답 대기
       return cachedResponse || fetchPromise;
     })
   );
