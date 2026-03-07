@@ -707,10 +707,8 @@
                 badge.textContent = "👪 학부모 계정";
                 badge.className = `inline-block px-2.5 py-1 rounded-md text-xs font-bold mb-2 border ${tData.badge}`;
                 
-                let childNameStr = "자녀";
-                if (currentUser.childId && publicData.users && publicData.users[currentUser.childId]) { 
-                    childNameStr = publicData.users[currentUser.childId].name; 
-                } // 부모 계정 정보 업데이트 시 이름 매핑 로직 (서버에서 받은 privateData 기반)
+                // ★ 수정: 백엔드에서 넘겨준 자녀의 진짜 이름을 표시하도록 수정 (에러 발생 원인 제거됨)
+                let childNameStr = currentUser.childName ? currentUser.childName : "자녀"; 
                 
                 classInfo.textContent = `자녀: ${escapeHTML(childNameStr)} 학생 (${escapeHTML(currentUser.className)})`;
                 document.getElementById('menu-homework').classList.add('hidden');
