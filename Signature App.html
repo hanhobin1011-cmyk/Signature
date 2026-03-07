@@ -5,45 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>한호빈T Signature 관리 어플리케이션</title>
 
-    <!-- ====== PWA 설정을 위한 태그 ====== --> 
+    <!-- ====== PWA 설정을 위한 태그 ====== -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link rel="apple-touch-icon" href="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png">
     
-    <!-- ★ 진단 및 서비스 워커 강제 등록 로직 -->
+    <!-- 순수 PWA 서비스 워커 등록 -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // URL 파라미터를 붙여 브라우저 캐시를 무시하고 무조건 최신 파일을 강제 다운로드
-                const swUrl = 'sw.js?v=' + new Date().getTime();
-                navigator.serviceWorker.register(swUrl, { scope: './' })
-                    .then(reg => {
-                        console.log('SW Registration Success:', reg);
-                    })
-                    .catch(err => {
-                        // 만약 파일 경로를 못 찾거나 에러가 나면 화면에 즉시 알림창 표시
-                        alert('🚨 서비스워커 등록 실패!\n원인: ' + err.message + '\n\nGitHub 파일 경로(sw.js)를 확인해주세요.');
-                    });
+                navigator.serviceWorker.register('sw.js?v=' + new Date().getTime()).catch(err => console.log('SW failed: ', err));
             });
         }
     </script>
-
-    <!-- ====== 🔔 OneSignal 푸시 알림 연동 코드 ====== -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "9c054f87-75b0-4566-bb6f-fe7bbe969911", 
-          // 상대 경로를 사용하여 폴더 위치와 무관하게 무조건 찾아가도록 설정
-          serviceWorkerPath: "sw.js", 
-          serviceWorkerParam: { scope: "./" }, 
-          notifyButton: { enable: false },
-          promptOptions: { slidedown: { prompts: [] } }
-        });
-      });
-    </script>
-    <!-- ================================================== -->
+    <!-- ======================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
@@ -66,6 +41,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         
+        /* 다이내믹 테마 지원을 위한 체크박스 클래스 */
         .checked-blue { background-color: #3b82f6; border-color: #3b82f6; color: white; }
         .checked-red { background-color: #ef4444; border-color: #ef4444; color: white; }
         .checked-green { background-color: #22c55e; border-color: #22c55e; color: white; }
@@ -80,11 +56,11 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col selection:bg-yellow-500 selection:text-white">
 
-    <!-- [화면 0] 스플래시 화면 -->
+    <!-- [화면 0] 앱 시작 및 새로고침 시 스플래시 화면 -->
     <div id="screen-splash" class="flex-1 flex flex-col items-center justify-center p-6 fixed inset-0 bg-[#121212] z-[100]">
         <img src="https://hanhobin1011-cmyk.github.io/Signature/icon-512x512.png" alt="Signature Icon" class="w-20 h-20 rounded-[22%] mb-8 animate-pulse shadow-lg shadow-yellow-500/20 border border-gray-800 object-cover">
         <svg class="animate-spin h-8 w-8 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        <p id="splash-text" class="text-gray-400 font-bold text-sm text-center">학원 데이터베이스 연동 중...</p>
+        <p id="splash-text" class="text-gray-400 font-bold text-sm">학원 데이터베이스 연동 중...</p>
     </div>
 
     <!-- [화면 1] 로그인 화면 -->
@@ -137,32 +113,7 @@
         <div class="mb-8 mt-2 relative">
             <div id="userBadge" class="inline-block px-2.5 py-1 rounded-md text-xs font-bold mb-2"></div>
             <h2 class="text-2xl font-bold text-white"><span id="userName" class="text-yellow-400"></span> 님,<br>오늘도 환영합니다!</h2>
-            
-            <div class="flex justify-between items-end mt-2">
-                <p id="userClassInfo" class="text-sm text-gray-400 font-medium"></p>
-                <!-- 영구적인 알림 수동 설정 버튼 -->
-                <button onclick="showPushBanner()" class="text-[11px] bg-gray-800 text-blue-400 px-2.5 py-1.5 rounded-lg border border-gray-700 hover:text-white hover:bg-blue-600 transition-all flex items-center gap-1.5 shadow-sm font-bold">
-                    🔔 알림 설정
-                </button>
-            </div>
-        </div>
-
-        <!-- 푸시 알림 유도 배너 -->
-        <div id="pushBannerWrapper" class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0 transform -translate-y-2">
-            <div id="pushSubscribeBanner" class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 mb-6 shadow-lg border border-blue-500/30 relative">
-                <button onclick="dismissPushBanner()" class="absolute top-2 right-2 text-blue-200 hover:text-white p-1 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-                <div class="flex justify-between items-center mt-1">
-                    <div>
-                        <p class="text-white font-bold text-sm flex items-center gap-1.5"><span class="animate-bounce">🔔</span> 실시간 알림 켜기</p>
-                        <p class="text-blue-100 text-[11px] mt-1 font-medium leading-tight">숙제 피드백, 공지사항을<br>가장 빠르게 받아보세요!</p>
-                    </div>
-                    <button onclick="requestPushPermission()" class="bg-white text-blue-600 font-black text-xs px-4 py-2.5 rounded-xl shadow-md active:scale-95 transition-transform whitespace-nowrap">
-                        설정하기
-                    </button>
-                </div>
-            </div>
+            <p id="userClassInfo" class="text-sm text-gray-400 font-medium mt-2"></p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
@@ -174,7 +125,7 @@
                     <span class="text-xs font-bold bg-yellow-500 text-black px-2 py-1 rounded-full animate-pulse">진행중</span>
                 </div>
                 <h3 class="text-white font-bold text-lg">매일 과제 제출</h3>
-                <p class="text-gray-400 text-xs mt-1">오늘의 숙제를 서버로 바로 제출하세요.</p>
+                <p class="text-gray-400 text-xs mt-1">오늘의 숙제를 점검하고 인증하세요.</p>
             </button>
 
             <button onclick="navTo('dashboard')" class="bg-[#1E1E1E] border border-gray-700 p-5 rounded-2xl text-left hover:border-blue-500 hover:bg-gray-800 transition-all group col-span-2">
@@ -212,7 +163,7 @@
             </button>
         </div>
         <div class="mt-12 text-center pb-4 border-t border-gray-800 pt-6">
-            <p class="text-gray-500 text-xs font-bold">Signature App v2.6 <span class="font-normal text-gray-600">(알림 핫픽스)</span></p>
+            <p class="text-gray-500 text-xs font-bold">Signature App v2.7 <span class="font-normal text-gray-600">(최적화 완료)</span></p>
             <p class="text-gray-600 text-[10px] mt-1">&copy; 2026 수학강사 한호빈. All rights reserved.</p>
         </div>
     </main>
@@ -223,7 +174,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> 메인으로
         </button>
         <div class="flex justify-between items-end mb-6">
-            <div><span id="hwClassBadge" class="px-2 py-1 rounded text-xs font-bold mb-2 inline-block border"></span><h2 class="text-2xl font-bold text-white tracking-tight">매일 숙제 제출</h2></div>
+            <div><span id="hwClassBadge" class="px-2 py-1 rounded text-xs font-bold mb-2 inline-block border"></span><h2 class="text-2xl font-bold text-white tracking-tight">매일 과제 제출</h2></div>
             <div class="text-right"><p class="text-xs text-gray-500 mb-1">학습 목표</p><p id="hwTargetText" class="text-sm font-bold text-white"></p></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="my-homework-container"></div>
@@ -906,19 +857,6 @@
             renderReports();
             if (currentUser.role === 'student') renderHomeworkList();
             renderDashboard(); 
-            
-            if (window.OneSignalDeferred) {
-                window.OneSignalDeferred.push(async function(OneSignal) {
-                    await OneSignal.login(currentUser.id);
-                    await OneSignal.User.addTags({
-                        role: currentUser.role,
-                        className: currentUser.className,
-                        name: currentUser.name
-                    });
-                });
-            }
-            
-            checkPushStatus();
         }
 
         function logout() {
@@ -929,106 +867,12 @@
             document.getElementById('loginPw').value = '';
             document.getElementById('app-header').classList.add('hidden-screen');
             
-            if (window.OneSignalDeferred) {
-                window.OneSignalDeferred.push(async function(OneSignal) {
-                    await OneSignal.logout();
-                });
-            }
-
-            const wrapper = document.getElementById('pushBannerWrapper');
-            if (wrapper) {
-                wrapper.classList.remove('max-h-[300px]', 'opacity-100', 'translate-y-0');
-                wrapper.classList.add('max-h-0', 'opacity-0', '-translate-y-4');
-            }
-            
             showScreenOnly('login');
             history.pushState({ screen: 'login' }, "", "#login");
         }
 
         // ==========================================
-        // 🔔 푸시 알림
-        // ==========================================
-        function checkPushStatus() {
-            if (!currentUser) return;
-            if (!window.OneSignalDeferred) return;
-            
-            OneSignalDeferred.push(async function(OneSignal) {
-                const isOptedIn = OneSignal.User.PushSubscription.optedIn;
-                const isDismissed = localStorage.getItem('hideSignaturePushBanner_' + currentUser.id) === 'true';
-                
-                if (isOptedIn || isDismissed) {
-                    hideBannerSmoothly();
-                } else {
-                    setTimeout(() => { showBannerSmoothly(); }, 300);
-                }
-
-                OneSignal.User.PushSubscription.addEventListener("change", function(subscription) {
-                    if (subscription.current.optedIn) {
-                        hideBannerSmoothly();
-                    }
-                });
-            });
-        }
-
-        function showBannerSmoothly() {
-            const wrapper = document.getElementById('pushBannerWrapper');
-            if (wrapper) {
-                wrapper.classList.remove('max-h-0', 'opacity-0', '-translate-y-2');
-                wrapper.classList.add('max-h-[300px]', 'opacity-100', 'translate-y-0');
-            }
-        }
-
-        function hideBannerSmoothly() {
-            const wrapper = document.getElementById('pushBannerWrapper');
-            if (wrapper) {
-                wrapper.classList.remove('max-h-[300px]', 'opacity-100', 'translate-y-0');
-                wrapper.classList.add('max-h-0', 'opacity-0', '-translate-y-2');
-            }
-        }
-
-        function dismissPushBanner() {
-            if (!currentUser) return;
-            localStorage.setItem('hideSignaturePushBanner_' + currentUser.id, 'true'); 
-            hideBannerSmoothly();
-        }
-
-        function showPushBanner() {
-            if (!currentUser) return;
-            localStorage.removeItem('hideSignaturePushBanner_' + currentUser.id); 
-            showBannerSmoothly();
-            
-            const wrapper = document.getElementById('pushBannerWrapper');
-            if (wrapper) {
-                setTimeout(() => {
-                    wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-                }, 200);
-            }
-        }
-
-        function requestPushPermission() {
-            if (!currentUser) return;
-            
-            localStorage.setItem('hideSignaturePushBanner_' + currentUser.id, 'true');
-            hideBannerSmoothly();
-
-            if (window.Notification && Notification.permission === 'denied') {
-                alert("스마트폰(브라우저) 설정에서 알림이 강제로 차단되어 있습니다.\n\n해결방법: [브라우저 주소창 왼쪽 자물쇠 아이콘] 또는 폰의 [설정] > [앱 권한] > [알림] 메뉴에서 '허용'으로 변경해 주세요.");
-                return;
-            }
-            
-            if (window.OneSignalDeferred) {
-                OneSignalDeferred.push(async function(OneSignal) {
-                    try {
-                        await OneSignal.Notifications.requestPermission();
-                    } catch (error) {
-                        console.error("푸시 권한 요청 오류:", error);
-                    }
-                });
-            }
-        }
-
-        // ==========================================
-        // 🚀 PWA 앱 설치 로직 (중복 에러 완벽 해결)
+        // 🚀 PWA 앱 설치 로직 (수동 버튼용)
         // ==========================================
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -1040,7 +884,6 @@
             if (banner) banner.classList.add('translate-y-full');
         }
 
-        // 앱 설치 버튼을 눌렀을 때 호출되는 함수
         async function handleInstallClick() {
             if (isIos()) {
                 window.location.href = './Install.html';
@@ -1603,7 +1446,7 @@
             const data = taskStore[id];
             const tData = themeMapper[currentTask.themeName] || themeMapper['blue'];
 
-            document.getElementById('modalDateTitle').textContent = `${date} 숙제`;
+            document.getElementById('modalDateTitle').textContent = `${date} 과제`;
             document.getElementById('modalRangeDesc').textContent = range;
             document.getElementById('modalStatusCheck').checked = data.isDone;
             document.getElementById('modalStatusText').textContent = data.isDone ? '완료' : '미완료';
@@ -2001,4 +1844,3 @@
     </script>
 </body>
 </html>
-
