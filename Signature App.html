@@ -837,14 +837,31 @@
             else showScreenOnly(currentUser ? 'main' : 'login');
         });
 
+        // ★ 신규 추가: 클라이언트 측 비밀번호 단방향 암호화(해싱) 엔진
+        async function getSHA256Hash(text) {
+            const msgBuffer = new TextEncoder().encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         function checkAutoLogin() {
             const savedId = localStorage.getItem('signature_id');
-            const savedPw = localStorage.getItem('signature_pw');
+            // ★ 수정: 평문 비밀번호 대신 해시(Hash)된 토큰을 확인합니다.
+            const savedHash = localStorage.getItem('signature_pw_hash');
+            const oldPlainPw = localStorage.getItem('signature_pw');
+
+            // 기존 평문 비밀번호가 남아있다면 보안을 위해 즉시 삭제 (강제 재로그인 유도)
+            if (oldPlainPw) {
+                localStorage.removeItem('signature_pw');
+            }
+
             if (!globalDB || !globalDB.users) { showScreenOnly('login'); return; }
 
-            if (savedId && savedPw && globalDB.users[savedId]) {
+            if (savedId && savedHash && globalDB.users[savedId]) {
                 const user = globalDB.users[savedId];
-                if (user.pw === savedPw) {
+                // 서버에서 받은 해시된 비밀번호와 스마트폰 로컬의 해시가 일치하는지 확인
+                if (user.pw === savedHash) {
                     user.id = savedId;
                     currentUser = user;
                     applyLoginState();
@@ -857,18 +874,23 @@
             history.replaceState({ screen: 'login' }, "", "#login");
         }
 
-        function tryLogin() {
+        // ★ 수정: async 키워드 추가 및 로그인 로직 개편
+        async function tryLogin() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value.trim();
             if (!globalDB || !globalDB.users) return showLoginErrorModal("서버 데이터를 불러오지 못했습니다.<br>네트워크 연결을 확인해주세요.");
             if (!id || !pw) return showLoginErrorModal("아이디와 비밀번호를 모두 입력해주세요.");
             
             const user = globalDB.users[id];
-            if (user && user.pw === pw) {
+            // ★ 핵심: 입력받은 평문 비밀번호를 즉시 해싱하여 서버의 값과 비교
+            const hashedInputPw = await getSHA256Hash(pw + APP_SECRET_KEY);
+
+            if (user && user.pw === hashedInputPw) {
                 user.id = id;
                 currentUser = user;
                 localStorage.setItem('signature_id', id);
-                localStorage.setItem('signature_pw', pw);
+                // ★ 핵심: 평문 대신 복호화가 불가능한 해시값을 로컬 스토리지에 안전하게 보관
+                localStorage.setItem('signature_pw_hash', hashedInputPw);
                 applyLoginState();
                 navTo('main');
             } else {
@@ -915,7 +937,8 @@
         function logout() {
             currentUser = null;
             localStorage.removeItem('signature_id');
-            localStorage.removeItem('signature_pw');
+            // ★ 수정: 로그아웃 시 해시값 토큰 삭제
+            localStorage.removeItem('signature_pw_hash');
             document.getElementById('loginId').value = '';
             document.getElementById('loginPw').value = '';
             document.getElementById('app-header').classList.add('hidden-screen');
