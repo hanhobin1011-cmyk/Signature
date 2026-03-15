@@ -1,8 +1,7 @@
-// 캐시 버전 (업데이트 시 숫자를 올리면 기기의 이전 캐시가 강제 초기화됩니다)
-const CACHE_NAME = 'signature-app-v5';
+const CACHE_VERSION = 'v11';
+const CACHE_ENV = 'prod'; // 🟢 운영(PROD) 배포 환경으로 전환 완료
+const CACHE_NAME = `signature-app-${CACHE_VERSION}-${CACHE_ENV}`;
 
-// 오프라인에서도 앱이 열리도록 돕는 최소한의 핵심 파일들
-// ★ 수정: 파일명에 띄어쓰기가 있는 경우 %20으로 인코딩하여 캐시 에러 방지
 const urlsToCache = [
   './',
   './Signature%20App.html',
@@ -12,25 +11,22 @@ const urlsToCache = [
   './icon-512x512.png'
 ];
 
-// 1. 설치 (Install) - 새로운 서비스워커 대기 없이 즉시 적용
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('[ServiceWorker] Caching App Shell');
-      return cache.addAll(urlsToCache).catch(err => console.warn('[ServiceWorker] Cache addAll error:', err));
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+      .catch(err => console.error('Service Worker Install Error:', err))
   );
 });
 
-// 2. 활성화 (Activate) - 이전 버전의 캐시 쓰레기 청소
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[ServiceWorker] Deleting old cache:', cacheName);
+            console.log(`[Service Worker] Deleting old cache: ${cacheName}`);
             return caches.delete(cacheName);
           }
         })
@@ -40,58 +36,84 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// 3. 네트워크 가로채기 (Fetch) - 스마트 하이브리드 캐시 전략
 self.addEventListener('fetch', event => {
-  const reqUrl = event.request.url;
+  const req = event.request;
+  const reqUrl = req.url;
 
-  // ★ 방어막: http나 https로 시작하는 정상적인 웹 요청만 처리 (크롬 확장프로그램 에러 원천 차단)
-  if (!reqUrl.startsWith('http')) {
-    return;
-  }
+  // 1. http/https 프로토콜이 아닌 경우 처리 안 함 (크롬 익스텐션 등 방어)
+  if (!reqUrl.startsWith('http')) return;
 
-  // [전략 A] 외부 API 통신: 캐시 절대 금지 (무조건 네트워크 직행)
+  // 2. POST 요청 제외 (숙제 제출, 로그인 등 데이터 전송)
+  if (req.method === 'POST') return; 
+
+  // 3. 백엔드 API 및 관리자/보안 파일 캐싱 절대 배제
   if (reqUrl.includes('script.google.com') || 
       reqUrl.includes('googleusercontent.com') || 
-      reqUrl.includes('api.telegram.org') || 
-      reqUrl.includes('kakaoapi')) {
-    event.respondWith(fetch(event.request));
-    return;
+      reqUrl.includes('Admin.html')) {
+    // 네트워크로 바로 통과시킵니다.
+    return; 
   }
 
-  // [전략 B] 메인 HTML 파일: Network-First (항상 최신 코드 유지)
-  if (event.request.mode === 'navigate' || event.request.headers.get('accept').includes('text/html')) {
+  // 4. HTML 문서 요청 처리 (Network-First, 보수적 Fallback)
+  const acceptHeader = req.headers.get('accept');
+  // acceptHeader가 null이 아닐 때만 includes를 호출하도록 엄격한 null-safe 처리
+  const isHtmlRequest = req.mode === 'navigate' || (acceptHeader && typeof acceptHeader.includes === 'function' && acceptHeader.includes('text/html'));
+
+  if (isHtmlRequest) {
     event.respondWith(
-      fetch(event.request)
+      fetch(req)
         .then(networkResponse => {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          // 네트워크 응답 성공 시 캐시 최신화
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(req, responseClone));
+          }
           return networkResponse;
         })
-        .catch(() => {
-          // 인터넷이 끊겼을 때 캐시된 HTML 반환
-          return caches.match(event.request).then(cachedResponse => {
-            return cachedResponse || caches.match('./Signature%20App.html'); 
+        .catch(async () => {
+          // 네트워크 실패(오프라인 등) 시 캐시 폴백 (보수적 운영)
+          console.warn('[Service Worker] Network failed, serving HTML from cache.');
+          
+          const cachedResponse = await caches.match(req);
+          if (cachedResponse) return cachedResponse;
+          
+          // 요청한 HTML이 캐시에 없을 경우 기본 앱 화면으로 폴백
+          const fallback = await caches.match('./Signature%20App.html');
+          if (fallback) return fallback;
+          
+          // 완전히 오프라인이고 캐시도 없는 경우 에러 텍스트 응답
+          return new Response("오프라인 상태이며 캐시된 화면이 없습니다. 인터넷 연결을 확인해주세요.", {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
           });
         })
     );
     return;
   }
 
-  // [전략 C] 이미지, 아이콘 등 정적 리소스: Stale-while-revalidate
+  // 5. 정적 리소스(JS, CSS, 이미지 등) 요청 (Stale-While-Revalidate 전략)
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      const fetchPromise = fetch(event.request).then(networkResponse => {
-        // 정상적인 응답(200)일 때만 캐시를 갱신
+    caches.match(req).then(cachedResponse => {
+      if (cachedResponse) {
+        // 이미지가 캐시에 있으면 먼저 바로 보여주고, 백그라운드에서 몰래 새 이미지가 있는지 확인해서 갱신
+        fetch(req).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then(cache => cache.put(req, networkResponse));
+          }
+        }).catch(() => {/* 오프라인 시 무시 */});
+        return cachedResponse;
+      }
+
+      // 캐시에 없으면 다운로드 후 캐시에 저장
+      return fetch(req).then(networkResponse => {
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(req, responseClone));
         }
         return networkResponse;
       }).catch(err => {
-        console.warn('[ServiceWorker] Fetch failed, keeping offline mode', err);
+        console.warn('[Service Worker] Static resource fetch failed', err);
       });
-
-      return cachedResponse || fetchPromise;
     })
   );
 });
