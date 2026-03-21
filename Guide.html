@@ -47,19 +47,19 @@
         }
 
         /* 커스텀 스크롤바 */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* 모바일 상단 네비게이션 및 가로 스크롤 요소 스크롤바 숨김 */
+        /* 가로 스크롤 요소 스크롤바 숨김 */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* 앵커 오프셋 (헤더 높이만큼 띄우기) */
-        section { scroll-margin-top: 5rem; }
+        section { scroll-margin-top: 6rem; }
 
-        /* 아코디언 (FAQ) 애니메이션 처리용 */
+        /* 아코디언 애니메이션 */
         details > summary { list-style: none; cursor: pointer; }
         details > summary::-webkit-details-marker { display: none; }
         details[open] summary ~ * { animation: slideDown 0.3s ease-in-out; }
@@ -67,628 +67,534 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* 3D 목업 효과용 CSS */
+        .perspective-container { perspective: 2000px; }
+        .mockup-left { transform: rotateY(20deg) rotateZ(-3deg) translateX(40px) scale(0.85); z-index: 10; opacity: 0.6; transition: all 0.5s ease; }
+        .mockup-right { transform: rotateY(-20deg) rotateZ(3deg) translateX(-40px) scale(0.85); z-index: 10; opacity: 0.6; transition: all 0.5s ease; }
+        .mockup-center { z-index: 20; transform: scale(1); transition: all 0.5s ease; box-shadow: 0 0 60px rgba(99,102,241,0.4); }
+        
+        .perspective-container:hover .mockup-left { transform: rotateY(10deg) rotateZ(-1deg) translateX(-20px) scale(0.9); opacity: 0.8; }
+        .perspective-container:hover .mockup-right { transform: rotateY(-10deg) rotateZ(1deg) translateX(20px) scale(0.9); opacity: 0.8; }
+        .perspective-container:hover .mockup-center { transform: scale(1.02); }
+
+        /* 드래그 상태일 때 스크롤 스냅 무시 (부드러운 드래그를 위해) */
+        .drag-scroll.active { scroll-snap-type: none; }
     </style>
 </head>
-<body class="antialiased selection:bg-brand-accent selection:text-white">
+<body class="antialiased selection:bg-brand-accent selection:text-white relative">
 
     <!-- ==========================================
-         [상단/모바일 Sticky 네비게이션]
+         [상단 고정 네비게이션바 (PC & Mobile)]
          ========================================== -->
-    <nav class="md:hidden sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-brand-border py-3 px-4 shadow-lg">
-        <div class="flex items-center gap-2 mb-2 px-1">
-            <span class="font-playfair italic font-black text-brand-light text-lg">Signature</span>
-            <span class="text-xs text-slate-400 font-bold tracking-tight">사용 가이드</span>
-        </div>
-        <div class="flex overflow-x-auto hide-scrollbar gap-2 pb-1">
-            <a href="#quick-start" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-surface border border-brand-border text-[13px] font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">빠른 시작</a>
-            <a href="#install" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-surface border border-brand-border text-[13px] font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">설치 및 로그인</a>
-            <a href="#features" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-surface border border-brand-border text-[13px] font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">주요 기능</a>
-            <a href="#homework" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-dark border border-brand-DEFAULT text-[13px] font-bold text-white shadow-sm transition">과제 제출</a>
-            <a href="#parents" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-surface border border-brand-border text-[13px] font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">학부모 안내</a>
-            <a href="#faq" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-surface border border-brand-border text-[13px] font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition">FAQ</a>
-        </div>
-    </nav>
-
-    <div class="flex flex-col md:flex-row min-h-screen max-w-[1400px] mx-auto">
-        
-        <!-- ==========================================
-             [PC 좌측 고정 사이드바 (TOC)]
-             ========================================== -->
-        <aside class="hidden md:block w-64 shrink-0 p-8 sticky top-0 h-screen overflow-y-auto border-r border-brand-border bg-slate-900/50">
-            <div class="mb-10">
-                <h1 class="font-playfair italic font-black text-3xl text-white tracking-tight leading-none mb-1">Signature</h1>
-                <p class="text-brand-light text-sm font-bold tracking-wide">STUDENT & PARENT GUIDE</p>
+    <header class="fixed top-0 inset-x-0 z-50 bg-slate-900/80 backdrop-blur-lg border-b border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- 로고 영역 -->
+            <div class="flex items-center gap-3">
+                <span class="font-playfair italic font-black text-brand-light text-2xl tracking-tight">Signature</span>
+                <span class="hidden sm:inline-block text-xs font-bold bg-slate-800 text-slate-300 px-2 py-1 rounded">사용 가이드</span>
             </div>
             
-            <nav class="flex flex-col gap-1 text-[14px]">
-                <p class="text-xs font-bold text-slate-500 mb-2 tracking-wider mt-4">시작하기</p>
-                <a href="#hero" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">홈 / 요약</a>
-                <a href="#quick-start" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">빠른 시작 안내</a>
-                <a href="#install" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">앱 설치 방법</a>
-                <a href="#login" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">로그인 안내</a>
-
-                <p class="text-xs font-bold text-slate-500 mb-2 tracking-wider mt-6">기능 안내</p>
-                <a href="#features" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">주요 메뉴 살펴보기</a>
-                <a href="#homework" class="px-3 py-2 rounded-lg text-brand-light font-bold hover:text-white hover:bg-brand-surface transition">과제 제출 상세 가이드</a>
-                <a href="#parents" class="px-3 py-2 rounded-lg text-brand-accent hover:text-white hover:bg-brand-surface transition">학부모 전용 기능</a>
-                <a href="#reports" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">테스트 리포트 안내</a>
-                <a href="#others" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">출결 / 시간표 / 공지</a>
-
-                <p class="text-xs font-bold text-slate-500 mb-2 tracking-wider mt-6">지원 및 부록</p>
-                <a href="#faq" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-surface transition">자주 묻는 질문 (FAQ)</a>
+            <!-- PC 링크 -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+                <a href="#quick-start" class="hover:text-white transition">빠른 시작</a>
+                <a href="#install" class="hover:text-white transition">앱 설치</a>
+                <a href="#features" class="hover:text-white transition">주요 기능</a>
+                <a href="#homework" class="text-brand-light font-bold hover:text-white transition">과제 제출</a>
+                <a href="#reports" class="hover:text-white transition">리포트</a>
+                <a href="#faq" class="hover:text-white transition">FAQ</a>
             </nav>
-        </aside>
 
-        <!-- ==========================================
-             [메인 콘텐츠 영역]
-             ========================================== -->
-        <main class="flex-1 w-full min-w-0">
+            <!-- CTA 버튼 -->
+            <div class="flex items-center gap-3">
+                <a href="./Signature%20App.html" class="hidden sm:flex px-4 py-2 bg-brand-DEFAULT hover:bg-brand-light text-white text-sm font-bold rounded-lg transition shadow-md items-center gap-1.5">
+                    앱 실행
+                </a>
+            </div>
+        </div>
+
+        <!-- 모바일 서브 네비게이션 (가로 스크롤) -->
+        <div class="md:hidden flex overflow-x-auto hide-scrollbar drag-scroll gap-2 px-4 py-2 bg-slate-900/95 border-t border-slate-800 cursor-grab">
+            <a href="#quick-start" class="shrink-0 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[13px] text-slate-300 pointer-events-none md:pointer-events-auto">빠른 시작</a>
+            <a href="#install" class="shrink-0 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[13px] text-slate-300 pointer-events-none md:pointer-events-auto">앱 설치</a>
+            <a href="#features" class="shrink-0 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[13px] text-slate-300 pointer-events-none md:pointer-events-auto">기능 안내</a>
+            <a href="#homework" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-dark border border-brand-DEFAULT text-[13px] font-bold text-white pointer-events-none md:pointer-events-auto">과제 제출</a>
+            <a href="#parents" class="shrink-0 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[13px] text-slate-300 pointer-events-none md:pointer-events-auto">학부모 안내</a>
+            <a href="#faq" class="shrink-0 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-[13px] text-slate-300 pointer-events-none md:pointer-events-auto">FAQ</a>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         [1. Hero 섹션 (중앙 정렬 풀스크린)]
+         ========================================== -->
+    <main class="pt-24 md:pt-32 pb-20 relative overflow-hidden">
+        <!-- 배경 다이내믹 그라데이션 & 빛 효과 -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800/40 via-slate-900 to-slate-900 -z-20"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-DEFAULT/20 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 text-center">
             
-            <!-- 1. Hero 섹션 -->
-            <section id="hero" class="relative px-6 py-16 md:px-16 md:py-24 overflow-hidden border-b border-brand-border">
-                <!-- 배경 장식 효과 -->
-                <div class="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 bg-brand-DEFAULT opacity-20 blur-[100px] rounded-full pointer-events-none"></div>
-                <div class="absolute bottom-0 left-0 -ml-32 -mb-32 w-80 h-80 bg-brand-accent opacity-10 blur-[80px] rounded-full pointer-events-none"></div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/80 border border-slate-700 backdrop-blur-md shadow-sm mb-6">
+                <span class="text-brand-light text-xs font-black tracking-widest uppercase">Student & Parent Guide</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.15] mb-6">
+                <span class="font-playfair italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-brand-light to-brand-accent pr-1">Signature</span> 앱<br class="hidden md:block"> 공식 사용 매뉴얼
+            </h1>
+            
+            <p class="text-slate-300 text-lg md:text-xl font-medium leading-relaxed max-w-2xl mx-auto mb-10">
+                학생과 학부모님이 앱을 가장 쉽게 설치하고 100% 활용하는 방법.<br class="hidden md:block">스마트한 학습 관리를 지금 시작해 보세요.
+            </p>
 
-                <div class="relative z-10 max-w-4xl mx-auto">
-                    <div class="flex items-center gap-4 mb-6">
-                        <img src="./icon-512x512.png" alt="Signature App Icon" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-lg border border-slate-700 bg-slate-800" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzFlMjliMyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iLjEwZW0iIGZpbGw9IiM2MzY2ZjEiIGZvbnQtc2l6ZT0iNTAlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5TPC90ZXh0Pjwvc3ZnPg=='">
-                        <div>
-                            <span class="inline-block px-3 py-1 rounded-full bg-brand-surface border border-brand-border text-brand-light text-xs font-bold mb-2">공식 매뉴얼</span>
-                            <h2 class="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">
-                                <span class="font-playfair italic font-normal text-brand-light">Signature</span> 앱<br class="hidden md:block"> 사용 가이드
-                            </h2>
-                        </div>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-3 mb-16 md:mb-24 relative z-30">
+                <a href="./Signature%20App.html" class="w-full sm:w-auto px-8 py-4 bg-brand-DEFAULT hover:bg-brand-light text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all flex justify-center items-center gap-2 text-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    앱 바로 실행하기
+                </a>
+                <a href="./Install.html" class="w-full sm:w-auto px-8 py-4 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white font-bold rounded-xl shadow-sm transition-all flex justify-center items-center gap-2 text-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    설치 가이드
+                </a>
+            </div>
+
+            <!-- 프리미엄 3D 스크린샷 쇼케이스 -->
+            <div class="relative w-full max-w-5xl mx-auto h-auto flex justify-center items-center perspective-container">
+                <!-- 좌측 이미지 (PC에서만 보임) -->
+                <div class="hidden md:block absolute left-0 md:left-10 lg:left-20 w-[240px] lg:w-[280px] mockup-left">
+                    <img src="Homework1.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x800/1e293b/818cf8?text=Homework1.jpg';" alt="과제 제출 화면" class="w-full h-auto rounded-[2rem] border-[6px] border-slate-800 shadow-2xl select-none" draggable="false">
+                </div>
+                
+                <!-- 우측 이미지 (PC에서만 보임) -->
+                <div class="hidden md:block absolute right-0 md:right-10 lg:right-20 w-[240px] lg:w-[280px] mockup-right">
+                    <img src="Report1.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x800/1e293b/818cf8?text=Report1.jpg';" alt="테스트 리포트 화면" class="w-full h-auto rounded-[2rem] border-[6px] border-slate-800 shadow-2xl select-none" draggable="false">
+                </div>
+                
+                <!-- 중앙 메인 이미지 (항상 보임) -->
+                <div class="relative w-[260px] sm:w-[300px] lg:w-[320px] mockup-center">
+                    <div class="absolute top-0 inset-x-0 h-6 bg-slate-900 rounded-b-xl w-1/2 mx-auto z-20"></div>
+                    <img src="Login.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x800/0f172a/6366f1?text=Login.jpg';" alt="로그인 화면" class="w-full h-auto rounded-[2.5rem] border-[8px] border-slate-900 shadow-2xl select-none" draggable="false">
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- ==========================================
+         [본문 컨텐츠 영역]
+         ========================================== -->
+    <div class="bg-slate-900 relative">
+        <!-- 구분선 및 배경 효과 -->
+        <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+        
+        <div class="max-w-4xl mx-auto px-6 py-20 space-y-28">
+
+            <!-- 2. 빠른 시작 안내 -->
+            <section id="quick-start" class="scroll-mt-32">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-white mb-4">빠른 시작 가이드</h2>
+                    <p class="text-slate-400">앱을 처음 사용하는 분들을 위한 필수 5단계 흐름입니다.</p>
+                </div>
+
+                <div class="relative border-l-2 border-slate-800 ml-4 md:ml-8 pl-8 space-y-10">
+                    <div class="relative">
+                        <div class="absolute -left-[43px] md:-left-[49px] top-0 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_15px_rgba(99,102,241,0.4)]">1</div>
+                        <h3 class="text-xl font-bold text-white mb-2">앱 설치 및 접속</h3>
+                        <p class="text-[15px] text-slate-400 leading-relaxed">학원에서 카카오톡으로 전달받은 링크를 눌러 브라우저(Chrome/Safari)를 열고, 스마트폰 바탕화면에 앱을 설치합니다.</p>
                     </div>
+                    <div class="relative">
+                        <div class="absolute -left-[43px] md:-left-[49px] top-0 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_15px_rgba(99,102,241,0.4)]">2</div>
+                        <h3 class="text-xl font-bold text-white mb-2">초기 계정 로그인</h3>
+                        <p class="text-[15px] text-slate-400 leading-relaxed">안내받은 학생용 또는 학부모용 초기 아이디와 비밀번호를 입력하여 로그인합니다.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[43px] md:-left-[49px] top-0 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_15px_rgba(99,102,241,0.4)]">3</div>
+                        <h3 class="text-xl font-bold text-white mb-2">홈 화면(대시보드) 확인</h3>
+                        <p class="text-[15px] text-slate-400 leading-relaxed">로그인 직후 나오는 홈 화면에서 이번 주 시간표, 과제 마감일, 내 성적 요약 등 중요 정보를 한눈에 파악합니다.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[43px] md:-left-[49px] top-0 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_15px_rgba(99,102,241,0.4)]">4</div>
+                        <h3 class="text-xl font-bold text-white mb-2">메뉴 활용하기</h3>
+                        <p class="text-[15px] text-slate-400 leading-relaxed"><strong class="text-white">학생</strong>은 [과제 제출] 메뉴에서 사진을 찍어 숙제를 올리고, <strong class="text-white">학부모님</strong>은 [테스트 리포트]나 [출결 조회] 메뉴에서 자녀의 현황을 살핍니다.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[43px] md:-left-[49px] top-0 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_15px_rgba(99,102,241,0.4)]">5</div>
+                        <h3 class="text-xl font-bold text-white mb-2">알림톡 및 자료실 확인</h3>
+                        <p class="text-[15px] text-slate-400 leading-relaxed">학원에서 발송되는 알림톡을 확인하거나, 앱 내 [알림 & 자료실]에서 필요한 수업 자료와 복습 영상 링크를 수시로 확인합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. 앱 설치 방법 -->
+            <section id="install" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-white mb-6">스마트폰 홈 화면에 설치하기</h2>
+                <p class="text-slate-400 mb-8 text-[15px]">Signature 앱은 앱스토어를 거치지 않고 웹 링크를 통해 바탕화면에 바로 설치할 수 있는 웹앱(PWA) 방식입니다.</p>
+
+                <div class="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden shadow-lg">
+                    <div class="flex border-b border-slate-700">
+                        <button id="tab-btn-android" onclick="switchInstallTab('android')" class="flex-1 py-4 text-center text-sm font-bold text-white bg-brand-DEFAULT/20 border-b-2 border-brand-DEFAULT transition">Android (갤럭시)</button>
+                        <button id="tab-btn-ios" onclick="switchInstallTab('ios')" class="flex-1 py-4 text-center text-sm font-bold text-slate-400 hover:text-white transition">iOS (아이폰)</button>
+                    </div>
+
+                    <div id="tab-content-android" class="p-6 md:p-8">
+                        <ol class="list-decimal pl-5 space-y-4 text-slate-300 text-[15px]">
+                            <li>학원에서 제공한 앱 링크를 반드시 <strong class="text-white bg-slate-700 px-1 rounded">Chrome(크롬) 브라우저</strong>로 열어주세요.</li>
+                            <li>화면 하단에 <strong class="text-white text-brand-light">"홈 화면에 Signature 앱 추가"</strong> 배너가 뜨면 터치합니다.</li>
+                            <li>배너가 안 보일 경우, 브라우저 우측 상단의 <strong class="text-white">[점 3개 메뉴 ⋮]</strong>를 누른 뒤 <strong class="text-white">[홈 화면에 추가]</strong> 또는 <strong class="text-white">[앱 설치]</strong>를 선택합니다.</li>
+                            <li>설치 팝업이 뜨면 <strong>[설치]</strong> 버튼을 누릅니다.</li>
+                            <li>이제 스마트폰 바탕화면(홈 화면)에 생성된 Signature 아이콘을 눌러 접속하세요.</li>
+                        </ol>
+                    </div>
+
+                    <div id="tab-content-ios" class="p-6 md:p-8 hidden">
+                        <ol class="list-decimal pl-5 space-y-4 text-slate-300 text-[15px]">
+                            <li>전달받은 앱 링크를 반드시 <strong class="text-white bg-slate-700 px-1 rounded">Safari(사파리) 브라우저</strong>로 엽니다.<br>
+                                <span class="text-brand-accent text-sm mt-1 inline-block">※ 카카오톡 인앱 브라우저에서는 설치가 불가능합니다. 우측 하단 설정 메뉴를 눌러 '다른 브라우저(Safari)로 열기'를 선택하세요.</span>
+                            </li>
+                            <li>화면 하단 중앙에 있는 <strong class="text-white">[공유버튼(네모 안 위쪽 화살표 ↑)]</strong>을 터치합니다.</li>
+                            <li>메뉴 창을 위로 살짝 올려서 <strong class="text-white text-brand-light">[홈 화면에 추가 (+)]</strong>를 찾아 터치합니다.</li>
+                            <li>우측 상단의 <strong>[추가]</strong>를 누릅니다.</li>
+                            <li>스마트폰 바탕화면(홈 화면)에 생성된 앱 아이콘으로 간편하게 접속하세요.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-5 rounded-xl bg-slate-800/80 border border-slate-700 flex gap-4 items-start">
+                    <div class="text-amber-500 shrink-0 mt-0.5">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                    </div>
+                    <div class="text-[14px] text-slate-300">
+                        <strong class="text-white text-base block mb-1">화면 업데이트가 안 될 때 (캐시 문제)</strong>
+                        앱의 기능이 추가되었으나 예전 화면이 보인다면, 백그라운드에 실행 중인 <strong>앱을 완전히 종료(위로 쓸어올려 끄기)한 후 다시 실행</strong>해 주시면 최신 버전이 반영됩니다.
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. 로그인 방법 -->
+            <section id="login" class="scroll-mt-32">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-6">로그인 안내</h2>
+                        <ul class="space-y-6 text-slate-300 text-[15px] leading-relaxed">
+                            <li class="flex items-start gap-4">
+                                <span class="w-7 h-7 rounded-full bg-brand-dark flex items-center justify-center text-white shrink-0 mt-0.5 text-sm font-bold">1</span>
+                                <div>학원에서 개별적으로 안내해 드린 계정(아이디 및 비밀번호)으로 로그인합니다. 학생과 학부모용 계정이 분리되어 있을 수 있습니다.</div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="w-7 h-7 rounded-full bg-brand-dark flex items-center justify-center text-white shrink-0 mt-0.5 text-sm font-bold">2</span>
+                                <div>아이디와 비밀번호를 입력하고 <strong>[로그인]</strong> 버튼을 누릅니다. 대소문자와 공백이 들어가지 않도록 주의해 주세요.</div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-white shrink-0 mt-0.5 text-sm font-bold">!</span>
+                                <div><strong>접속 만료 안내:</strong> 보안을 위해 일정 기간이 지나면 로그아웃될 수 있습니다. 이때는 다시 로그인해 주세요.</div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-white shrink-0 mt-0.5 text-sm font-bold">?</span>
+                                <div><strong class="text-brand-accent">비밀번호 분실 시:</strong> 앱 내에서는 비밀번호를 변경할 수 없습니다. 로그인 정보를 잊으셨다면 학원 데스크나 담당 관리자 선생님께 문의하여 초기화 요청을 해주시기 바랍니다.</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mx-auto w-full max-w-[280px]">
+                        <img src="Login.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x800/1e293b/818cf8?text=Login.jpg';" alt="로그인 화면 예시" class="w-full h-auto rounded-[2rem] border-[6px] border-slate-800 shadow-xl select-none" draggable="false">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. 주요 기능 -->
+            <section id="features" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-white mb-2">학생/학부모 주요 메뉴 안내</h2>
+                <p class="text-slate-400 mb-8 text-[15px]">※ <strong class="text-brand-light">학생 계정</strong>은 과제 제출 등 참여형 메뉴가 보이며, <strong class="text-brand-accent">학부모 계정</strong>은 학습 현황 및 리포트 조회 중심으로 구성됩니다.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     
-                    <p class="text-slate-300 text-lg md:text-xl font-medium leading-relaxed max-w-2xl mb-10">
-                        학생과 학부모님이 앱을 쉽게 설치하고 핵심 기능을 100% 활용하는 방법을 한눈에 안내합니다. 스마트한 학습 관리를 지금 시작해 보세요.
-                    </p>
-
-                    <div class="flex flex-wrap gap-3">
-                        <a href="./Signature%20App.html" class="px-6 py-3.5 bg-brand-DEFAULT hover:bg-brand-light text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            앱 바로 실행하기
-                        </a>
-                        <a href="./Install.html" class="px-6 py-3.5 bg-brand-surface border border-brand-border hover:bg-slate-700 text-white font-bold rounded-xl shadow-sm transition-all flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            설치 가이드
-                        </a>
-                        <a href="./Privacy.html" class="px-6 py-3.5 bg-transparent border border-transparent hover:border-brand-border text-slate-400 hover:text-white font-medium rounded-xl transition-all">
-                            개인정보처리방침
-                        </a>
+                    <div class="bg-slate-800/40 border border-slate-700 p-6 rounded-2xl hover:border-brand-DEFAULT transition group">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-4 group-hover:bg-indigo-500 group-hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-2">과제 제출</h3>
+                        <p class="text-[14px] text-slate-400">사진을 촬영하고 모르는 문제를 입력하여 숙제를 제출하거나 수정합니다. <span class="text-xs text-slate-500 block mt-1">(학생 전용 기능)</span></p>
                     </div>
 
-                    <!-- 핵심 요약 3가지 카드 -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
-                        <div class="bg-slate-800/50 border border-slate-700/50 p-5 rounded-2xl backdrop-blur-sm">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white mb-1">간편한 과제 제출</h3>
-                            <p class="text-[13px] text-slate-400 leading-relaxed">스마트폰으로 사진을 찍어 모르는 문항 번호와 함께 오늘의 숙제를 1분 만에 제출합니다.</p>
+                    <div class="bg-slate-800/40 border border-slate-700 p-6 rounded-2xl hover:border-brand-DEFAULT transition group">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-4 group-hover:bg-blue-500 group-hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         </div>
-                        <div class="bg-slate-800/50 border border-slate-700/50 p-5 rounded-2xl backdrop-blur-sm">
-                            <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white mb-1">직관적인 학습 현황</h3>
-                            <p class="text-[13px] text-slate-400 leading-relaxed">숙제 검수 상태와 누적 달성도를 그래프 형태의 현황판으로 실시간 확인합니다.</p>
+                        <h3 class="font-bold text-white text-lg mb-2">숙제 현황판</h3>
+                        <p class="text-[14px] text-slate-400">날짜별 과제 검수 상태(통과, 미흡 등)와 단원별 누적 달성도를 그래프로 실시간 파악합니다.</p>
+                    </div>
+
+                    <div class="bg-slate-800/40 border border-slate-700 p-6 rounded-2xl hover:border-brand-DEFAULT transition group">
+                        <div class="w-12 h-12 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center mb-4 group-hover:bg-teal-500 group-hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
-                        <div class="bg-slate-800/50 border border-slate-700/50 p-5 rounded-2xl backdrop-blur-sm">
-                            <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <h3 class="font-bold text-white text-lg mb-2">수업 시간표</h3>
+                        <p class="text-[14px] text-slate-400">이번 주 수업 진도 일정을 확인하거나, 지난 수업의 복습용 해설 영상을 바로 시청합니다.</p>
+                    </div>
+
+                    <div class="bg-slate-800/40 border border-slate-700 p-6 rounded-2xl hover:border-brand-DEFAULT transition group">
+                        <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center mb-4 group-hover:bg-rose-500 group-hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-2">출결 조회</h3>
+                        <p class="text-[14px] text-slate-400">정규 수업 및 주말 클리닉의 출석, 지각, 조퇴, 결석 기록을 날짜별로 투명하게 확인합니다.</p>
+                    </div>
+
+                    <div class="bg-slate-800/40 border border-slate-700 p-6 rounded-2xl hover:border-brand-DEFAULT transition group">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center mb-4 group-hover:bg-purple-500 group-hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-2">테스트 리포트</h3>
+                        <p class="text-[14px] text-slate-400">단순 점수뿐 아니라 내 약점 단원을 파악하고 강사님의 피드백을 확인하여 성적 향상에 활용합니다.</p>
+                    </div>
+
+                    <div class="bg-slate-800/40 border border-slate-700 p-6 rounded-2xl hover:border-brand-DEFAULT transition group">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4 group-hover:bg-amber-500 group-hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        </div>
+                        <h3 class="font-bold text-white text-lg mb-2">알림 & 자료실</h3>
+                        <p class="text-[14px] text-slate-400">학원 공지사항, 휴원 정보 및 PDF 학습 보충 자료 등을 안전하게 다운로드하거나 열람합니다.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 6. 과제 제출 가이드 -->
+            <section id="homework" class="scroll-mt-32">
+                <div class="bg-indigo-900/20 p-8 md:p-10 rounded-3xl border border-brand-DEFAULT/50 shadow-[0_0_40px_rgba(99,102,241,0.05)] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-brand-DEFAULT blur-[80px] opacity-20 rounded-full"></div>
+                    
+                    <h2 class="text-2xl font-bold text-brand-light mb-4">과제 제출 상세 가이드 (중요)</h2>
+                    <p class="text-slate-300 text-[15px] mb-10">매일 숙제를 가장 빠르고 정확하게 제출하는 방법입니다. 학생 분들은 순서를 꼭 숙지해 주세요.</p>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="order-2 lg:order-1 space-y-8">
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 mt-0.5">1</div>
+                                <div>
+                                    <h4 class="font-bold text-white text-lg mb-1">제출할 과제 날짜 선택</h4>
+                                    <p class="text-[14px] text-slate-400 leading-relaxed">메인에서 <strong>[과제 제출]</strong> 버튼을 누르고, 본인이 제출할 해당 날짜의 과제 범위를 선택합니다.</p>
+                                </div>
                             </div>
-                            <h3 class="font-bold text-white mb-1">통합 리포트 & 출결</h3>
-                            <p class="text-[13px] text-slate-400 leading-relaxed">오답 분석이 포함된 테스트 리포트, 정규/클리닉 출결, 공지사항을 한 곳에서 모아봅니다.</p>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 mt-0.5">2</div>
+                                <div>
+                                    <h4 class="font-bold text-white text-lg mb-1">상태 체크 및 모르는 문항 선택</h4>
+                                    <p class="text-[14px] text-slate-400 leading-relaxed"><strong>[완료/미완료]</strong>를 체크한 뒤, 화면에 나열된 문항 번호 중 <strong>틀렸거나 모르는 질문 문항</strong>을 터치하여 직접 선택합니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 mt-0.5">3</div>
+                                <div>
+                                    <h4 class="font-bold text-white text-lg mb-1">인증 사진 촬영 및 업로드</h4>
+                                    <p class="text-[14px] text-slate-400 leading-relaxed">직접 푼 교재 <strong>사진을 촬영하거나 갤러리에서 여러 장 선택</strong>하여 첨부합니다. 선생님께 전할 메모도 남길 수 있습니다.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 mt-0.5">4</div>
+                                <div>
+                                    <h4 class="font-bold text-white text-lg mb-1">제출 및 카카오톡 전송</h4>
+                                    <p class="text-[14px] text-slate-400 leading-relaxed"><strong>[제출하기]</strong> 완료 후, 시스템 안내에 따라 담당 선생님께 <strong>[카카오톡 보내기]</strong> 흐름까지 이어서 진행해야 최종 완료됩니다.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-1 lg:order-2 w-full min-w-0">
+                            <!-- 1, 2, 3 선택형 갤러리 (과제 제출) -->
+                            <div class="flex flex-col items-center w-full max-w-[280px] mx-auto">
+                                <img id="hw-main-img" src="Homework1.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x800/1e293b/818cf8?text=Homework1.jpg';" alt="숙제 제출 화면" class="w-full h-auto rounded-[2rem] border-[6px] border-slate-800 shadow-xl object-contain transition-opacity duration-200">
+                                
+                                <div class="flex justify-center gap-4 mt-6">
+                                    <button onclick="changeHwImage(1)" id="hw-btn-1" class="w-10 h-10 rounded-full bg-brand-DEFAULT text-white font-bold shadow-lg transition-all ring-2 ring-brand-DEFAULT ring-offset-2 ring-offset-slate-900">1</button>
+                                    <button onclick="changeHwImage(2)" id="hw-btn-2" class="w-10 h-10 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-all border border-slate-700">2</button>
+                                    <button onclick="changeHwImage(3)" id="hw-btn-3" class="w-10 h-10 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-all border border-slate-700">3</button>
+                                </div>
+                                <p class="text-center text-xs font-bold tracking-wider text-slate-400 mt-3">순서대로 번호를 눌러 화면을 확인하세요</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 공통 컨테이너 스타일링 (여백) -->
-            <div class="max-w-4xl mx-auto px-6 py-12 md:px-16 space-y-20">
-
-                <!-- 2. 빠른 시작 안내 -->
-                <section id="quick-start">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <svg class="w-7 h-7 text-brand-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        빠른 시작 가이드
+            <!-- 7. 학부모 가이드 -->
+            <section id="parents" class="scroll-mt-32">
+                <div class="bg-slate-800/40 border border-slate-700 p-8 md:p-10 rounded-3xl relative overflow-hidden">
+                    <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                        <svg class="w-7 h-7 text-brand-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        학부모님, 주로 이 기능을 확인해 보세요
                     </h2>
-                    <p class="text-slate-400 mb-8">앱을 처음 사용하는 초보자 분들을 위한 필수 5단계 흐름입니다.</p>
-
-                    <div class="relative border-l-2 border-slate-800 ml-4 pl-8 space-y-8">
-                        <div class="relative">
-                            <div class="absolute -left-[43px] top-1 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_10px_rgba(99,102,241,0.3)]">1</div>
-                            <h3 class="text-lg font-bold text-white mb-1">앱 설치 및 접속</h3>
-                            <p class="text-sm text-slate-400">학원에서 카카오톡으로 전달받은 링크를 눌러 브라우저(Chrome/Safari)를 열고, 스마트폰 바탕화면에 앱을 설치합니다.</p>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute -left-[43px] top-1 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_10px_rgba(99,102,241,0.3)]">2</div>
-                            <h3 class="text-lg font-bold text-white mb-1">초기 계정 로그인</h3>
-                            <p class="text-sm text-slate-400">안내받은 학생용 또는 학부모용 초기 아이디와 비밀번호를 입력하여 로그인합니다.</p>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute -left-[43px] top-1 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_10px_rgba(99,102,241,0.3)]">3</div>
-                            <h3 class="text-lg font-bold text-white mb-1">홈 화면(대시보드) 확인</h3>
-                            <p class="text-sm text-slate-400">로그인 직후 나오는 홈 화면에서 이번 주 시간표, 과제 마감일, 내 성적 요약 등 중요 정보를 한눈에 파악합니다.</p>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute -left-[43px] top-1 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_10px_rgba(99,102,241,0.3)]">4</div>
-                            <h3 class="text-lg font-bold text-white mb-1">메뉴 활용하기</h3>
-                            <p class="text-sm text-slate-400"><strong class="text-white">학생</strong>은 [과제 제출] 메뉴에서 사진을 찍어 숙제를 올리고, <strong class="text-white">학부모님</strong>은 [테스트 리포트]나 [출결 조회] 메뉴에서 자녀의 현황을 살핍니다.</p>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute -left-[43px] top-1 w-8 h-8 bg-slate-900 border-2 border-brand-DEFAULT rounded-full flex items-center justify-center text-sm font-bold text-brand-light shadow-[0_0_10px_rgba(99,102,241,0.3)]">5</div>
-                            <h3 class="text-lg font-bold text-white mb-1">알림톡 및 자료실 확인</h3>
-                            <p class="text-sm text-slate-400">학원에서 발송되는 알림톡을 확인하거나, 앱 내 [알림 & 자료실]에서 필요한 수업 자료와 복습 영상 링크를 수시로 확인합니다.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <hr class="border-slate-800 border-t-2 border-dashed">
-
-                <!-- 3. 앱 설치 방법 -->
-                <section id="install">
-                    <h2 class="text-2xl font-bold text-white mb-6">스마트폰 홈 화면에 설치하기</h2>
-                    <p class="text-slate-400 mb-6 text-sm">Signature 앱은 앱스토어를 거치지 않고 웹 링크를 통해 바탕화면에 바로 설치할 수 있는 웹앱(PWA) 방식입니다.</p>
-
-                    <!-- 탭 UI 컨테이너 -->
-                    <div class="bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-lg">
-                        <div class="flex border-b border-slate-700">
-                            <button id="tab-btn-android" onclick="switchInstallTab('android')" class="flex-1 py-4 text-center text-sm font-bold text-brand-light bg-slate-800/80 border-b-2 border-brand-light transition">Android (갤럭시)</button>
-                            <button id="tab-btn-ios" onclick="switchInstallTab('ios')" class="flex-1 py-4 text-center text-sm font-bold text-slate-400 bg-slate-900/50 border-b-2 border-transparent hover:text-slate-200 transition">iOS (아이폰)</button>
-                        </div>
-
-                        <!-- 안드로이드 콘텐츠 -->
-                        <div id="tab-content-android" class="p-6 md:p-8">
-                            <ol class="list-decimal pl-5 space-y-4 text-slate-300 text-[15px]">
-                                <li>학원에서 제공한 앱 링크를 반드시 <strong class="text-white bg-slate-700 px-1 rounded">Chrome(크롬) 브라우저</strong>로 열어주세요.</li>
-                                <li>화면 하단에 <strong class="text-white text-brand-light">"홈 화면에 Signature 앱 추가"</strong> 배너가 뜨면 터치합니다.</li>
-                                <li>배너가 안 보일 경우, 브라우저 우측 상단의 <strong class="text-white">[점 3개 메뉴 ⋮]</strong>를 누른 뒤 <strong class="text-white">[홈 화면에 추가]</strong> 또는 <strong class="text-white">[앱 설치]</strong>를 선택합니다.</li>
-                                <li>설치 팝업이 뜨면 <strong>[설치]</strong> 버튼을 누릅니다.</li>
-                                <li>이제 스마트폰 바탕화면(홈 화면)에 생성된 Signature 아이콘을 눌러 접속하세요.</li>
-                            </ol>
-                        </div>
-
-                        <!-- iOS 콘텐츠 -->
-                        <div id="tab-content-ios" class="p-6 md:p-8 hidden">
-                            <ol class="list-decimal pl-5 space-y-4 text-slate-300 text-[15px]">
-                                <li>전달받은 앱 링크를 반드시 <strong class="text-white bg-slate-700 px-1 rounded">Safari(사파리) 브라우저</strong>로 엽니다.<br>
-                                    <span class="text-brand-accent text-sm mt-1 inline-block">※ 카카오톡 인앱 브라우저에서는 설치가 불가능합니다. 우측 하단 설정 메뉴를 눌러 '다른 브라우저(Safari)로 열기'를 선택하세요.</span>
-                                </li>
-                                <li>화면 하단 중앙에 있는 <strong class="text-white">[공유버튼(네모 안 위쪽 화살표 ↑)]</strong>을 터치합니다.</li>
-                                <li>메뉴 창을 위로 살짝 올려서 <strong class="text-white text-brand-light">[홈 화면에 추가 (+)]</strong>를 찾아 터치합니다.</li>
-                                <li>우측 상단의 <strong>[추가]</strong>를 누릅니다.</li>
-                                <li>스마트폰 바탕화면(홈 화면)에 생성된 앱 아이콘으로 간편하게 접속하세요.</li>
-                            </ol>
-                        </div>
-                    </div>
-
-                    <!-- 주의사항 Callout -->
-                    <div class="mt-6 p-4 rounded-xl bg-slate-800 border border-slate-700 flex gap-4">
-                        <div class="text-yellow-500 shrink-0 mt-0.5">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                        </div>
-                        <div class="text-[13px] text-slate-300">
-                            <strong class="text-white">화면 업데이트가 안 될 때 (캐시 문제)</strong><br>
-                            앱의 기능이 추가되었으나 예전 화면이 보인다면, 백그라운드에 실행 중인 <strong>앱을 완전히 종료(위로 쓸어올려 끄기)한 후 다시 실행</strong>해 주시면 최신 버전이 반영됩니다.
-                        </div>
-                    </div>
-                </section>
-
-                <hr class="border-slate-800 border-t-2 border-dashed">
-
-                <!-- 4. 로그인 방법 -->
-                <section id="login">
-                    <h2 class="text-2xl font-bold text-white mb-6">로그인 안내</h2>
+                    <p class="text-[15px] text-slate-300 mb-8 leading-relaxed">학부모 계정으로 로그인하시면 자녀가 앱에 접속해 제출한 기록과 학원의 평가를 투명하게 모니터링할 수 있습니다. 바쁘시더라도 아래 4가지는 정기적으로 확인해 보시기를 권장합니다.</p>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <ul class="space-y-5 text-slate-300 text-sm leading-relaxed">
-                                <li class="flex items-start gap-3">
-                                    <span class="w-6 h-6 rounded-full bg-brand-dark flex items-center justify-center text-white shrink-0 mt-0.5 text-xs font-bold">1</span>
-                                    <div>학원에서 개별적으로 안내해 드린 계정(아이디 및 비밀번호)으로 로그인합니다. 학생과 학부모용 계정이 분리되어 있을 수 있습니다.</div>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="w-6 h-6 rounded-full bg-brand-dark flex items-center justify-center text-white shrink-0 mt-0.5 text-xs font-bold">2</span>
-                                    <div>아이디와 비밀번호를 입력하고 <strong>[로그인]</strong> 버튼을 누릅니다. 대소문자와 공백이 들어가지 않도록 주의해 주세요.</div>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-white shrink-0 mt-0.5 text-xs font-bold">!</span>
-                                    <div><strong>접속 만료 안내:</strong> 보안을 위해 일정 기간이 지나면 로그아웃될 수 있습니다. 이때는 당황하지 마시고 다시 로그인해 주세요.</div>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-white shrink-0 mt-0.5 text-xs font-bold">?</span>
-                                    <div><strong class="text-brand-accent">비밀번호 분실 시:</strong> 앱 내에서는 임의로 비밀번호를 찾거나 변경할 수 없습니다. 로그인 정보를 잊으셨다면 학원 데스크나 담당 관리자 선생님께 문의하여 초기화 요청을 해주시기 바랍니다.</div>
-                                </li>
-                            </ul>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="flex gap-4 bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <div class="text-brand-light mt-0.5 text-xl">✔</div>
+                            <div>
+                                <strong class="text-white text-base block mb-1">숙제 현황판</strong>
+                                <span class="text-[14px] text-slate-400">자녀가 제때 숙제를 제출했는지 검수 현황 점검</span>
+                            </div>
                         </div>
-
-                        <!-- 로그인 화면 실제 이미지 -->
-                        <div class="mx-auto w-full max-w-[280px]">
-                            <img src="./Login.png" alt="로그인 화면 예시" class="w-full h-auto rounded-[2rem] border-[6px] border-slate-800 shadow-2xl object-cover">
+                        <div class="flex gap-4 bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <div class="text-brand-light mt-0.5 text-xl">✔</div>
+                            <div>
+                                <strong class="text-white text-base block mb-1">테스트 리포트 (중요)</strong>
+                                <span class="text-[14px] text-slate-400">시험 점수, 평균 비교, 오답 분석, 강사 총평 확인</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <div class="text-brand-light mt-0.5 text-xl">✔</div>
+                            <div>
+                                <strong class="text-white text-base block mb-1">출결 조회</strong>
+                                <span class="text-[14px] text-slate-400">수업 및 보충 클리닉에 지각/결석 없이 참석했는지 내역 확인</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                            <div class="text-brand-light mt-0.5 text-xl">✔</div>
+                            <div>
+                                <strong class="text-white text-base block mb-1">알림 & 자료실</strong>
+                                <span class="text-[14px] text-slate-400">다음 달 수강 계획서, 휴강 안내, 간담회 등 주요 공지 확인</span>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <hr class="border-slate-800 border-t-2 border-dashed">
-
-                <!-- 5. 주요 기능 (카드형) -->
-                <section id="features">
-                    <h2 class="text-2xl font-bold text-white mb-2">학생/학부모 주요 메뉴 안내</h2>
-                    <p class="text-slate-400 mb-8 text-sm">홈 화면(대시보드) 하단 또는 메인 메뉴에서 다음 항목들을 선택하여 이용할 수 있습니다.<br>※ <strong class="text-brand-light">학생 계정</strong>은 과제 제출 등 참여형 메뉴가 보이며, <strong class="text-brand-accent">학부모 계정</strong>은 자녀의 학습 현황 및 리포트 조회 중심으로 화면이 구성됩니다.</p>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        
-                        <!-- 카드 1 -->
-                        <div class="bg-brand-surface border border-brand-border p-5 rounded-2xl hover:border-brand-DEFAULT transition group">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-3 group-hover:bg-indigo-500 group-hover:text-white transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white text-[15px] mb-1">과제 제출 <span class="text-xs font-normal text-slate-500 ml-1">(학생 전용)</span></h3>
-                            <p class="text-[13px] text-slate-400"><strong>무엇을 하나요?</strong> 사진을 촬영하고 모르는 문제를 입력하여 숙제를 제출하거나 수정합니다.</p>
-                        </div>
-
-                        <!-- 카드 2 -->
-                        <div class="bg-brand-surface border border-brand-border p-5 rounded-2xl hover:border-brand-DEFAULT transition group">
-                            <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center mb-3 group-hover:bg-blue-500 group-hover:text-white transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white text-[15px] mb-1">숙제 현황판</h3>
-                            <p class="text-[13px] text-slate-400"><strong>무엇을 하나요?</strong> 날짜별 과제 검수 상태(미제출, 통과, 미흡 등)와 단원별 학습 달성도를 한눈에 파악합니다.</p>
-                        </div>
-
-                        <!-- 카드 3 -->
-                        <div class="bg-brand-surface border border-brand-border p-5 rounded-2xl hover:border-brand-DEFAULT transition group">
-                            <div class="w-10 h-10 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center mb-3 group-hover:bg-teal-500 group-hover:text-white transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white text-[15px] mb-1">수업 시간표</h3>
-                            <p class="text-[13px] text-slate-400"><strong>언제 쓰나요?</strong> 이번 주 수업 진도 일정을 확인하거나, 지난 수업의 복습용 해설 영상을 시청할 때 사용합니다.</p>
-                        </div>
-
-                        <!-- 카드 4 -->
-                        <div class="bg-brand-surface border border-brand-border p-5 rounded-2xl hover:border-brand-DEFAULT transition group">
-                            <div class="w-10 h-10 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center mb-3 group-hover:bg-rose-500 group-hover:text-white transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white text-[15px] mb-1">출결 조회</h3>
-                            <p class="text-[13px] text-slate-400"><strong>어떤 도움이 되나요?</strong> 정규 수업 및 주말 클리닉의 출석, 지각, 조퇴, 결석 기록을 투명하게 확인합니다.</p>
-                        </div>
-
-                        <!-- 카드 5 -->
-                        <div class="bg-brand-surface border border-brand-border p-5 rounded-2xl hover:border-brand-DEFAULT transition group sm:col-span-2 md:col-span-1">
-                            <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center mb-3 group-hover:bg-purple-500 group-hover:text-white transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white text-[15px] mb-1">테스트 리포트</h3>
-                            <p class="text-[13px] text-slate-400"><strong>어떤 도움이 되나요?</strong> 단순 점수뿐 아니라 내 약점 단원을 파악하고 강사님의 피드백을 확인하여 성적 향상에 활용합니다.</p>
-                        </div>
-
-                        <!-- 카드 6 -->
-                        <div class="bg-brand-surface border border-brand-border p-5 rounded-2xl hover:border-brand-DEFAULT transition group sm:col-span-2 md:col-span-1">
-                            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center mb-3 group-hover:bg-amber-500 group-hover:text-white transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            </div>
-                            <h3 class="font-bold text-white text-[15px] mb-1">알림 & 자료실</h3>
-                            <p class="text-[13px] text-slate-400"><strong>무엇을 하나요?</strong> 학원 공지사항, 특강 안내, 휴원 정보 및 PDF 학습 보충 자료 등을 다운로드하거나 열람합니다.</p>
-                        </div>
-
+            <!-- 8. 테스트 리포트 -->
+            <section id="reports" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-white mb-4">테스트 리포트 깊게 보기</h2>
+                <p class="text-slate-400 mb-10 text-[15px] leading-relaxed max-w-3xl">앱에서 제공하는 테스트 리포트는 단순한 '점수 통보'가 아닙니다. 어떤 유형이 취약한지 분석하여 다음 학습 방향을 제시하는 중요한 나침반입니다.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="bg-slate-800/40 border border-slate-700 p-8 rounded-2xl">
+                        <h3 class="text-white text-lg font-bold mb-6 border-b border-slate-700 pb-3">리포트에서 제공되는 상세 정보</h3>
+                        <ul class="space-y-6">
+                            <li>
+                                <span class="block text-[15px] font-bold text-brand-light mb-1">점수 비교 분석</span>
+                                <span class="text-[14px] text-slate-400">내 점수와 소속 반의 전체 평균 점수를 비교하여 현재 위치를 객관적으로 파악합니다.</span>
+                            </li>
+                            <li>
+                                <span class="block text-[15px] font-bold text-brand-light mb-1">문항별 오답 분석</span>
+                                <span class="text-[14px] text-slate-400">틀린 문제의 번호, 단원명, 난이도를 분석표로 제공하여 약점을 정확히 진단합니다.</span>
+                            </li>
+                            <li>
+                                <span class="block text-[15px] font-bold text-brand-light mb-1">담당 강사의 1:1 총평</span>
+                                <span class="text-[14px] text-slate-400">테스트 결과에 대한 특이사항, 칭찬, 보완점 등 강사님의 세밀한 코멘트가 제공됩니다.</span>
+                            </li>
+                            <li>
+                                <span class="block text-[15px] font-bold text-brand-light mb-1">시험지 원본 및 해설 확인</span>
+                                <span class="text-[14px] text-slate-400">첨부된 채점 시험지 사진이나 해설 링크를 눌러 즉시 오답노트를 작성할 수 있습니다.</span>
+                            </li>
+                        </ul>
                     </div>
-                </section>
-
-                <hr class="border-slate-800 border-t-2 border-dashed">
-
-                <!-- 6. 과제 제출 가이드 -->
-                <section id="homework" class="bg-slate-800/30 p-6 md:p-8 rounded-3xl border border-brand-DEFAULT shadow-[0_0_30px_rgba(99,102,241,0.1)] relative">
-                    <div class="absolute top-0 right-10 w-24 h-24 bg-brand-DEFAULT blur-3xl opacity-20 rounded-full"></div>
                     
-                    <h2 class="text-2xl font-bold text-white mb-3 text-brand-light">과제 제출 상세 가이드 (중요)</h2>
-                    <p class="text-slate-400 text-sm mb-8">매일매일 숙제를 가장 빠르고 편하게 제출하는 방법입니다. 학생 분들은 순서를 꼭 숙지해 주세요.</p>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                        <div class="order-2 lg:order-1 space-y-6">
+                    <div class="w-full min-w-0">
+                        <!-- 1, 2, 3 선택형 갤러리 (테스트 리포트) -->
+                        <div class="flex flex-col items-center w-full max-w-[280px] mx-auto">
+                            <img id="rp-main-img" src="Report1.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x800/1e293b/818cf8?text=Report1.jpg';" alt="테스트 리포트 화면" class="w-full h-auto rounded-[2rem] border-[6px] border-slate-800 shadow-xl object-contain transition-opacity duration-200">
                             
-                            <!-- 스텝 -->
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 shadow-lg text-sm mt-0.5">1</div>
-                                <div>
-                                    <h4 class="font-bold text-white mb-1">제출할 과제 선택</h4>
-                                    <p class="text-[13px] text-slate-400 leading-relaxed">메인 화면에서 <strong>[과제 제출]</strong> 버튼을 누릅니다. 캘린더나 목록에서 본인이 제출할 해당 날짜의 과제 범위를 확인하고 선택합니다.</p>
-                                </div>
+                            <div class="flex justify-center gap-4 mt-6">
+                                <button onclick="changeRpImage(1)" id="rp-btn-1" class="w-10 h-10 rounded-full bg-brand-DEFAULT text-white font-bold shadow-lg transition-all ring-2 ring-brand-DEFAULT ring-offset-2 ring-offset-slate-900">1</button>
+                                <button onclick="changeRpImage(2)" id="rp-btn-2" class="w-10 h-10 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-all border border-slate-700">2</button>
+                                <button onclick="changeRpImage(3)" id="rp-btn-3" class="w-10 h-10 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-all border border-slate-700">3</button>
                             </div>
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 shadow-lg text-sm mt-0.5">2</div>
-                                <div>
-                                    <h4 class="font-bold text-white mb-1">진행 상태 체크 및 질문/오답 선택</h4>
-                                    <p class="text-[13px] text-slate-400 leading-relaxed">과제를 다 풀었는지 <strong>[완료/미완료]</strong>를 체크합니다. 그 후 화면에 나열된 문항 번호 중 본인이 <strong>틀렸거나 모르는 질문 문항</strong>을 터치하여 선택합니다. <br>(※ 잘못 눌렀을 경우 초기화 버튼으로 지울 수 있습니다.)</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 shadow-lg text-sm mt-0.5">3</div>
-                                <div>
-                                    <h4 class="font-bold text-white mb-1">인증 사진 업로드</h4>
-                                    <p class="text-[13px] text-slate-400 leading-relaxed">카메라 아이콘을 눌러 직접 푼 교재/노트 <strong>사진을 촬영하거나 갤러리에서 다중 선택</strong>하여 첨부합니다. 선생님께 전할 <strong>메모</strong>도 남길 수 있습니다.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 rounded-full bg-brand-DEFAULT text-white flex items-center justify-center font-bold shrink-0 shadow-lg text-sm mt-0.5">4</div>
-                                <div>
-                                    <h4 class="font-bold text-white mb-1">제출 완료 및 카카오톡 전송</h4>
-                                    <p class="text-[13px] text-slate-400 leading-relaxed"><strong>[제출하기]</strong> 버튼을 누르면 업로드가 진행됩니다. 완료 후 시스템 안내에 따라, 담당 선생님께 전송되는 <strong>[카카오톡 보내기]</strong> 흐름까지 이어서 진행해야 최종 검수가 시작됩니다.</p>
-                                </div>
-                            </div>
-
-                            <!-- 팁 박스 -->
-                            <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mt-6">
-                                <h5 class="text-sm font-bold text-brand-light mb-2 flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    제출 시 주의사항
-                                </h5>
-                                <ul class="text-[12px] text-slate-400 space-y-1.5 list-disc pl-4">
-                                    <li>사진 파일 용량이 너무 크거나 장수가 많으면 업로드가 실패하거나 오래 걸릴 수 있습니다. <strong>안정적인 와이파이(Wi-Fi) 환경</strong>을 권장합니다.</li>
-                                    <li>인터넷 연결 끊김으로 제출이 실패한 경우 앱을 완전히 껐다 켜서 다시 시도해 주세요.</li>
-                                    <li>임시 저장 기능이 있으므로 제출했던 과제를 다시 불러와 수정 첨부할 수 있습니다.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- 스크린샷 3장 (가로 스크롤) -->
-                        <div class="order-1 lg:order-2 flex flex-col items-center">
-                            <div class="w-full max-w-[320px] md:max-w-full flex overflow-x-auto gap-4 snap-x snap-mandatory hide-scrollbar pb-4 px-2">
-                                <img src="./Homework1.png" alt="숙제 제출 화면 1" class="w-[240px] shrink-0 snap-center rounded-[1.5rem] border-[4px] border-slate-800 shadow-xl object-cover">
-                                <img src="./Homework2.png" alt="숙제 제출 화면 2" class="w-[240px] shrink-0 snap-center rounded-[1.5rem] border-[4px] border-slate-800 shadow-xl object-cover">
-                                <img src="./Homework3.png" alt="숙제 제출 화면 3" class="w-[240px] shrink-0 snap-center rounded-[1.5rem] border-[4px] border-slate-800 shadow-xl object-cover">
-                            </div>
-                            <span class="text-xs font-bold tracking-wider text-slate-400 mt-2">좌우로 스와이프하여 확인하세요</span>
+                            <p class="text-center text-xs font-bold tracking-wider text-slate-400 mt-3">순서대로 번호를 눌러 화면을 확인하세요</p>
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <hr class="border-slate-800 border-t-2 border-dashed">
-
-                <!-- 7. 학부모 가이드 -->
-                <section id="parents">
-                    <div class="bg-gradient-to-br from-indigo-900/40 to-slate-900 border border-indigo-500/30 p-6 md:p-8 rounded-2xl relative overflow-hidden">
-                        <div class="absolute right-0 bottom-0 text-indigo-500/10">
-                            <svg class="w-48 h-48 -mr-10 -mb-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+            <!-- 10. FAQ -->
+            <section id="faq" class="scroll-mt-32">
+                <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-brand-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    자주 묻는 질문 (FAQ)
+                </h2>
+                
+                <div class="space-y-4">
+                    <details class="group bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
+                        <summary class="p-5 font-bold text-[15px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
+                            Q. 앱 설치(홈 화면 추가) 배너가 안 떠요. 어떻게 설치하나요?
+                            <span class="text-slate-500 group-open:rotate-45 transition-transform text-xl">+</span>
+                        </summary>
+                        <div class="p-5 pt-0 text-[14px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
+                            A. 안드로이드의 경우 브라우저 우측 상단의 점 3개 메뉴(⋮)를 눌러 <strong>'홈 화면에 추가'</strong>를 직접 선택하시면 됩니다. 아이폰은 반드시 <strong>Safari 브라우저</strong>로 접속한 후 하단 공유 버튼(↑)에서 '홈 화면에 추가'를 눌러주세요.
                         </div>
-                        <h2 class="text-xl md:text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                            <svg class="w-6 h-6 text-brand-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                            학부모님, 주로 이 기능을 확인해 보세요
-                        </h2>
-                        <p class="text-sm text-slate-300 mb-6 max-w-2xl leading-relaxed">학부모 계정으로 로그인하시면, 자녀가 앱에 접속해 제출한 기록과 학원의 평가를 투명하게 모니터링할 수 있습니다. 바쁘시더라도 아래 4가지는 정기적으로 확인해 보시기를 권장합니다.</p>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-                            <div class="flex gap-3 bg-slate-800/80 p-4 rounded-xl border border-slate-700/50">
-                                <div class="text-brand-light shrink-0 mt-1">✔</div>
-                                <div>
-                                    <strong class="text-white text-sm block mb-1">숙제 현황판</strong>
-                                    <span class="text-[13px] text-slate-400">자녀가 제때 숙제를 제출했는지, 미제출 상태는 아닌지 검수 현황 점검</span>
-                                </div>
-                            </div>
-                            <div class="flex gap-3 bg-slate-800/80 p-4 rounded-xl border border-slate-700/50">
-                                <div class="text-brand-light shrink-0 mt-1">✔</div>
-                                <div>
-                                    <strong class="text-white text-sm block mb-1">테스트 리포트 (중요)</strong>
-                                    <span class="text-[13px] text-slate-400">학원에서 본 시험 점수, 평균 비교, 강사 총평, 오답 원인 분석 확인</span>
-                                </div>
-                            </div>
-                            <div class="flex gap-3 bg-slate-800/80 p-4 rounded-xl border border-slate-700/50">
-                                <div class="text-brand-light shrink-0 mt-1">✔</div>
-                                <div>
-                                    <strong class="text-white text-sm block mb-1">출결 조회</strong>
-                                    <span class="text-[13px] text-slate-400">정규 수업 및 보충 클리닉에 지각이나 결석 없이 잘 참석했는지 내역 확인</span>
-                                </div>
-                            </div>
-                            <div class="flex gap-3 bg-slate-800/80 p-4 rounded-xl border border-slate-700/50">
-                                <div class="text-brand-light shrink-0 mt-1">✔</div>
-                                <div>
-                                    <strong class="text-white text-sm block mb-1">알림 & 자료실</strong>
-                                    <span class="text-[13px] text-slate-400">다음 달 수강 계획서, 휴강 안내, 간담회 등 주요 공지 확인</span>
-                                </div>
-                            </div>
+                    </details>
+                    <details class="group bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
+                        <summary class="p-5 font-bold text-[15px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
+                            Q. 아이디와 비밀번호가 맞는데 로그인이 안 됩니다.
+                            <span class="text-slate-500 group-open:rotate-45 transition-transform text-xl">+</span>
+                        </summary>
+                        <div class="p-5 pt-0 text-[14px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
+                            A. 영문 대소문자를 구분하며, 특히 뒤에 공백(띄어쓰기)이 함께 입력되지 않았는지 확인해 주세요. 계속 실패할 경우 계정이 비활성화되었을 수 있으니 학원으로 문의해 주시기 바랍니다.
                         </div>
-                    </div>
-                </section>
-
-                <hr class="border-slate-800 border-t-2 border-dashed">
-
-                <!-- 8. 테스트 리포트 -->
-                <section id="reports">
-                    <h2 class="text-2xl font-bold text-white mb-6">테스트 리포트 깊게 보기</h2>
-                    <p class="text-slate-400 mb-6 text-sm leading-relaxed max-w-3xl">앱에서 제공하는 테스트 리포트는 단순한 '점수 통보'가 아닙니다. 어떤 유형이 취약한지 분석하여 다음 학습 방향을 제시하는 중요한 나침반입니다.</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                        <!-- 항목 리스트 -->
-                        <div class="bg-brand-surface border border-brand-border p-6 rounded-2xl">
-                            <h3 class="text-white font-bold mb-4 border-b border-slate-700 pb-2">리포트에서 제공되는 정보</h3>
-                            <ul class="space-y-4">
-                                <li>
-                                    <span class="block text-sm font-bold text-brand-light">점수 비교 분석</span>
-                                    <span class="text-[13px] text-slate-400 block mt-0.5">내 점수와 소속 반의 전체 평균 점수를 비교하여 현재 위치를 객관적으로 파악합니다.</span>
-                                </li>
-                                <li>
-                                    <span class="block text-sm font-bold text-brand-light">문항별 오답 분석</span>
-                                    <span class="text-[13px] text-slate-400 block mt-0.5">내가 틀린 문제의 번호, 단원명, 난이도를 분석표로 제공하여 약점을 정확히 진단합니다.</span>
-                                </li>
-                                <li>
-                                    <span class="block text-sm font-bold text-brand-light">담당 강사의 1:1 총평</span>
-                                    <span class="text-[13px] text-slate-400 block mt-0.5">테스트 결과에 대한 특이사항, 칭찬, 보완점 등 강사님의 세밀한 코멘트가 제공됩니다.</span>
-                                </li>
-                                <li>
-                                    <span class="block text-sm font-bold text-brand-light">시험지 원본 및 해설 확인</span>
-                                    <span class="text-[13px] text-slate-400 block mt-0.5">첨부된 채점 시험지 사진, 해설지 PDF, 또는 문항별 영상 링크를 눌러 즉시 오답노트를 작성할 수 있습니다.</span>
-                                </li>
-                            </ul>
+                    </details>
+                    <details class="group bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
+                        <summary class="p-5 font-bold text-[15px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
+                            Q. 숙제 제출 시 사진 업로드가 안 되고 멈춥니다.
+                            <span class="text-slate-500 group-open:rotate-45 transition-transform text-xl">+</span>
+                        </summary>
+                        <div class="p-5 pt-0 text-[14px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
+                            A. 한 번에 너무 많은 사진(10장 이상)을 올리거나, 스마트폰의 사진 용량이 과도하게 큰 경우 발생할 수 있습니다. 3~5장씩 나누어 업로드하거나 안정적인 와이파이 환경에서 다시 시도해 보세요. 기기 설정에서 브라우저의 '사진(카메라) 접근 권한'도 허용되어 있어야 합니다.
                         </div>
-                        
-                        <!-- 스크린샷 3장 (가로 스크롤) -->
-                        <div class="flex flex-col items-center">
-                            <div class="w-full max-w-[320px] md:max-w-full flex overflow-x-auto gap-4 snap-x snap-mandatory hide-scrollbar pb-4 px-2">
-                                <img src="./Report1.png" alt="테스트 리포트 예시 1" class="w-[240px] shrink-0 snap-center rounded-[1.5rem] border-[4px] border-slate-800 shadow-xl object-cover">
-                                <img src="./Report2.png" alt="테스트 리포트 예시 2" class="w-[240px] shrink-0 snap-center rounded-[1.5rem] border-[4px] border-slate-800 shadow-xl object-cover">
-                                <img src="./Report3.png" alt="테스트 리포트 예시 3" class="w-[240px] shrink-0 snap-center rounded-[1.5rem] border-[4px] border-slate-800 shadow-xl object-cover">
-                            </div>
-                            <span class="text-xs font-bold tracking-wider text-slate-400 mt-2">좌우로 스와이프하여 확인하세요</span>
+                    </details>
+                    <details class="group bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
+                        <summary class="p-5 font-bold text-[15px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
+                            Q. 과제를 이미 제출했는데, 사진을 빼먹어서 수정하고 싶어요.
+                            <span class="text-slate-500 group-open:rotate-45 transition-transform text-xl">+</span>
+                        </summary>
+                        <div class="p-5 pt-0 text-[14px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
+                            A. 가능합니다! [과제 제출] 메뉴에서 제출했던 날짜를 다시 선택하시면 이전에 선택했던 문항과 사진 내역이 불러와집니다. 내용을 수정한 후 다시 [제출하기]를 누르면 덮어씌워져 갱신됩니다.
                         </div>
-                    </div>
-                </section>
-
-                <hr class="border-slate-800 border-t-2 border-dashed">
-
-                <!-- 9. 출결/시간표/공지 -->
-                <section id="others">
-                    <h2 class="text-2xl font-bold text-white mb-6">그 외 유용한 기능</h2>
-                    <div class="space-y-4">
-                        <div class="bg-brand-surface border border-slate-700 p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start md:items-center">
-                            <div class="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-white mb-1">수업 시간표 및 영상 링크</h3>
-                                <p class="text-[13px] text-slate-400">주차별로 내 반의 수업 일정이 기록됩니다. 만약 결석했거나 다시 듣고 싶은 내용이 있다면, 해당 일정에 첨부된 <strong>[수업 녹화 영상(YouTube 등)] 링크</strong>를 눌러 바로 복습할 수 있습니다.</p>
-                            </div>
+                    </details>
+                    <details class="group bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
+                        <summary class="p-5 font-bold text-[15px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
+                            Q. 학부모 계정으로 들어왔는데 [과제 제출] 버튼이 안 보여요.
+                            <span class="text-slate-500 group-open:rotate-45 transition-transform text-xl">+</span>
+                        </summary>
+                        <div class="p-5 pt-0 text-[14px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
+                            A. 정상입니다. 학부모용 계정은 모니터링 기능(리포트, 출결, 현황판)에 특화되어 있어 과제 제출 메뉴가 노출되지 않습니다. 과제 제출은 학생 계정으로 진행하도록 안내해 주세요.
                         </div>
-
-                        <div class="bg-brand-surface border border-slate-700 p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start md:items-center">
-                            <div class="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-white mb-1">상세한 출결 조회</h3>
-                                <p class="text-[13px] text-slate-400">정규수업뿐만 아니라 주말 클리닉, 보충 수업에 대한 <strong>[출석 / 지각 / 조퇴 / 결석]</strong> 상태를 기록합니다. 지각이나 결석 사유 등 특이사항 메모도 함께 확인할 수 있습니다.</p>
-                            </div>
+                    </details>
+                    <details class="group bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
+                        <summary class="p-5 font-bold text-[15px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
+                            Q. 앱 디자인이 예전 버전처럼 보여요. 화면이 이상해요.
+                            <span class="text-slate-500 group-open:rotate-45 transition-transform text-xl">+</span>
+                        </summary>
+                        <div class="p-5 pt-0 text-[14px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
+                            A. 스마트폰의 브라우저 캐시(기록) 때문입니다. 홈 화면에서 <strong>앱 아이콘을 완전히 종료(스와이프하여 끄기)한 후 다시 실행</strong>하시면 최신 화면을 받아올 수 있습니다.
                         </div>
+                    </details>
+                </div>
+            </section>
 
-                        <div class="bg-brand-surface border border-slate-700 p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start md:items-center">
-                            <div class="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-white mb-1">알림 & 자료실 (외부 링크 호환)</h3>
-                                <p class="text-[13px] text-slate-400">학원에서 전체 또는 소속 반 학생들에게 알리는 공지사항 게시판입니다. 구글 드라이브(문서), 노션(Notion) 등 <strong>외부 링크가 첨부</strong>된 경우 앱 밖으로 안전하게 연결하여 열람할 수 있도록 지원합니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            <!-- 11. 하단 영역 (Footer / CTA) -->
+            <footer class="mt-24 pt-12 border-t border-slate-800 flex flex-col items-center text-center">
+                
+                <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xl mx-auto mb-12">
+                    <a href="./Signature%20App.html" class="flex-1 px-6 py-4 bg-brand-DEFAULT hover:bg-brand-light text-white font-bold rounded-xl transition shadow-[0_0_15px_rgba(99,102,241,0.3)] text-[15px]">
+                        앱 바로 실행하기
+                    </a>
+                    <a href="./Install.html" class="flex-1 px-6 py-4 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition text-[15px]">
+                        홈 화면 설치 가이드
+                    </a>
+                    <a href="./Privacy.html" class="flex-1 px-6 py-4 bg-transparent border border-slate-700 hover:bg-slate-800 text-slate-400 font-medium rounded-xl transition text-[15px]">
+                        개인정보처리방침
+                    </a>
+                </div>
 
-                <hr class="border-slate-800 border-t-2 border-dashed">
+                <p class="text-[14px] text-slate-500 mb-2">
+                    가이드를 읽어보신 후에도 앱 사용에 문제가 있다면 <strong class="text-brand-light">담당 관리자 또는 학원 데스크</strong>로 문의해 주시기 바랍니다.
+                </p>
+                <p class="text-[13px] text-slate-600 font-medium mt-4">
+                    &copy; 2026 HANHOBIN MATH LAB. All rights reserved. <br class="sm:hidden">
+                    <span class="inline-block sm:ml-2">최종 업데이트: 2026년 3월</span>
+                </p>
+            </footer>
 
-                <!-- 10. FAQ -->
-                <section id="faq">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <svg class="w-6 h-6 text-brand-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        자주 묻는 질문 (FAQ)
-                    </h2>
-                    
-                    <div class="space-y-3">
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 앱 설치(홈 화면 추가) 배너가 안 떠요. 어떻게 설치하나요?
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 안드로이드의 경우 브라우저 우측 상단의 점 3개 메뉴(⋮)를 눌러 <strong>'홈 화면에 추가'</strong>를 직접 선택하시면 됩니다. 아이폰은 반드시 <strong>Safari 브라우저</strong>로 접속한 후 하단 공유 버튼(↑)에서 '홈 화면에 추가'를 눌러주세요.
-                            </div>
-                        </details>
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 아이디와 비밀번호가 맞는데 로그인이 안 됩니다.
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 영문 대소문자를 구분하며, 특히 뒤에 공백(띄어쓰기)이 함께 입력되지 않았는지 확인해 주세요. 계속 실패할 경우 계정이 비활성화되었을 수 있으니 학원으로 문의해 주시기 바랍니다.
-                            </div>
-                        </details>
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 숙제 제출 시 사진 업로드가 안 되고 멈춥니다.
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 한 번에 너무 많은 사진(10장 이상)을 올리거나, 스마트폰의 사진 용량이 과도하게 큰 경우 발생할 수 있습니다. 3~5장씩 나누어 업로드하거나 안정적인 와이파이 환경에서 다시 시도해 보세요. 또한 기기 설정에서 브라우저의 '사진(카메라) 접근 권한'이 허용되어 있는지 확인해야 합니다.
-                            </div>
-                        </details>
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 과제를 이미 제출했는데, 사진을 빼먹어서 수정하고 싶어요.
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 가능합니다! [과제 제출] 메뉴에서 제출했던 날짜를 다시 선택하시면 이전에 선택했던 질문 문항과 사진 내역이 불러와집니다. 내용을 수정한 후 다시 [제출하기]를 누르면 데이터가 덮어씌워져 갱신됩니다.
-                            </div>
-                        </details>
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 학부모 계정으로 들어왔는데 [과제 제출] 버튼이 안 보여요.
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 정상입니다. 학부모용 계정은 모니터링 기능(리포트, 출결, 현황판)에 특화되어 있어 숙제 업로드 메뉴가 노출되지 않습니다. 과제 업로드는 학생 기기에서 학생 계정으로 진행하도록 안내해 주세요.
-                            </div>
-                        </details>
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 테스트 리포트는 어디서 확인하나요?
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 메인 화면 하단의 <strong>[테스트 리포트]</strong> 아이콘을 누르시면 됩니다. 학원에서 채점 및 분석을 완료하고 시스템에 업로드한 날부터 리스트에 표시됩니다.
-                            </div>
-                        </details>
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 학원 공지사항이나 복습 영상 자료는 어디에 있나요?
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 전체적인 공지와 보충 자료는 <strong>[알림 & 자료실]</strong>에서 확인하실 수 있습니다. 특정 요일의 수업 해설 영상이라면 <strong>[수업 시간표]</strong> 메뉴에 해당 날짜 일정과 함께 유튜브 등 링크가 첨부되어 있습니다.
-                            </div>
-                        </details>
-                        <details class="group bg-brand-surface border border-slate-700 rounded-xl overflow-hidden">
-                            <summary class="p-4 md:p-5 font-bold text-[14px] text-slate-200 flex justify-between items-center cursor-pointer hover:bg-slate-700/50 transition">
-                                Q. 앱 디자인이 예전 버전처럼 보여요. 화면이 이상해요.
-                                <span class="text-slate-500 group-open:rotate-45 transition-transform text-lg">+</span>
-                            </summary>
-                            <div class="p-4 pt-0 text-[13px] text-slate-400 leading-relaxed border-t border-slate-700/50 mt-1">
-                                A. 스마트폰의 브라우저 캐시(기록) 때문입니다. 화면을 위에서 아래로 당겨서 새로고침 하시거나, 홈 화면에서 <strong>앱 아이콘을 완전히 종료(스와이프하여 끄기)한 후 다시 실행</strong>하시면 최신 화면을 받아올 수 있습니다.
-                            </div>
-                        </details>
-                    </div>
-                </section>
-
-                <!-- 11. 하단 영역 (Footer / CTA) -->
-                <footer class="mt-20 pt-10 border-t border-slate-800 flex flex-col items-center text-center">
-                    
-                    <div class="flex flex-col md:flex-row gap-3 w-full max-w-lg mx-auto mb-10">
-                        <a href="./Signature%20App.html" class="flex-1 px-4 py-3 bg-brand-DEFAULT hover:bg-brand-light text-white font-bold rounded-xl transition shadow-md text-sm">
-                            앱 바로 실행하기
-                        </a>
-                        <a href="./Install.html" class="flex-1 px-4 py-3 bg-brand-surface border border-brand-border hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition text-sm">
-                            홈 화면 설치 가이드
-                        </a>
-                        <a href="./Privacy.html" class="flex-1 px-4 py-3 bg-transparent border border-slate-600 hover:bg-slate-800 text-slate-400 font-medium rounded-xl transition text-sm">
-                            개인정보처리방침
-                        </a>
-                    </div>
-
-                    <p class="text-[13px] text-slate-500 mb-2">
-                        가이드를 읽어보신 후에도 앱 사용에 문제가 있다면 <strong class="text-brand-light">담당 관리자 또는 학원 데스크</strong>로 문의해 주시기 바랍니다.
-                    </p>
-                    <p class="text-[12px] text-slate-600 font-medium">
-                        &copy; 2026 HANHOBIN MATH LAB. All rights reserved. <br class="md:hidden">
-                        <span class="inline-block mt-1">최종 업데이트: 2026년 3월</span>
-                    </p>
-                </footer>
-
-            </div>
-        </main>
+        </div>
     </div>
 
     <script>
-        // 탭 전환 스크립트 (설치 방법 영역)
+        // 설치 방법 탭 전환 스크립트
         function switchInstallTab(tabId) {
             const btnAndroid = document.getElementById('tab-btn-android');
             const btnIos = document.getElementById('tab-btn-ios');
@@ -696,17 +602,88 @@
             const contentIos = document.getElementById('tab-content-ios');
 
             if(tabId === 'android') {
-                btnAndroid.className = "flex-1 py-4 text-center text-sm font-bold text-brand-light bg-slate-800/80 border-b-2 border-brand-light transition";
-                btnIos.className = "flex-1 py-4 text-center text-sm font-bold text-slate-400 bg-slate-900/50 border-b-2 border-transparent hover:text-slate-200 transition";
+                btnAndroid.className = "flex-1 py-4 text-center text-sm font-bold text-white bg-brand-DEFAULT/20 border-b-2 border-brand-DEFAULT transition";
+                btnIos.className = "flex-1 py-4 text-center text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition";
                 contentAndroid.classList.remove('hidden');
                 contentIos.classList.add('hidden');
             } else {
-                btnIos.className = "flex-1 py-4 text-center text-sm font-bold text-brand-light bg-slate-800/80 border-b-2 border-brand-light transition";
-                btnAndroid.className = "flex-1 py-4 text-center text-sm font-bold text-slate-400 bg-slate-900/50 border-b-2 border-transparent hover:text-slate-200 transition";
+                btnIos.className = "flex-1 py-4 text-center text-sm font-bold text-white bg-brand-DEFAULT/20 border-b-2 border-brand-DEFAULT transition";
+                btnAndroid.className = "flex-1 py-4 text-center text-sm font-bold text-slate-400 hover:text-white border-b-2 border-transparent transition";
                 contentIos.classList.remove('hidden');
                 contentAndroid.classList.add('hidden');
             }
         }
+
+        // 이미지 갤러리 선택 로직 (과제 제출)
+        function changeHwImage(num) {
+            const img = document.getElementById('hw-main-img');
+            img.style.opacity = '0.3'; // 부드러운 화면 전환(페이드 아웃)
+            
+            setTimeout(() => {
+                img.src = `Homework${num}.jpg`;
+                img.onerror = function() { this.onerror=null; this.src=`https://placehold.co/400x800/1e293b/818cf8?text=Homework${num}.jpg`; };
+                img.style.opacity = '1'; // 페이드 인
+            }, 200);
+
+            // 버튼 활성화 스타일 업데이트
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`hw-btn-${i}`);
+                if (i === num) {
+                    btn.className = "w-10 h-10 rounded-full bg-brand-DEFAULT text-white font-bold shadow-lg transition-all ring-2 ring-brand-DEFAULT ring-offset-2 ring-offset-slate-900";
+                } else {
+                    btn.className = "w-10 h-10 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-all border border-slate-700";
+                }
+            }
+        }
+
+        // 이미지 갤러리 선택 로직 (테스트 리포트)
+        function changeRpImage(num) {
+            const img = document.getElementById('rp-main-img');
+            img.style.opacity = '0.3'; 
+            
+            setTimeout(() => {
+                img.src = `Report${num}.jpg`;
+                img.onerror = function() { this.onerror=null; this.src=`https://placehold.co/400x800/1e293b/818cf8?text=Report${num}.jpg`; };
+                img.style.opacity = '1'; 
+            }, 200);
+
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`rp-btn-${i}`);
+                if (i === num) {
+                    btn.className = "w-10 h-10 rounded-full bg-brand-DEFAULT text-white font-bold shadow-lg transition-all ring-2 ring-brand-DEFAULT ring-offset-2 ring-offset-slate-900";
+                } else {
+                    btn.className = "w-10 h-10 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 font-bold transition-all border border-slate-700";
+                }
+            }
+        }
     </script>
+<script>
+  // 1. 마우스 우클릭 방지
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault(); // 우클릭 메뉴가 뜨지 않게 합니다.
+    // alert('보안을 위해 우클릭을 사용할 수 없습니다.'); // 경고창이 필요하면 주석(//)을 지우세요.
+  });
+
+  // 2. 개발자 도구 및 소스 보기 단축키 방지
+  document.addEventListener('keydown', function(e) {
+    // F12 키 방지 (가장 많이 쓰는 개발자 도구 키)
+    if (e.keyCode === 123) {
+      e.preventDefault();
+      e.returnValue = false;
+    }
+
+    // Ctrl+Shift+I (개발자 도구) / Ctrl+Shift+J (콘솔) / Ctrl+Shift+C (요소 검사)
+    if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+      e.preventDefault();
+      e.returnValue = false;
+    }
+
+    // Ctrl+U (소스 보기)
+    if (e.ctrlKey && e.keyCode === 85) {
+      e.preventDefault();
+      e.returnValue = false;
+    }
+  });
+</script>
 </body>
 </html>
